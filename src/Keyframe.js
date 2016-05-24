@@ -1,5 +1,6 @@
 /**
  * Keyframe
+ * Values are stored as Arrays for tweening groups, such as a Vector array
  * @author Colin Duffy
  */
 
@@ -25,9 +26,7 @@ function Keyframe(object, keys, endValue, duration, delay, ease, onComplete, onU
     // Object
     this.object          = object;
     this.keys            = Array.isArray(keys) ? keys : [ keys ];
-    // this.startValue      = Array.isArray(startValue)  ? startValue   : [ startValue ];
     this.startValue      = startValue !== undefined ? ( Array.isArray(startValue) ? startValue: [ startValue ] ) : [ this.object[ this.keys[0] ] ];
-    // this.startValue      = startValue !== undefined ? startValue : [ this.object[ this.keys[0] ] ];
     this.endValue        = Array.isArray(endValue)  ? endValue   : [ endValue ];
     this.multiArray      = Array.isArray(this.startValue[0]);
     
