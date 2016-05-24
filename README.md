@@ -1,2 +1,3 @@
 # Apollo-Timeline
-After Effects functionality
+
+After Effects timeline

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta content="content-type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="author" content="Colin Duffy">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+    
+    <title>Apollo Timeline - Markers</title>
+    
+    <!-- Stylesheets -->
+    <style type="text/css">
+      #overlay {
+        font-family: Helvetica, Arial, sans-serif;
+        position: absolute;
+        left: 10px;
+        top:  10px;
+      }
+      #box {
+        background-color: #F00;
+        position: absolute;
+      }
+    </style>
+    
+    <!-- Scripts -->
+    <script type="text/javascript" src="./DOMExtend.js"></script>
+    <script type="text/javascript" src="../src/Bezier.js"></script>
+    <script type="text/javascript" src="../src/Keyframe.js"></script>
+    <script type="text/javascript" src="../src/Marker.js"></script>
+    <script type="text/javascript" src="../src/Timeline.js"></script>
+    <script type="text/javascript" src="../src/Timer.js"></script>
+  </head>
+  <body>
+    <div>
+      <p id="log"></p>
+      <div id="markers">
+        <p>Markers</p>
+        <button>In</button>
+        <button>Out</button>
+      </div>
+    </div>
+    <div id="box"></div>
+    
+    <script type="text/javascript">
+      var visibilityChange = "visibilitychange";
+      var domHidden        = "hidden";
+      
+      if(typeof document.mozHidden !== "undefined") {
+          domHidden        = "mozHidden";
+          visibilityChange = "mozvisibilitychange";
+      } else if(typeof document.msHidden !== "undefined") {
+          domHidden        = "msHidden";
+          visibilityChange = "msvisibilitychange";
+      } else if(typeof document.webkitHidden !== "undefined") {
+          domHidden        = "webkitHidden";
+          visibilityChange = "webkitvisibilitychange";
+      }
+      
+      function visibilityChangeHandler(evt) {
+        var hidden = document[ domHidden ];
+        hidden ? Timer.pauseAll() : Timer.playAll();
+      }
+      
+      var timeline, box, log, markers;
+      
+      // Buttons
+      
+      function clickHandler(evt) {
+        evt.preventDefault();
+        var marker = evt.target.innerHTML;
+        timeline.goToMarker( marker );
+      }
+      var btns = document.getElementsByTagName("button");
+      for(var i = 0; i < btns.length; ++i) {
+        var b = btns[i];
+        b.addEventListener("click", clickHandler);
+      }
+      
+      // Update handler
+      
+      function onUpdate() {
+        var output = "<b>Timeline</b>";
+        output += "<br>Seconds: " + timeline.seconds.toFixed(2);
+        output += "<br>Duration: " + timeline.duration.toFixed(2);
+        log.innerHTML = output;
+      }
+      
+      // Init
+      
+      window.onload = function() {
+        log     = document.getElementById("log");
+        markers = document.getElementById("markers");
+        
+        // Setup
+        box = document.getElementById("box");
+        DOM.extend( box );
+        box.x     = 200;
+        box.y     = 100;
+        box.width = box.height = 100;
+        box.opacity = 0;
+        
+        timeline = new Timeline();
+        timeline.duration = 3;
+        // timeline.playMode = PlayMode.ONCE;
+        timeline.playMode = PlayMode.LOOP;
+        // timeline.playMode = PlayMode.PING_PONG;
+        timeline.onUpdate = onUpdate;
+        timeline.setTime( 1 );
+        
+        timeline.addMarker( new Marker("In",   0.0, "") );
+        timeline.addMarker( new Marker("Idle", 1.0, "stop") );
+        timeline.addMarker( new Marker("Out",  1.5, "") );
+        
+        timeline.add( box, 'opacity', 1, 1, 0.0 ); // in
+        timeline.add( box, 'opacity', 0, 1, 1.5, 0.25, 0.25, 0.75, 0.75, undefined, undefined, 1 ); // out
+        timeline.restart();
+        timeline.play();
+        
+        document.addEventListener( visibilityChange, visibilityChangeHandler, false );
+      };
+    </script>
+  </body>
+</html>
