@@ -102,6 +102,10 @@ function Timeline() {
             var percent = (now - key.timestamp) / key.duration;
             
             if( key.isActive(now) ) {
+                // Auto-origin, this updates the Start Value to whatever the object currently is
+                if( !key.active ) {
+                    key.startValue = [ key.object[ key.keys[0] ] ];
+                }
                 key.active = true;
                 key.update( percent );
                 
