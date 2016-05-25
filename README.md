@@ -18,12 +18,12 @@ A Keyframe is an object that interpolates between 2 Arrays, *startValue* and *en
 * **bezier** - Cubic Bezier interpolation from A to B
 * **hold** - No interpolation from A to B until the Keyframe is complete
 
-** This won't work properly **
+**This won't work properly**
 
 `timeline.add( box, 'opacity', 1, 1, 0.0 );`
 `timeline.add( box, 'opacity', 0, 1, 1.5 );`
 
-** But this will **
+**But this will**
 
 `timeline.add( box, 'opacity', 1, 1, 0.0 );`
 `timeline.add( box, 'opacity', 0, 1, 1.5 ).autoOrigin = true;`
