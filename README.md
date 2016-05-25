@@ -1,5 +1,7 @@
 # Apollo Timeline
 
+### An After Effects-inspired Timeline
+
 ##### Timeline
 A Timeline is an object with keyframes, markers, and a timer. The timer updates the Timeline every time it's updated. Typically a Timeline has a set duration for synching/combining animations.
 
