@@ -22,6 +22,7 @@ function Keyframe(object, keys, endValue, duration, delay, ease, onComplete, onU
     this.ease            = ease  !== undefined ? ease  : [0.25, 0.25, 0.75, 0.75];
     this.timestamp       = delay !== undefined ? delay : 0;
     this.duration        = duration;
+    this.autoOrigin      = false; // if the keyframe should update it's start value before tweening
     
     // Object
     this.object          = object;

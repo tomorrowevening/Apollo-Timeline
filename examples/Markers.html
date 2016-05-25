@@ -113,7 +113,7 @@
         timeline.addMarker( new Marker("Out",  1.5, "") );
         
         timeline.add( box, 'opacity', 1, 1, 0.0 ); // in
-        timeline.add( box, 'opacity', 0, 1, 1.5 ); // out
+        timeline.add( box, 'opacity', 0, 1, 1.5 ).autoOrigin = true; // out
         timeline.restart();
         timeline.play();
         

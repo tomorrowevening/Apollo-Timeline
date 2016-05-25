@@ -102,8 +102,11 @@ function Timeline() {
             var percent = (now - key.timestamp) / key.duration;
             
             if( key.isActive(now) ) {
-                // Auto-origin, this updates the Start Value to whatever the object currently is
-                if( !key.active ) {
+                /**
+                 * Auto-origin, this updates the Start Value to whatever the object currently is
+                 * Ensure time is not running backwards (pingPong mode)
+                 */
+                if( !key.active && key.autoOrigin && this.timer.time > 0 ) {
                     key.startValue = [ key.object[ key.keys[0] ] ];
                 }
                 key.active = true;
@@ -146,11 +149,12 @@ function Timeline() {
         var wait   = this.duration === 0 ? this.seconds + _delay : _delay;
         var ease   = [ x0, y0, x1, y1 ];
         var key    = new Keyframe( target, keys, to, duration, wait, ease, completeHandler, updateHandler, from );
-        this.addKeyframe( key );
+        return this.addKeyframe( key );
     };
     
     this.addKeyframe = function(keyframe) {
         this.keyframes.push( keyframe );
+        return keyframe;
     };
     
     this.addMarker = function(marker) {
