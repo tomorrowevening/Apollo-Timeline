@@ -4,40 +4,42 @@
 
 var DOM = {
     
-    extend: function(element) {
+    extend: function(element, unit) {
+        element.unit = unit !== undefined ? unit : "px";
+        
         Object.defineProperty(element, "width", {
             get: function() {
-                return Number( this.style.width.replace("px", "") );
+                return Number( this.style.width.replace(this.unit, "") );
             },
             set: function(value) {
-                this.style.width = value + "px";
+                this.style.width = value + this.unit;
             }
         });
         
         Object.defineProperty(element, "height", {
             get: function() {
-                return Number( this.style.height.replace("px", "") );
+                return Number( this.style.height.replace(this.unit, "") );
             },
             set: function(value) {
-                this.style.height = value + "px";
+                this.style.height = value + this.unit;
             }
         });
         
         Object.defineProperty(element, "x", {
             get: function() {
-                return Number( this.style.left.replace("px", "") );
+                return Number( this.style.left.replace(this.unit, "") );
             },
             set: function(value) {
-                this.style.left = value + "px";
+                this.style.left = value + this.unit;
             }
         });
         
         Object.defineProperty(element, "y", {
             get: function() {
-                return Number( this.style.top.replace("px", "") );
+                return Number( this.style.top.replace(this.unit, "") );
             },
             set: function(value) {
-                this.style.top = value + "px";
+                this.style.top = value + this.unit;
             }
         });
         
