@@ -7,7 +7,6 @@ function Timer() {
     
     this.autoPause       = true;
     this.running         = false;
-    this.wasRunning      = false;
     this.time            = 1;
     this.timeStamp       = 0;
     this.deltaStamp      = 0; // now - before
@@ -18,7 +17,6 @@ function Timer() {
     
     this.play = function() {
         this.running    = true;
-        this.wasRunning = false;
         this.timeStamp  = Date.now();
         
         if(this.timer === undefined) {
@@ -96,7 +94,7 @@ Timer.playAll = function() {
     for(let i = 0; i < total; ++i) {
         let t = Timer.timers[i];
         if( t !== undefined ) {
-            if( t.autoPause && t.wasRunning ) t.play();
+            if( t.autoPause ) t.play();
         } else {
             // Remove deleted timers
             Timer.timers.splice(i, 1);
@@ -113,7 +111,6 @@ Timer.pauseAll = function() {
         if( t !== undefined ) {
             if( t.autoPause && t.running ) {
                 t.pause();
-                t.wasRunning = true;
             }
         } else {
             // Remove deleted timers
