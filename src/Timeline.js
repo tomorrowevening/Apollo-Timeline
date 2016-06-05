@@ -286,3 +286,5 @@ function Timeline() {
     
     return this;
 };
+
+module.exports = Timeline;

@@ -174,3 +174,5 @@ Bezier.getEase = function(name) {
     }
     return ease;
 };
+
+module.exports = Bezier;

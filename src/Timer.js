@@ -120,3 +120,5 @@ Timer.pauseAll = function() {
         }
     }
 };
+
+module.exports = Timer;

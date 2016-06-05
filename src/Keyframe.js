@@ -116,3 +116,5 @@ function Keyframe(object, keys, endValue, duration, delay, ease, onComplete, onU
     
     return this;
 };
+
+module.exports = Keyframe;

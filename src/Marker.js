@@ -9,3 +9,5 @@ function Marker(name, time, action) {
     this.action  = action !== undefined ? action : "";
     return this;
 };
+
+module.exports = Marker;
