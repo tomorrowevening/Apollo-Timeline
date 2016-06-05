@@ -1,0 +1,34 @@
+{
+  "name": "apollo-timeline",
+  "version": "1.0.0",
+  "description": "After Effects style Timeline",
+  "main": "src/Timeline.js",
+  "files": [
+    "package.json",
+    "LICENSE",
+    "README.md",
+    "src",
+    "src/Bezier.js",
+    "src/Keyframe.js",
+    "src/Marker.js",
+    "src/Timer.js",
+    "src/Timeline.js"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomorrowevening/Apollo-Timeline"
+  },
+  "keywords": [
+    "After Effects",
+    "Timeline",
+    "Animation"
+  ],
+  "author": "Colin Duffy",
+  "license": "Apache",
+  "homepage": "https://github.com/tomorrowevening/Apollo-Timeline",
+  "devDependencies": {
+  }
+}
