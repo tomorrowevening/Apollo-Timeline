@@ -4,6 +4,8 @@
  * @author Colin Duffy
  */
 
+var Bezier = require('./Bezier')
+
 var KeyframeType = {
     "LINEAR": "linear",
     "BEZIER": "bezier",
