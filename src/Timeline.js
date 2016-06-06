@@ -3,6 +3,10 @@
  * @author Colin Duffy
  */
 
+var Keyframe = require('./Keyframe')
+var Marker   = require('./Marker')
+var Timer    = require('./Timer')
+
 var PlayMode = {
     "LOOP":      "loop",
     "ONCE":      "once",
