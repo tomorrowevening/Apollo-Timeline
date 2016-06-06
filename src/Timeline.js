@@ -81,6 +81,7 @@ function Timeline() {
                     var total = this.keyframes.length-1;
                     for(var i = total; i > -1; --i) {
                         this.keyframes[i].update(0);
+                        this.keyframes[i].active = false;
                     }
                 }
             }
@@ -97,7 +98,7 @@ function Timeline() {
     };
     
     this.updateKeyframes = function() {
-        var pingP = this.mode !== PlayMode.PING_PONG || this.timer.time > 0;
+        var pPing = this.mode !== PlayMode.PING_PONG || this.timer.time > 0;
         var now   = this.seconds;
         var total = this.keyframes.length;
         
@@ -119,7 +120,7 @@ function Timeline() {
             } else if( key.active ) {
                 
                 key.active = false;
-                if(pingP) {
+                if(pPing) {
                     key.complete();
                 } else if(this.timer.time < 0) {
                     key.restart();
@@ -253,7 +254,6 @@ function Timeline() {
     
     Object.defineProperty(this, "seconds", {
         get: function() {
-            if(this.duration > 0) return this.timer.seconds % this.duration;
             return this.timer.seconds;
         },
         set: function(value) {

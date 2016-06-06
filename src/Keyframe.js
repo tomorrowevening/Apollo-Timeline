@@ -113,8 +113,20 @@ function Keyframe(object, keys, endValue, duration, delay, ease, onComplete, onU
     };
     
     this.isActive = function(time) {
-        return time >= this.timestamp && time < (this.timestamp+this.duration);
+        return time > this.startTime && time < this.endTime;
     };
+    
+    Object.defineProperty(this, "startTime", {
+        get: function() {
+            return this.timestamp;
+        }
+    });
+    
+    Object.defineProperty(this, "endTime", {
+        get: function() {
+            return this.timestamp + this.duration;
+        }
+    });
     
     return this;
 };
