@@ -1,6 +1,6 @@
 {
   "name": "apollo-timeline",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "After Effects style Timeline",
   "main": "src/Timeline.js",
   "files": [
@@ -27,7 +27,7 @@
     "Animation"
   ],
   "author": "Colin Duffy",
-  "license": "Apache",
+  "license": "Apache-2.0",
   "homepage": "https://github.com/tomorrowevening/Apollo-Timeline",
   "devDependencies": {}
 }

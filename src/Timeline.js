@@ -176,9 +176,9 @@ function Timeline() {
     };
     
     this.getMarker = function(name) {
-        let i, total = this.markers.length;
+        var i, total = this.markers.length;
         for(i = 0; i < total; ++i) {
-            let m = this.markers[i];
+            var m = this.markers[i];
             if(m.name === name) return i;
         }
         return -1;

@@ -36,7 +36,7 @@ function Timer() {
     this.update = function() {
         if( !this.running ) return;
         
-        const now = Date.now();
+        var now = Date.now();
         this.prevStamp      = this.elapsedStamp;
         this.deltaStamp     = now - this.timeStamp;
         this.elapsedStamp  += this.deltaStamp * this.time;
@@ -90,9 +90,9 @@ function Timer() {
 Timer.timers = [];
 
 Timer.playAll = function() {
-    let total = Timer.timers.length;
-    for(let i = 0; i < total; ++i) {
-        let t = Timer.timers[i];
+    var total = Timer.timers.length;
+    for(var i = 0; i < total; ++i) {
+        var t = Timer.timers[i];
         if( t !== undefined ) {
             if( t.autoPause ) t.play();
         } else {
@@ -105,9 +105,9 @@ Timer.playAll = function() {
 };
 
 Timer.pauseAll = function() {
-    let total = Timer.timers.length;
-    for(let i = 0; i < total; ++i) {
-        let t = Timer.timers[i];
+    var total = Timer.timers.length;
+    for(var i = 0; i < total; ++i) {
+        var t = Timer.timers[i];
         if( t !== undefined ) {
             if( t.autoPause && t.running ) {
                 t.pause();
