@@ -1,18 +1,17 @@
 {
   "name": "apollo-timeline",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "After Effects style Timeline",
-  "main": "src/Timeline.js",
+  "main": "Timeline.js",
   "files": [
     "package.json",
     "LICENSE",
     "README.md",
-    "src",
-    "src/Bezier.js",
-    "src/Keyframe.js",
-    "src/Marker.js",
-    "src/Timer.js",
-    "src/Timeline.js"
+    "Bezier.js",
+    "Keyframe.js",
+    "Marker.js",
+    "Timer.js",
+    "Timeline.js"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
