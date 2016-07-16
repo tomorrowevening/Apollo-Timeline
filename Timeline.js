@@ -42,7 +42,7 @@ function Timeline() {
 
     this.update = function() {
         // Update play mode settings
-        this.updatePlaymode();
+        if(this.duration > 0) this.updatePlaymode();
         
         // Markers
         this.updateMarkers();

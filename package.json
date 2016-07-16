@@ -1,6 +1,6 @@
 {
   "name": "apollo-timeline",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "After Effects style Timeline",
   "main": "Timeline.js",
   "files": [
