@@ -3,9 +3,11 @@
  * @author Colin Duffy
  */
 
-var Keyframe = require('./Keyframe')
-var Marker   = require('./Marker')
-var Timer    = require('./Timer')
+var Keyframe    = require('./Keyframe');
+var Marker      = require('./Marker');
+var Timer       = require('./Timer');
+var Dispatcher  = require("apollo-utils/Dispatcher");
+var Event       = require("apollo-utils/Event");
 
 var PlayMode = {
     "LOOP":      "loop",
@@ -14,6 +16,7 @@ var PlayMode = {
 };
 
 function Timeline() {
+    Dispatcher.call( this );
     
     this.name            = name !== undefined ? name : "Timeline";
     this.duration        = 0;
@@ -24,7 +27,15 @@ function Timeline() {
     this.markers         = [];
     this.timer           = new Timer();
     this.lastMarker      = undefined; // last triggered Marker
-    this.onUpdate        = undefined; // added for demo feedback, unnecessary
+    
+    this.dispose = function() {
+        this.timer.pause();
+        Timer.remove( this.timer );
+        delete this.timer;
+        this.timer = undefined;
+        
+        this.keyframes = this.markers = undefined;
+    }
     
     this.play = function() {
         this.timer.play();
@@ -49,8 +60,6 @@ function Timeline() {
         
         // Update keyframes
         this.updateKeyframes();
-        
-        if(this.onUpdate !== undefined) this.onUpdate();
     };
     
     this.updatePlaymode = function() {
@@ -129,6 +138,13 @@ function Timeline() {
             } else {
                 
                 key.active = false;
+                
+                // Remove old keyframes that'll never be used again
+                if(this.duration === 0 && now - key.timestamp > 1) {
+                    this.keyframes.splice(i, 1);
+                    --i;
+                    --total;
+                }
                 
             }
             
@@ -212,6 +228,8 @@ function Timeline() {
         if(marker.action === "stop") {
             this.pause();
             this.seconds = marker.time;
+        } else {
+            this.notify( "marker", marker );
         }
         return true;
     };
@@ -290,5 +308,8 @@ function Timeline() {
     
     return this;
 };
+
+Timeline.prototype = Object.create( Dispatcher.prototype );
+Timeline.prototype.constructor = Timeline;
 
 module.exports = Timeline;
