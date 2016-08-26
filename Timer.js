@@ -3,48 +3,48 @@
  * @author Colin Duffy
  */
 
+var TIME = ( performance || Date );
+
 function Timer() {
     
+    this.name            = "Timer::" + Timer.count.toString();
     this.autoPause       = true;
     this.running         = false;
     this.wasRunning      = false;
     this.time            = 1;
     this.timeStamp       = 0;
-    this.deltaStamp      = 0; // now - before
-    this.elapsedStamp    = 0; // Time elapsed
+    this.deltaStamp      = 0;
+    this.elapsedStamp    = 0;
     this.prevStamp       = 0;
-    this.timer           = undefined;
+    this.performance     = 0;
+    this.fps             = 0;
     this.onUpdate        = undefined;
     
     this.play = function() {
         this.running    = true;
-        this.timeStamp  = Date.now();
+        this.timeStamp  = TIME.now();
         
-        if(this.timer === undefined) {
-            this.timer = setInterval( this.update.bind(this), 10 );
-        }
+        this.update();
     };
     
     this.pause = function() {
         this.running    = false;
         this.wasRunning = false;
-        
-        if(this.timer !== undefined) {
-            clearInterval( this.timer );
-            this.timer = undefined;
-        }
     };
     
     this.update = function() {
         if( !this.running ) return;
         
-        var now = Date.now();
+        var now = TIME.now();
         this.prevStamp      = this.elapsedStamp;
         this.deltaStamp     = now - this.timeStamp;
+        this.fps            = 1000 / this.deltaStamp;
+        this.performance    = this.fps / 60;
         this.elapsedStamp  += this.deltaStamp * this.time;
         this.timeStamp      = now;
         
         if(this.onUpdate !== undefined) this.onUpdate();
+        window.requestAnimationFrame( this.update.bind(this) );
     }
     
     this.restart = function() {
@@ -53,7 +53,7 @@ function Timer() {
     };
     
     this.stamp = function() {
-        this.timeStamp = Date.now();
+        this.timeStamp = TIME.now();
     };
     
     // Getters / Setters
@@ -86,10 +86,24 @@ function Timer() {
     });
     
     Timer.timers.push( this );
+    ++Timer.count;
+    
     return this.restart();
 };
 
-Timer.timers = [];
+Timer.count     = 0;
+Timer.timers    = [];
+
+Timer.remove = function(me) {
+    var i, t, total = Timer.timers.length;
+    for(i = 0; i < total; ++i) {
+        t = Timer.timers[i];
+        if( t === me ) {
+            Timer.timers.splice(i, 1);
+            return;
+        }
+    }
+}
 
 Timer.playAll = function() {
     var total = Timer.timers.length;
