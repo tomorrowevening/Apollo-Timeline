@@ -231,6 +231,9 @@ function Timeline(name) {
         if(marker.action === "stop") {
             this.pause();
             this.seconds = marker.time;
+        } else if(marker.action === "delay") {
+            // delay call
+            marker.trigger();
         } else {
             this.notify( "marker", marker );
         }
@@ -258,6 +261,10 @@ function Timeline(name) {
         
         return -1;
     };
+    
+    this.delay = function(length, trigger) {
+        this.addMarker( new Marker("delayCall", this.seconds + length, "delay", trigger) );
+    }
     
     // Getters /  Setters
     
@@ -307,7 +314,6 @@ function Timeline(name) {
     });
     
     this.timer.listen(Event.UPDATE, this.update.bind(this));
-    this.timer.restart();
     
     return this;
 };
