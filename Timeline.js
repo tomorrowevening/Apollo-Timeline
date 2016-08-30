@@ -3,11 +3,11 @@
  * @author Colin Duffy
  */
 
-var Keyframe    = require('./Keyframe');
-var Marker      = require('./Marker');
-var Timer       = require('./Timer');
-var Dispatcher  = require("apollo-utils/Dispatcher");
-var Event       = require("apollo-utils/Event");
+var Dispatcher  = require('apollo-utils/Dispatcher');
+var Event       = require('apollo-utils/Event');
+var Keyframe    = require('./Keyframe')
+var Marker      = require('./Marker')
+var Timer       = require('./Timer')
 
 var PlayMode = {
     "LOOP":      "loop",
@@ -15,14 +15,14 @@ var PlayMode = {
     "PING_PONG": "pingPong"
 };
 
-function Timeline() {
-    Dispatcher.call( this );
+function Timeline(name) {
+    Dispatcher.call(this);
     
     this.name            = name !== undefined ? name : "Timeline";
     this.duration        = 0;
     this.timesPlayed     = 0;
     this.maxPlays        = 0;
-    this.mode            = PlayMode.LOOP;
+    this.mode            = PlayMode.ONCE;
     this.keyframes       = [];
     this.markers         = [];
     this.timer           = new Timer();
@@ -51,7 +51,7 @@ function Timeline() {
         this.timer.restart();
     };
 
-    this.update = function() {
+    this.update = function(evt) {
         // Update play mode settings
         if(this.duration > 0) this.updatePlaymode();
         
@@ -60,6 +60,9 @@ function Timeline() {
         
         // Update keyframes
         this.updateKeyframes();
+        
+        // Update
+        this.notifyEvent( evt );
     };
     
     this.updatePlaymode = function() {
@@ -303,7 +306,7 @@ function Timeline() {
         }
     });
     
-    this.timer.onUpdate = this.update.bind(this);
+    this.timer.listen(Event.UPDATE, this.update.bind(this));
     this.timer.restart();
     
     return this;
