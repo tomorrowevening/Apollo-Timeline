@@ -16,7 +16,7 @@ function lerp(value, min, max) {
     return min * ( 1 - value ) + max * value;
 };
 
-function Keyframe(object, keys, endValue, duration, delay, ease, onComplete, onUpdate, startValue) {
+function Keyframe(object, key, endValue, duration, delay, ease, onComplete, onUpdate, startValue) {
     
     // Time
     this.active          = false;
@@ -28,10 +28,9 @@ function Keyframe(object, keys, endValue, duration, delay, ease, onComplete, onU
     
     // Object
     this.object          = object;
-    this.keys            = Array.isArray(keys) ? keys : [ keys ];
-    this.startValue      = startValue !== undefined ? ( Array.isArray(startValue) ? startValue: [ startValue ] ) : [ this.object[ this.keys[0] ] ];
-    this.endValue        = Array.isArray(endValue)  ? endValue   : [ endValue ];
-    this.multiArray      = Array.isArray(this.startValue[0]);
+    this.key             = key;
+    this.startValue      = startValue !== undefined ? startValue : [ this.object[this.key] ];
+    this.endValue        = endValue;
     
     // Handlers
     this.onUpdate        = onUpdate;
@@ -52,35 +51,7 @@ function Keyframe(object, keys, endValue, duration, delay, ease, onComplete, onU
             percent = progress < 1 ? 0 : 1;
         }
         
-        var k, kTotal = this.keys.length;
-        
-        if(this.multiArray) {
-            
-            for(k = 0; k < kTotal; ++k) {
-                var key = this.keys[k];
-                var n, nTotal = this.startValue.length;
-                for(n = 0; n < nTotal; ++n) {
-                    var i, iTotal = this.startValue[n].length;
-                    for(i = 0; i < iTotal; ++i) {
-                        var start = this.startValue[n][i];
-                        var end   = this.endValue[n][i];
-                        var value = lerp( percent, start, end );
-                        this.object[key][n][i] = value;
-                    }
-                }
-            }
-            
-        } else {
-            
-            for(k = 0; k < kTotal; ++k) {
-                var key   = this.keys[k];
-                var start = this.startValue[k];
-                var end   = this.endValue[k];
-                var value = lerp( percent, start, end );
-                this.object[key] = value;
-            }
-            
-        }
+        this.object[this.key] = lerp( percent, this.startValue, this.endValue );
         
         if(this.onUpdate !== undefined) {
             this.onUpdate(progress, percent);
@@ -88,21 +59,11 @@ function Keyframe(object, keys, endValue, duration, delay, ease, onComplete, onU
     };
     
     this.restart = function() {
-        var total = this.keys.length;
-        for(var i = 0; i < total; ++i) {
-            var key   = this.keys[i];
-            var start = this.startValue[i];
-            this.object[key] = start;
-        }
+        this.object[this.key] = this.startValue;
     };
     
     this.finish = function() {
-        var total = this.keys.length;
-        for(var i = 0; i < total; ++i) {
-            var key   = this.keys[i];
-            var end   = this.endValue[i];
-            this.object[key] = end;
-        }
+        this.update(1);
     };
     
     this.complete = function() {
@@ -113,7 +74,7 @@ function Keyframe(object, keys, endValue, duration, delay, ease, onComplete, onU
     };
     
     this.isActive = function(time) {
-        return time > this.startTime && time < this.endTime;
+        return time >= this.startTime && time <= this.endTime;
     };
     
     Object.defineProperty(this, "startTime", {

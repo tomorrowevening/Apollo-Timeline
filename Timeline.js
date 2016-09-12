@@ -18,7 +18,9 @@ var PlayMode = {
 function Timeline(name) {
     Dispatcher.call(this);
     
-    this.name            = name !== undefined ? name : "Timeline";
+    ++Timeline.total;
+    
+    this.name            = name !== undefined ? name : "Timeline_" + Timeline.total.toString();
     this.duration        = 0;
     this.timesPlayed     = 0;
     this.maxPlays        = 0;
@@ -38,6 +40,13 @@ function Timeline(name) {
     }
     
     this.play = function() {
+        if(this.timer.elapsedStamp === 0) {
+            var total = this.keyframes.length-1;
+            for(var i = total; i > -1; --i) {
+                this.keyframes[i].update(0);
+                this.keyframes[i].active = false;
+            }
+        }
         this.timer.play();
     };
 
@@ -111,12 +120,12 @@ function Timeline(name) {
     
     this.updateKeyframes = function() {
         var pPing = this.mode !== PlayMode.PING_PONG || this.timer.time > 0;
-        var now   = this.seconds;
-        var total = this.keyframes.length;
+        var i, now, key, percent, total = this.keyframes.length;
         
-        for(var i = 0; i < total; ++i) {
-            var key = this.keyframes[i];
-            var percent = (now - key.timestamp) / key.duration;
+        for(i = 0; i < total; ++i) {
+            key = this.keyframes[i];
+            now = this.seconds;
+            percent = (now - key.timestamp) / key.duration;
             
             if( key.isActive(now) ) {
                 /**
@@ -124,7 +133,7 @@ function Timeline(name) {
                  * Ensure time is not running backwards (pingPong mode)
                  */
                 if( !key.active && key.autoOrigin && this.timer.time > 0 ) {
-                    key.startValue = [ key.object[ key.keys[0] ] ];
+                    key.startValue = key.object[ key.key ];
                 }
                 key.active = true;
                 key.update( percent );
@@ -168,11 +177,11 @@ function Timeline(name) {
 
     // Management
     
-    this.add = function(target, keys, to, duration, delay, x0, y0, x1, y1, completeHandler, updateHandler, from) {
+    this.add = function(target, key, to, duration, delay, x0, y0, x1, y1, completeHandler, updateHandler, from) {
         var _delay = delay !== undefined ? delay : 0;
         var wait   = this.duration === 0 ? this.seconds + _delay : _delay;
         var ease   = [ x0, y0, x1, y1 ];
-        var key    = new Keyframe( target, keys, to, duration, wait, ease, completeHandler, updateHandler, from );
+        var key    = new Keyframe( target, key, to, duration, wait, ease, completeHandler, updateHandler, from );
         return this.addKeyframe( key );
     };
     
@@ -320,5 +329,6 @@ function Timeline(name) {
 
 Timeline.prototype = Object.create( Dispatcher.prototype );
 Timeline.prototype.constructor = Timeline;
+Timeline.total = 0;
 
 module.exports = Timeline;
