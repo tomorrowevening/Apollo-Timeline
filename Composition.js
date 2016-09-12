@@ -56,7 +56,7 @@ function Composition( obj ) {
         this.timeline.pause();
     }
     
-    this.build = function(json, atlas, parentComp) {
+    this.build = function(json, parentComp) {
         var name                = json.name;
         var r                   = Math.round( json.bg[0]*255 );
         var g                   = Math.round( json.bg[1]*255 );
@@ -91,8 +91,6 @@ function Composition( obj ) {
             var layer = this.buildLayer( json.layers[i] );
             if(layer !== undefined) this.layers.push( layer );
         }
-        
-        if(atlas !== undefined) this.buildAtlas( atlas );
     }
     
     this.buildAtlas = function(atlas) {
