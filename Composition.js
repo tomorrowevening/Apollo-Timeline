@@ -25,6 +25,7 @@ function Composition( obj ) {
     this.timeline   = new Timeline();
     
     this.dispose = function() {
+        this.timeline.dispose();
         this.camera     = undefined;
         this.layers     = [];
     }
@@ -95,14 +96,18 @@ function Composition( obj ) {
     }
     
     this.buildAtlas = function(atlas) {
-        // Mode
-        if(atlas.settings.playMode !== undefined) {
-            this.timeline.playMode = atlas.settings.playMode;
-        }
+        if(atlas === undefined) return;
         
-        // Count
-        if(atlas.settings.playCount !== undefined) {
-            this.timeline.maxPlays = atlas.settings.playCount;
+        if(atlas.settings !== undefined) {
+            // Mode
+            if(atlas.settings.playMode !== undefined) {
+                this.timeline.playMode = atlas.settings.playMode;
+            }
+            
+            // Count
+            if(atlas.settings.playCount !== undefined) {
+                this.timeline.maxPlays = atlas.settings.playCount;
+            }
         }
     }
     
