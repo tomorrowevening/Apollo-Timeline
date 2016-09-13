@@ -1,0 +1,29 @@
+{
+    "compositions": {
+        "shapeAnimation": {
+            "settings": {
+                "playMode": "loop"
+            }
+        },
+        "images": {
+            "settings": {
+                "playMode": "loop"
+            }
+        },
+        "multiComp": {
+            "settings": {
+                "playMode": "loop"
+            }
+        },
+        "logo": {
+            "settings": {
+                "playMode": "loop"
+            }
+        },
+        "masking": {
+            "settings": {
+                "playMode": "loop"
+            }
+        }
+    }
+}
