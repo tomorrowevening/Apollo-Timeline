@@ -1,5 +1,6 @@
 var DOM         = require('apollo-utils/DOMUtil');
 var MathU       = require('apollo-utils/MathUtil');
+var Event       = require('apollo-utils/Event');
 var Timeline    = require('./Timeline');
 var Marker      = require('./Marker');
 var Layer       = require('./Layer').Layer;
@@ -20,8 +21,8 @@ function Composition( obj ) {
     this.width      = 0;
     this.height     = 0;
     this.camera     = undefined;
-    this.timeline   = new Timeline();
     this.layers     = [];
+    this.timeline   = new Timeline();
     
     this.dispose = function() {
         this.camera     = undefined;
@@ -259,6 +260,8 @@ function Composition( obj ) {
             }
         }
     }
+    
+    this.timeline.listen(Event.UPDATE, this.updateHandler.bind(this));
 }
 Composition.prototype = Object.create( Layer.prototype );
 Composition.prototype.constructor = Composition;
