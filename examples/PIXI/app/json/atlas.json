@@ -20,6 +20,16 @@
                 "playMode": "loop"
             }
         },
+        "shapes": {
+            "settings": {
+                "playMode": "loop"
+            }
+        },
+        "text": {
+            "settings": {
+                "playMode": "loop"
+            }
+        },
         "masking": {
             "settings": {
                 "playMode": "loop"
