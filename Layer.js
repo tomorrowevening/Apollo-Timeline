@@ -47,7 +47,7 @@ function Layer( obj ) {
 function LayerAudio( obj ) {
     Layer.call(this, obj);
     
-    this.fileID = Loader.fileID( json.content.source );
+    this.fileID = Loader.fileID( obj.content.source );
     this.file   = Loader.audio[this.fileID];
     this.timestamp = 0;
     
@@ -71,7 +71,7 @@ LayerAudio.prototype.constructor = LayerAudio;
 function LayerImage( obj ) {
     Layer.call(this, obj);
     
-    this.fileID = Loader.fileID( json.content.source );
+    this.fileID = Loader.fileID( obj.content.source );
     this.file   = Loader.images[this.fileID];
 }
 LayerImage.prototype = Object.create( Layer.prototype );
