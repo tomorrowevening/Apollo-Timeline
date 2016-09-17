@@ -2,12 +2,17 @@
 
 Open terminal
 
-`
-cd PIXI
+`cd PIXI`
 
-npm install
+`npm install`
 
-gulp
-`
+`gulp`
 
-The Application cycles through all the exported Compositions, playing them twice before moving to the next Composition.
+
+### Testing
+
+In `Application.js`, you'll find a boolean called `cycleCompositions`.
+
+Enabling to true cycles through all the exported Compositions, playing them twice before moving to the next Composition.
+
+Setting to false builds the Default Composition set in `project.json`
