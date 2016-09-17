@@ -37,26 +37,36 @@ export default class Application extends AppRunner {
         DOM.listen( window, "resize", this.resize.bind(this) );
     }
     
-    begin() {const me = this;
-        const json = Loader.json.project.compositions;
-        let compNames = [];
-        for(let name in json) compNames.push(name);
-        let index = 0, total = compNames.length;
-        console.log( "Compositions:", total, compNames.join(", ") );
+    begin() {
+        /**
+         * Do you want to sample all the exported compositions or only the default?
+         */
+        const cycleCompositions = false;
         
-        function showComp() {
-            let compName = compNames[index];
-            console.log(">> Show comp", compName, index);
-            me.buildComp( compName );
+        if(cycleCompositions) {
+            const me = this;
+            const json = Loader.json.project.compositions;
+            let compNames = [];
+            for(let name in json) compNames.push(name);
+            let index = 0, total = compNames.length;
+            console.log( "Compositions:", total, compNames.join(", ") );
             
-            DOM.delay(me.composition.duration*2, showComp);
-            timestamp = Date.now();
+            function showComp() {
+                let compName = compNames[index];
+                console.log(">> Show comp", compName, index);
+                me.buildComp( compName );
+                
+                DOM.delay(me.composition.duration*2, showComp);
+                timestamp = Date.now();
+                
+                 // next comp
+                index = (index+1) % total;
+            }
             
-             // next comp
-            index = (index+1) % total;
+            showComp();
+        } else {
+            this.buildComp( Loader.json.project.defaultComp );
         }
-        
-        showComp();
     }
     
     buildUI() {
