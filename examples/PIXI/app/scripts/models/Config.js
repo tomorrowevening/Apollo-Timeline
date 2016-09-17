@@ -9,7 +9,8 @@ export default {
         ],
         
         images: [
-            "images/logo.png"
+            "images/logo.png",
+            "images/grid.png"
         ],
         
         json: [
