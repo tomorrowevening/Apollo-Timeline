@@ -41,7 +41,7 @@ export default class Application extends AppRunner {
         /**
          * Do you want to sample all the exported compositions or only the default?
          */
-        const cycleCompositions = false;
+        const cycleCompositions = true;
         
         if(cycleCompositions) {
             const me = this;
@@ -53,7 +53,6 @@ export default class Application extends AppRunner {
             
             function showComp() {
                 let compName = compNames[index];
-                console.log(">> Show comp", compName, index);
                 me.buildComp( compName );
                 
                 DOM.delay(me.composition.duration*2, showComp);
@@ -110,6 +109,8 @@ export default class Application extends AppRunner {
             delete this.composition;
             this.composition = undefined;
         }
+        
+        console.log("Show Composition:", name);
         
         this.ui.text.text = name.toUpperCase();
         
