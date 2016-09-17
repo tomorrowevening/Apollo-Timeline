@@ -1,5 +1,9 @@
 # Apollo PIXI-Runtime
 
+PixiJS is a 2D WebGL renderer, so keep in mind this restricts positioning Z, and rotating X & Y.
+
+### Usage
+
 Open terminal
 
 `cd PIXI`
