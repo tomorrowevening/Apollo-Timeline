@@ -1,4 +1,6 @@
-.DS_Store
-.sass-cache
-Adobe After Effects Auto-Save
-node_modules
+/**/.DS_Store
+/**/.sass-cache
+/**/node_modules
+/**/Adobe After Effects Auto-Save
+/**/dist
+/**/node_modules
