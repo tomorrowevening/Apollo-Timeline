@@ -1,0 +1,15 @@
+@mixin animation($type, $duration, $h0, $p0, $p1, $h1) {
+    -webkit-animation: $type $duration cubic-bezier($h0, $p0, $p1, $h1);
+       -moz-animation: $type $duration cubic-bezier($h0, $p0, $p1, $h1);
+         -o-animation: $type $duration cubic-bezier($h0, $p0, $p1, $h1);
+        -ms-animation: $type $duration cubic-bezier($h0, $p0, $p1, $h1);
+            animation: $type $duration cubic-bezier($h0, $p0, $p1, $h1);
+}
+
+@mixin transition($type, $duration, $h0, $p0, $p1, $h1) {
+    -webkit-transition: $type $duration cubic-bezier($h0, $p0, $p1, $h1);
+       -moz-transition: $type $duration cubic-bezier($h0, $p0, $p1, $h1);
+         -o-transition: $type $duration cubic-bezier($h0, $p0, $p1, $h1);
+        -ms-transition: $type $duration cubic-bezier($h0, $p0, $p1, $h1);
+            transition: $type $duration cubic-bezier($h0, $p0, $p1, $h1);
+}
