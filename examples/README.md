@@ -9,8 +9,8 @@ Not everything is doable when recreating After Effects to interactive, as seen w
 
 ### Runtimes
 
-[PIXI Demo](http://tomorrowevening.github.io/Apollo-Timeline/examples/PIXI/dist/)
+[PIXI Demo](http://tomorrowevening.github.io/Apollo-Timeline/examples/PIXI/dist/index.html)
 
-[THREE Demo](http://tomorrowevening.github.io/Apollo-Timeline/examples/THREE/dist/)
+[THREE Demo](http://tomorrowevening.github.io/Apollo-Timeline/examples/THREE/dist/index.html)
 
 Each runtime uses a copy of the `aeProject/project.json` to use to demonstrate its capabilities.
