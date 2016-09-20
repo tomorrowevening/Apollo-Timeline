@@ -42,7 +42,7 @@ export default class Application extends AppRunner {
         /**
          * Do you want to sample all the exported compositions or only the default?
          */
-        const cycleCompositions = false;
+        const cycleCompositions = true;
         
         if(cycleCompositions) {
             const me = this;
@@ -56,17 +56,16 @@ export default class Application extends AppRunner {
                 let compName = compNames[index];
                 me.buildComp( compName );
                 
-                DOM.delay(me.composition.duration*2, showComp);
-                timestamp = Date.now();
-                
                  // next comp
                 index = (index+1) % total;
+                
+                DOM.delay(me.composition.duration*2, showComp);
+                timestamp = Date.now();
             }
             
             showComp();
         } else {
-            this.buildComp( "images" );
-            // this.buildComp( Loader.json.project.defaultComp );
+            this.buildComp( Loader.json.project.defaultComp );
         }
     }
     
@@ -77,7 +76,7 @@ export default class Application extends AppRunner {
         let json  = Loader.json.project.compositions[ name ];
         if(json === undefined) return; // doesn't exist
         
-        console.log("Comp:", name);
+        console.log("Comp:", name, json);
         
         // Remove previous comp
         if(this.composition !== undefined) {
@@ -85,6 +84,9 @@ export default class Application extends AppRunner {
             delete this.composition;
             this.composition = undefined;
         }
+        
+        let bg = new THREE.Color( json.bg[0], json.bg[1], json.bg[2] );
+        this.renderer.setClearColor( bg.getHex() );
         
         // Add new comp
         let atlas = Loader.json.atlas.compositions[ name ];
@@ -106,6 +108,9 @@ export default class Application extends AppRunner {
     
     resize() {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+        if(this.composition !== undefined) {
+            this.composition.updateCamera();
+        }
     }
     
 }
