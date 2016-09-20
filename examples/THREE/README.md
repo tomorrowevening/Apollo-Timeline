@@ -21,10 +21,19 @@ Setting to false builds the Default Composition set in `project.json`
 ### Built
 - Images
 - Text
+- Shapes
 
 
 ### To Do
-- Shapes
 - Masking with Shapes
-- Effects
+- Shape animation
+- Stroke: Solid
+- Stroke: Dashed
 - Stroke: Trim paths
+- Stroke: Offset paths
+- Stroke: Wiggle paths
+- Shape: Repeater
+- Shape: Twist
+- Cameras
+- Video
+- Effects
