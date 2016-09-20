@@ -43,7 +43,7 @@
     "jquery": "^2.2.4",
     "require-dir": "^0.3.0",
     "stats.js": "^0.16.0",
-    "three": "^0.80.0",
+    "three": "^0.81.0",
     "three-text2d": "^0.3.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
