@@ -1,11 +1,13 @@
 var THREE       = require('three');
 var MathU       = require('apollo-utils/MathUtil');
+var ThreeU      = require('apollo-utils/ThreeUtil');
 var Loader      = require('apollo-utils/Loader');
 var Composition = require('apollo-timeline/Composition');
 var THREELayer  = require('./THREELayer').THREELayer;
 var THREEImage  = require('./THREELayer').THREEImage;
 var THREEShape  = require('./THREELayer').THREEShape;
 var THREEText   = require('./THREELayer').THREEText;
+
 
 function THREEComposition(json, renderer) {
     Composition.call(this, json);
@@ -27,6 +29,13 @@ function THREEComposition(json, renderer) {
             return undefined;
         }
     };
+    
+    this.dispose = function() {
+        this.item.dispose();
+        this.timeline.dispose();
+        this.camera = undefined;
+        this.layers = [];
+    }
     
     this.setupPerspectiveCam = function() {
         const fov = 60;
@@ -106,7 +115,7 @@ function THREEComposition(json, renderer) {
     }
     
     this.draw = function() {
-        if( this.post.effects.length > 0 ) {
+        if( this.post.enabled && this.post.effects.length > 0 ) {
             this.post.composer.render();
         } else {
             this.renderer.render( this.item, this.camera );
