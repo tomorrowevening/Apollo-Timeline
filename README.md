@@ -20,29 +20,13 @@ A Keyframe is an object that interpolates between 2 Arrays, *startValue* and *en
 * **bezier** - Cubic Bezier interpolation from A to B
 * **hold** - No interpolation from A to B until the Keyframe is complete
 
-**This won't work properly**
-
-`timeline.add( box, 'opacity', 1, 1, 0.0 );`
-
-`timeline.add( box, 'opacity', 0, 1, 1.5 );`
-
-**But this will**
-
-`timeline.add( box, 'opacity', 1, 1, 0.0 );`
-
-`timeline.add( box, 'opacity', 0, 1, 1.5 ).autoOrigin = true;`
-
-The reason the top example won't work correctly is because when both Keyframes are added to the Timeline, their startValue equals the same (box.opacity). We can override that with this call, but it's not so pretty:
-
-`timeline.add( box, 'opacity', 0, 1, 1.5, 0.25, 0.25, 0.75, 0.75, undefined, undefined, 1 );`
-
 
 ##### Marker
 A Marker is time-based label with optional commands.
+Current built-in actions are 'stop', which stops the timeline, and 'delay', which will pause the timeline for the set duration.
 
-Jumps to the "Idle" Marker
-
-`timeline.goToMarker( "Idle" );`
+Jumps to the "idle" Marker
+`timeline.goToMarker( "idle" );`
 
 ###### Commands
 "stop" - Stops the Timeline
@@ -50,4 +34,3 @@ Jumps to the "Idle" Marker
 Stop the Timeline at 1 second
 
 `timeline.addMarker( new Marker("Idle", 1.0, "stop") );`
-

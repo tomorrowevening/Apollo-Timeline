@@ -1,4 +1,4 @@
-import Loader from 'apollo-utils/Loader';
+import Config from './Config';
 import Layer from './Layer';
 
 export class LayerImage extends Layer {
@@ -6,8 +6,8 @@ export class LayerImage extends Layer {
         super(obj);
         
         if(obj.content !== undefined) {
-            this.fileID = Loader.fileID( obj.content.source );
-            this.file = Loader.images[this.fileID];
+            this.fileID = Config.fileID( obj.content.source );
+            this.file = Config.images[this.fileID];
         }
     }
 }

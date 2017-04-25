@@ -1,13 +1,16 @@
 {
   "name": "apollo-timeline",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "After Effects style Timeline",
   "main": "dist/timeline.min.js",
   "files": [
     "package.json",
     "LICENSE",
     "README.md",
-    "dist/timeline.min.js"
+    "dist/timeline.min.js",
+    "dist/timeline.all.min.js",
+    "dist/timeline.dom.min.js",
+    "dist/timeline.three.min.js"
   ],
   "repository": {
     "type": "git",
@@ -24,11 +27,17 @@
   "devDependencies": {
     "apollo-utils": "^1.1.87",
     "babel": "^6.3.26",
+    "babel-plugin-glslify": "^2.0.0",
     "babel-plugin-transform-class-properties": "^6.23.0",
     "babel-preset-latest": "^6.22.0",
+    "glslify": "^6.0.1",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.1",
     "gulp-concat": "^2.6.1",
-    "gulp-uglify": "^1.4.1"
+    "gulp-uglify": "^1.4.1",
+    "polyline-normals": "^2.0.2",
+    "three": "^0.83.0",
+    "three-line-2d": "^1.1.6",
+    "three-text2d": "^0.3.0"
   }
 }

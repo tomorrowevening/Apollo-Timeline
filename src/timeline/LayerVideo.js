@@ -1,4 +1,4 @@
-import Loader from 'apollo-utils/Loader';
+import Config from './Config';
 import Layer from './Layer';
 
 export class LayerVideo extends Layer {
@@ -7,8 +7,8 @@ export class LayerVideo extends Layer {
         this.timeStamp = 0;
         
         if(obj.content !== undefined) {
-            this.fileID = Loader.fileID( obj.content.source );
-            this.file = Loader.video[this.fileID];
+            this.fileID = Config.fileID( obj.content.source );
+            this.file = Config.video[this.fileID];
         }
     }
 }
