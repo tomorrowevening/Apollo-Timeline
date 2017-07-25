@@ -2,6 +2,7 @@ var gulp    = require('gulp');
 var babel   = require('gulp-babel');
 var concat  = require("gulp-concat");
 var uglify  = require("gulp-uglify");
+var gutil   = require("gulp-util");
 var defaultPaths = [
     'src/timeline/Bezier.js',
     'src/timeline/Marker.js',
@@ -31,34 +32,55 @@ var threePaths = [
     'src/three/THREEVideo.js'
 ];
 
-function compile(srcPaths, distPath) {
+function compile(srcPaths, distPath, minify) {
     return gulp.src(srcPaths)
         .pipe(babel({
             comments: false,
-            presets: ["latest"],
+            presets: ["latest", "stage-1"],
             plugins: ["transform-class-properties", "glslify"]
         }))
         .pipe(concat(distPath))
-        .pipe(uglify())
+        .pipe(minify ? uglify() : gutil.noop())
         .pipe(gulp.dest('dist'));
 }
 
+gulp.task('all', ['default', 'individualFiles', 'deluxe', 'dom', 'three'], function() {});
+
 gulp.task('default', function() {
+    var minify = true;
     var paths = defaultPaths;
-    return compile(paths, 'timeline.min.js');
+    return compile(paths, 'timeline.min.js', minify);
+});
+
+gulp.task('individualFiles', function() {
+    var minify = false;
+    var paths = defaultPaths.concat(domPaths).concat(threePaths);
+    var i, total = paths.length-1, split, name;
+    for(i = 0; i < total; ++i) {
+        split = paths[i].split('/');
+        name = split[split.length-1];
+        compile(paths[i], name, minify);
+    }
+    i = total;
+    split = paths[i].split('/');
+    name = split[split.length-1];
+    return compile(paths[i], name, minify);
 });
 
 gulp.task('deluxe', function() {
+    var minify = true;
     var paths = defaultPaths.concat(domPaths).concat(threePaths);
-    return compile(paths, 'timeline.all.min.js');
+    return compile(paths, 'timeline.all.min.js', minify);
 });
 
 gulp.task('dom', function() {
+    var minify = true;
     var paths = defaultPaths.concat(domPaths);
-    return compile(paths, 'timeline.dom.min.js');
+    return compile(paths, 'timeline.dom.min.js', minify);
 });
 
 gulp.task('three', function() {
+    var minify = true;
     var paths = defaultPaths.concat(threePaths);
-    return compile(paths, 'timeline.three.min.js');
+    return compile(paths, 'timeline.three.min.js', minify);
 });
