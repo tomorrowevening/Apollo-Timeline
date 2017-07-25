@@ -1,10 +1,10 @@
-var TIME = ( performance || Date );
+export const TIME = ( performance || Date );
 
 /**
  * Timer
  * @author Colin Duffy
  */
-export default class Timer {
+export class Timer {
     
     constructor(onUpdate) {
         this.running        = false;

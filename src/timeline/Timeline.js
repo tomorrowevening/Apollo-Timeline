@@ -1,14 +1,12 @@
-import Timer from './Timer';
+import { Timer, TIME } from './Timer';
 
-const PlayMode = {
+export const PlayMode = {
     "LOOP":      "loop",
     "ONCE":      "once",
     "PING_PONG": "pingPong"
 };
 
-var TIME = ( performance || Date );
-
-export default class Timeline {
+export class Timeline {
     
     constructor() {
         this.duration       = 0;

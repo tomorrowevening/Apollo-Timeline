@@ -1,5 +1,5 @@
 import Layer    from './Layer';
-import Timeline from './Timeline';
+import { Timeline } from './Timeline';
 
 var TIME = ( performance || Date );
 
