@@ -1,6 +1,6 @@
 {
   "name": "apollo-timeline",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "After Effects style Timeline",
   "main": "dist/timeline.min.js",
   "files": [
@@ -10,7 +10,29 @@
     "dist/timeline.min.js",
     "dist/timeline.all.min.js",
     "dist/timeline.dom.min.js",
-    "dist/timeline.three.min.js"
+    "dist/timeline.three.min.js",
+    "src/timeline/Bezier.js",
+    "src/timeline/Marker.js",
+    "src/timeline/Timer.js",
+    "src/timeline/Keyframe.js",
+    "src/timeline/Layer.js",
+    "src/timeline/LayerAudio.js",
+    "src/timeline/LayerImage.js",
+    "src/timeline/LayerShape.js",
+    "src/timeline/LayerText.js",
+    "src/timeline/LayerVideo.js",
+    "src/timeline/Timeline.js",
+    "src/timeline/Composition.j",
+    "src/dom/SVGUtil.js",
+    "src/dom/SVGItem.js",
+    "src/three/EffectComposer.js",
+    "src/three/THREEConfig.js",
+    "src/three/THREEFBO.js",
+    "src/three/THREELayer.js",
+    "src/three/THREEImage.js",
+    "src/three/THREEShape.js",
+    "src/three/THREEText.js",
+    "src/three/THREEVideo.js"
   ],
   "repository": {
     "type": "git",
