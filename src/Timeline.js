@@ -1,7 +1,7 @@
 import {
   Timer,
   TIME
-} from './Timer';
+} from 'apollo-utils/Timer';
 
 export const PlayMode = {
   'LOOP': 'loop',

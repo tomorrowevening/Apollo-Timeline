@@ -7,8 +7,11 @@ import {
   createMasks,
   applyMasks,
   getMaxBorder
+} from 'apollo-utils/SVGUtil';
+import {
+  SVGAnimate,
+  SVGMorph
 } from './SVGUtil';
-import Keyframe from '../Keyframe';
 
 export default class SVGItem {
   constructor(json, timeline) {
@@ -54,6 +57,9 @@ export default class SVGItem {
               svg = SVGShape(p, style, this.item, timeline);
               this.item.x -= border / 2;
               this.item.y -= border / 2;
+              if(p.timeline !== undefined && p.timeline.length > 0) {
+                SVGMorph(svg, p.timeline, style, timeline);
+              }
               break;
           }
 
@@ -61,6 +67,10 @@ export default class SVGItem {
             this.item.x -= border / 2;
             this.item.y -= border / 2;
             applyMasks(svg, masks);
+            
+            if(style.timeline.length > 0 && timeline !== undefined) {
+              SVGAnimate(svg, style.timeline, timeline);
+            }
             this.item.appendChild(svg);
           }
         }

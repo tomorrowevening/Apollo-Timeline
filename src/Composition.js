@@ -1,6 +1,6 @@
 import Layer from './Layer';
 import { Timeline } from './Timeline';
-import { TIME } from './Timer';
+import { TIME } from 'apollo-utils/Timer';
 
 export default class Composition extends Layer {
   constructor(obj) {

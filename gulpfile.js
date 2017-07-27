@@ -7,7 +7,6 @@ var defaultPaths = [
   'src/TimelineConfig.js',
   'src/Bezier.js',
   'src/Marker.js',
-  'src/Timer.js',
   'src/Keyframe.js',
   'src/Layer.js',
   'src/LayerAudio.js',
