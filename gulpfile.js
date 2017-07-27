@@ -24,7 +24,6 @@ var domPaths = [
 var threePaths = [
   'src/three/EffectComposer.js',
   'src/three/THREEConfig.js',
-  'src/three/THREEFBO.js',
   'src/three/THREELayer.js',
   'src/three/THREEImage.js',
   'src/three/THREEShape.js',
