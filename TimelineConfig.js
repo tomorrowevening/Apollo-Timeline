@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,"__esModule",{value:!0});var TimelineConfig={compositions:{},images:{},textures:{},video:{},fileID:function(e){var i=e.split("/");return i=i[i.length-1],i.split(".").length>1&&(i=i.split("."),i.pop(),i=i.join("")),i}};exports["default"]=TimelineConfig;
