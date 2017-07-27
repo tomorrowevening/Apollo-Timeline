@@ -1,13 +1,12 @@
 {
   "name": "apollo-timeline",
-  "version": "1.2.21",
+  "version": "1.2.22",
   "description": "After Effects style Timeline",
   "files": [
     "package.json",
     "LICENSE",
     "README.md",
     "TimelineConfig.js",
-    "Bezier.js",
     "Marker.js",
     "Timer.js",
     "Keyframe.js",
