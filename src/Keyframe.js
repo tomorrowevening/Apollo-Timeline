@@ -1,15 +1,10 @@
-import {
-  lerp,
-  curveAt
-} from 'apollo-utils/MathUtil';
+import { lerp, curveAt } from 'apollo-utils/MathUtil';
 
-export const KeyframeType = {
-  LINEAR: 'linear',
-  BEZIER: 'bezier',
-  HOLD: 'hold'
-};
-
-export class Keyframe {
+export default class Keyframe {
+  static LINEAR = 'linear';
+  static BEZIER = 'bezier';
+  static HOLD = 'hold';
+  
   constructor(object, key, endValue, duration, params) {
     params = params !== undefined ? params : {};
 
@@ -23,19 +18,19 @@ export class Keyframe {
     this.startValue = params.start;
     this.onComplete = params.onComplete;
     this.onUpdate = params.onUpdate;
-    this.easeType = KeyframeType.BEZIER;
+    this.easeType = Keyframe.BEZIER;
 
     if(this.ease[0] === this.ease[1] && this.ease[2] === this.ease[3]) {
-      this.easeType = KeyframeType.LINEAR;
+      this.easeType = Keyframe.LINEAR;
     }
   }
 
   update(progress) {
-    let percent = progress; // KeyframeType.LINEAR
+    let percent = progress; // Keyframe.LINEAR
 
-    if(this.easeType === KeyframeType.BEZIER) {
+    if(this.easeType === Keyframe.BEZIER) {
       percent = curveAt(percent, this.ease[0], this.ease[1], this.ease[2], this.ease[3]);
-    } else if(this.easeType === KeyframeType.HOLD) {
+    } else if(this.easeType === Keyframe.HOLD) {
       percent = progress < 1 ? 0 : 1;
     }
 

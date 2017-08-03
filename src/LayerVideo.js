@@ -1,7 +1,7 @@
 import TimelineConfig from './TimelineConfig';
 import Layer from './Layer';
 
-export class LayerVideo extends Layer {
+export default class LayerVideo extends Layer {
   constructor(obj) {
     super(obj);
     this.timeStamp = 0;

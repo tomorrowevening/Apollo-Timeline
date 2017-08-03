@@ -1,1 +1,60 @@
-"use strict";function _interopRequireDefault(e){return e&&e.__esModule?e:{"default":e}}function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function _possibleConstructorReturn(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function _inherits(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}var _TimelineConfig=require("../TimelineConfig"),_TimelineConfig2=_interopRequireDefault(_TimelineConfig),_THREELayer2=require("./THREELayer"),_THREELayer3=_interopRequireDefault(_THREELayer2);module.exports=function(e){var t=function(t){function n(t,r){_classCallCheck(this,n);var i=_possibleConstructorReturn(this,(n.__proto__||Object.getPrototypeOf(n)).call(this,t,r)),o=t.content.source,a=_TimelineConfig2["default"].fileID(o),u=_TimelineConfig2["default"].images[a],s=_TimelineConfig2["default"].textures[a],l=o.search(".png")>-1,f=new e.PlaneGeometry(u.width,u.height);f.computeBoundingBox();var c=f.boundingBox,p=(c.max.x-c.min.x)/2,_=(c.max.y-c.min.y)/2,m=0;f.applyMatrix((new e.Matrix4).makeTranslation(p,-_,-m));var h=new e.MeshBasicMaterial({map:s,transparent:l,side:e.DoubleSide,depthTest:!1});return i.mesh=new e.Mesh(f,h),i.item.add(i.mesh),_THREELayer3["default"].transform(i.item,i.mesh,t.transform,r),i}return _inherits(n,t),n}(_THREELayer3["default"]);return t};
+'use strict';
+
+var _TimelineConfig = require('../TimelineConfig');
+
+var _TimelineConfig2 = _interopRequireDefault(_TimelineConfig);
+
+var _THREELayer2 = require('./THREELayer');
+
+var _THREELayer3 = _interopRequireDefault(_THREELayer2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+module.exports = function (THREE) {
+  var THREEImage = function (_THREELayer) {
+    _inherits(THREEImage, _THREELayer);
+
+    function THREEImage(json, timeline) {
+      _classCallCheck(this, THREEImage);
+
+      var _this = _possibleConstructorReturn(this, (THREEImage.__proto__ || Object.getPrototypeOf(THREEImage)).call(this, json, timeline));
+
+      var url = json.content.source;
+      var fileID = _TimelineConfig2.default.fileID(url);
+      var image = _TimelineConfig2.default.images[fileID];
+      var texture = _TimelineConfig2.default.textures[fileID];
+      var transparent = url.search('.png') > -1;
+
+      var geometry = new THREE.PlaneGeometry(image.width, image.height);
+
+      geometry.computeBoundingBox();
+      var box = geometry.boundingBox;
+      var w = (box.max.x - box.min.x) / 2;
+      var h = (box.max.y - box.min.y) / 2;
+      var d = 0;
+      geometry.applyMatrix(new THREE.Matrix4().makeTranslation(w, -h, -d));
+
+      var material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: transparent,
+        side: THREE.DoubleSide,
+        depthTest: false
+      });
+
+      _this.mesh = new THREE.Mesh(geometry, material);
+      _this.item.add(_this.mesh);
+      _THREELayer3.default.transform(_this.item, _this.mesh, json.transform, timeline);
+      return _this;
+    }
+
+    return THREEImage;
+  }(_THREELayer3.default);
+
+  return THREEImage;
+};

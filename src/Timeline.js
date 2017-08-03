@@ -1,20 +1,16 @@
-import {
-  Timer,
-  TIME
-} from 'apollo-utils/Timer';
+import Keyframe from './Keyframe';
+import { Timer, TIME } from 'apollo-utils/Timer';
 
-export const PlayMode = {
-  'LOOP': 'loop',
-  'ONCE': 'once',
-  'PING_PONG': 'pingPong'
-};
-
-export class Timeline {
+export default class Timeline {
+  static LOOP = 'loop';
+  static ONCE = 'once';
+  static PING_PONG = 'pingPong';
+  
   constructor() {
     this.duration = 0;
     this.timesPlayed = 0;
     this.maxPlays = 0;
-    this.mode = PlayMode.LOOP;
+    this.mode = Timeline.LOOP;
     this.keyframes = [];
     this.markers = [];
     this.delayed = [];
@@ -190,7 +186,7 @@ export class Timeline {
 
   updatePlaymode() {
     const seconds = this.seconds;
-    if(this.mode === PlayMode.PING_PONG) {
+    if(this.mode === Timeline.PING_PONG) {
 
       if(seconds >= this.duration) {
         this.time.elapsed = this.duration * 1000 - 1;
@@ -205,7 +201,7 @@ export class Timeline {
         }
       }
 
-    } else if(this.mode === PlayMode.LOOP) {
+    } else if(this.mode === Timeline.LOOP) {
 
       if(seconds > this.duration) {
         ++this.timesPlayed;
@@ -291,7 +287,7 @@ export class Timeline {
       return false;
     }
 
-    if(this.mode === PlayMode.LOOP && this.timesPlayed > 0) {
+    if(this.mode === Timeline.LOOP && this.timesPlayed > 0) {
       return false;
     }
 
@@ -302,7 +298,7 @@ export class Timeline {
 
   set playMode(value) {
     this.mode = value;
-    if(value === PlayMode.LOOP || value === PlayMode.ONCE) {
+    if(value === Timeline.LOOP || value === Timeline.ONCE) {
       this.time.speed = Math.abs(this.time.speed);
     }
   }

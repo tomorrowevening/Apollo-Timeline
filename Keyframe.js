@@ -1,1 +1,88 @@
-"use strict";function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(exports,"__esModule",{value:!0}),exports.Keyframe=exports.KeyframeType=void 0;var _createClass=function(){function e(e,t){for(var i=0;i<t.length;i++){var s=t[i];s.enumerable=s.enumerable||!1,s.configurable=!0,"value"in s&&(s.writable=!0),Object.defineProperty(e,s.key,s)}}return function(t,i,s){return i&&e(t.prototype,i),s&&e(t,s),t}}(),_MathUtil=require("apollo-utils/MathUtil"),KeyframeType=exports.KeyframeType={LINEAR:"linear",BEZIER:"bezier",HOLD:"hold"},Keyframe=exports.Keyframe=function(){function e(t,i,s,a,r){_classCallCheck(this,e),r=void 0!==r?r:{},this.active=!1,this.object=t,this.key=i,this.endValue=s,this.duration=a,this.timestamp=void 0!==r.delay?r.delay:0,this.ease=void 0!==r.ease?r.ease:[.25,.25,.75,.75],this.startValue=r.start,this.onComplete=r.onComplete,this.onUpdate=r.onUpdate,this.easeType=KeyframeType.BEZIER,this.ease[0]===this.ease[1]&&this.ease[2]===this.ease[3]&&(this.easeType=KeyframeType.LINEAR)}return _createClass(e,[{key:"update",value:function(e){var t=e;this.easeType===KeyframeType.BEZIER?t=(0,_MathUtil.curveAt)(t,this.ease[0],this.ease[1],this.ease[2],this.ease[3]):this.easeType===KeyframeType.HOLD&&(t=e<1?0:1),this.active||void 0!==this.startValue||(this.startValue=this.object[this.key]),this.object[this.key]=(0,_MathUtil.lerp)(t,this.startValue,this.endValue),void 0!==this.onUpdate&&this.onUpdate(e,t)}},{key:"complete",value:function(){this.update(1),void 0!==this.onComplete&&this.onComplete(),this.active=!1}},{key:"isActive",value:function(e){return e>=this.startTime&&e<=this.endTime}},{key:"startTime",get:function(){return this.timestamp}},{key:"endTime",get:function(){return this.timestamp+this.duration}}]),e}();
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _MathUtil = require('apollo-utils/MathUtil');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Keyframe = function () {
+  function Keyframe(object, key, endValue, duration, params) {
+    _classCallCheck(this, Keyframe);
+
+    params = params !== undefined ? params : {};
+
+    this.active = false;
+    this.object = object;
+    this.key = key;
+    this.endValue = endValue;
+    this.duration = duration;
+    this.timestamp = params.delay !== undefined ? params.delay : 0;
+    this.ease = params.ease !== undefined ? params.ease : [0.25, 0.25, 0.75, 0.75];
+    this.startValue = params.start;
+    this.onComplete = params.onComplete;
+    this.onUpdate = params.onUpdate;
+    this.easeType = Keyframe.BEZIER;
+
+    if (this.ease[0] === this.ease[1] && this.ease[2] === this.ease[3]) {
+      this.easeType = Keyframe.LINEAR;
+    }
+  }
+
+  _createClass(Keyframe, [{
+    key: 'update',
+    value: function update(progress) {
+      var percent = progress;
+
+      if (this.easeType === Keyframe.BEZIER) {
+        percent = (0, _MathUtil.curveAt)(percent, this.ease[0], this.ease[1], this.ease[2], this.ease[3]);
+      } else if (this.easeType === Keyframe.HOLD) {
+        percent = progress < 1 ? 0 : 1;
+      }
+
+      if (!this.active && this.startValue === undefined) {
+        this.startValue = this.object[this.key];
+      }
+
+      this.object[this.key] = (0, _MathUtil.lerp)(percent, this.startValue, this.endValue);
+
+      if (this.onUpdate !== undefined) {
+        this.onUpdate(progress, percent);
+      }
+    }
+  }, {
+    key: 'complete',
+    value: function complete() {
+      this.update(1);
+
+      if (this.onComplete !== undefined) this.onComplete();
+      this.active = false;
+    }
+  }, {
+    key: 'isActive',
+    value: function isActive(time) {
+      return time >= this.startTime && time <= this.endTime;
+    }
+  }, {
+    key: 'startTime',
+    get: function get() {
+      return this.timestamp;
+    }
+  }, {
+    key: 'endTime',
+    get: function get() {
+      return this.timestamp + this.duration;
+    }
+  }]);
+
+  return Keyframe;
+}();
+
+Keyframe.LINEAR = 'linear';
+Keyframe.BEZIER = 'bezier';
+Keyframe.HOLD = 'hold';
+exports.default = Keyframe;

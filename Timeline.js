@@ -1,1 +1,337 @@
-"use strict";function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(exports,"__esModule",{value:!0}),exports.Timeline=exports.PlayMode=void 0;var _createClass=function(){function e(e,t){for(var i=0;i<t.length;i++){var s=t[i];s.enumerable=s.enumerable||!1,s.configurable=!0,"value"in s&&(s.writable=!0),Object.defineProperty(e,s.key,s)}}return function(t,i,s){return i&&e(t.prototype,i),s&&e(t,s),t}}(),_Timer=require("apollo-utils/Timer"),PlayMode=exports.PlayMode={LOOP:"loop",ONCE:"once",PING_PONG:"pingPong"},Timeline=exports.Timeline=function(){function e(){_classCallCheck(this,e),this.duration=0,this.timesPlayed=0,this.maxPlays=0,this.mode=PlayMode.LOOP,this.keyframes=[],this.markers=[],this.delayed=[],this.playing=!0,this.lastMarker=void 0,this.time={elapsed:0,stamp:0,speed:1}}return _createClass(e,[{key:"add",value:function(e,t,i,s,a){a=void 0!==a?a:{};var r=this.seconds,n=new Keyframe(e,t,i,s,{delay:void 0!==a.delay?a.delay+r:r,ease:a.ease,start:a.start,onUpdate:a.onUpdate,onComplete:a.onComplete});return this.addKeyframe(n)}},{key:"addKeyframe",value:function(e){return this.keyframes.push(e),e}},{key:"addMarker",value:function(e){return this.markers.push(e),this}},{key:"delay",value:function(e,t,i){this.delayed.push({time:1e3*e+_Timer.TIME.now(),callback:t,params:i})}},{key:"dispose",value:function(){this.keyframes=[],this.markers=[],this.delayed=[]}},{key:"play",value:function(){if(0===this.time.elapsed)for(var e=this.keyframes.length-1,t=e;t>-1;--t)this.keyframes[t].update(0),this.keyframes[t].active=!1;this.time.stamp=_Timer.TIME.now(),this.playing=!0}},{key:"pause",value:function(){this.playing=!1}},{key:"update",value:function(){if(this.playing){var e=_Timer.TIME.now(),t=e-this.time.stamp;this.time.elapsed+=t*this.time.speed,this.time.stamp=e,this.updateDelayed(),this.duration>0&&this.updatePlaymode(),this.updateMarkers(),this.updateKeyframes()}}},{key:"updateDelayed",value:function(){var e=_Timer.TIME.now(),t=void 0,i=void 0,s=this.delayed.length;for(t=0;t<s;++t)i=this.delayed[t],e>=i.time&&(i.callback(i.params),this.delayed.splice(t,1),--t,--s)}},{key:"updateKeyframes",value:function(){var e,t,i,s,a=this.keyframes.length,r=this.seconds;for(e=0;e<a;++e)i=this.keyframes[e],t=r,s=(t-i.timestamp)/i.duration,i.isActive(t)?(!i.active&&void 0===i.startValue&&this.time.speed>0&&(i.startValue=i.object[i.key]),i.active=!0,i.update(s)):i.active?(i.active=!1,this.time.speed<0?i.restart():i.complete()):(i.active=!1,0===this.duration&&t-i.timestamp>1&&(this.keyframes.splice(e,1),--e,--a))}},{key:"updateMarkers",value:function(){var e=this.prevSeconds,t=this.seconds;if(!(e>t))for(var i=Math.min(e,t),s=Math.max(e,t),a=this.markers.length,r=0;r<a;++r){var n=this.markers[r],o=n.time,d=n.duration+o,l=o>i&&o<=s;n.duration>0&&(l=t>o&&t<=d),l?(n.active||this.trigger(r),n.active=!0):n.active&&(n.active=!1,void 0!==n.complete&&n.complete())}}},{key:"updatePlaymode",value:function(){var e=this.seconds;if(this.mode===PlayMode.PING_PONG)e>=this.duration?(this.time.elapsed=1e3*this.duration-1,this.time.speed*=-1):e<0&&(this.time.elapsed=1,this.time.speed=Math.abs(this.time.speed),++this.timesPlayed,this.maxPlays>0&&this.timesPlayed>=this.maxPlays&&this.pause());else if(this.mode===PlayMode.LOOP){if(e>this.duration)if(++this.timesPlayed,this.maxPlays>0&&this.timesPlayed>=this.maxPlays)this.pause(),this.time.elapsed=0;else{this.time.elapsed=0;for(var t=this.keyframes.length-1,i=t;i>-1;--i)this.keyframes[i].update(0),this.keyframes[i].active=!1}}else e>this.duration&&(++this.timesPlayed,this.pause(),this.time.elapsed=0)}},{key:"trigger",value:function(e){var t=this.markers[e];return void 0!==t&&("stop"===t.action?(this.pause(),this.seconds=t.time):"delay"===t.action&&t.trigger(),!0)}},{key:"goToMarker",value:function(e){var t=this.getMarker(e);return void 0!==t&&(this.seconds=t.time,this.play()),t}},{key:"getMarker",value:function(e){var t=void 0,i=this.markers.length;for(t=0;t<i;++t){var s=this.markers[t];if(s.name===e)return s}}},{key:"playMode",get:function(){return this.mode},set:function(e){this.mode=e,e!==PlayMode.LOOP&&e!==PlayMode.ONCE||(this.time.speed=Math.abs(this.time.speed))}},{key:"seconds",get:function(){return this.time.elapsed/1e3},set:function(e){this.time.elapsed=1e3*e}},{key:"speed",get:function(){return this.time.speed},set:function(e){this.time.speed=e}},{key:"restartable",get:function(){return!!this.playing&&(!(this.maxPlays>0&&this.timesPlayed>=this.maxPlays)&&!(this.mode===PlayMode.LOOP&&this.timesPlayed>0))}}]),e}();
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Keyframe = require('./Keyframe');
+
+var _Keyframe2 = _interopRequireDefault(_Keyframe);
+
+var _Timer = require('apollo-utils/Timer');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Timeline = function () {
+  function Timeline() {
+    _classCallCheck(this, Timeline);
+
+    this.duration = 0;
+    this.timesPlayed = 0;
+    this.maxPlays = 0;
+    this.mode = Timeline.LOOP;
+    this.keyframes = [];
+    this.markers = [];
+    this.delayed = [];
+    this.playing = true;
+    this.lastMarker = undefined;
+    this.time = {
+      elapsed: 0,
+      stamp: 0,
+      speed: 1
+    };
+  }
+
+  _createClass(Timeline, [{
+    key: 'add',
+    value: function add(target, key, to, duration, params) {
+      params = params !== undefined ? params : {};
+      var now = this.seconds;
+      var newKey = new _Keyframe2.default(target, key, to, duration, {
+        delay: params.delay !== undefined ? params.delay + now : now,
+        ease: params.ease,
+        start: params.start,
+        onUpdate: params.onUpdate,
+        onComplete: params.onComplete
+      });
+      return this.addKeyframe(newKey);
+    }
+  }, {
+    key: 'addKeyframe',
+    value: function addKeyframe(keyframe) {
+      this.keyframes.push(keyframe);
+      return keyframe;
+    }
+  }, {
+    key: 'addMarker',
+    value: function addMarker(marker) {
+      this.markers.push(marker);
+      return this;
+    }
+  }, {
+    key: 'delay',
+    value: function delay(wait, callback, params) {
+      this.delayed.push({
+        time: wait * 1000 + _Timer.TIME.now(),
+        callback: callback,
+        params: params
+      });
+    }
+  }, {
+    key: 'dispose',
+    value: function dispose() {
+      this.keyframes = [];
+      this.markers = [];
+      this.delayed = [];
+    }
+  }, {
+    key: 'play',
+    value: function play() {
+      if (this.time.elapsed === 0) {
+        var total = this.keyframes.length - 1;
+        for (var i = total; i > -1; --i) {
+          this.keyframes[i].update(0);
+          this.keyframes[i].active = false;
+        }
+      }
+      this.time.stamp = _Timer.TIME.now();
+      this.playing = true;
+    }
+  }, {
+    key: 'pause',
+    value: function pause() {
+      this.playing = false;
+    }
+  }, {
+    key: 'update',
+    value: function update() {
+      if (!this.playing) return;
+
+      var now = _Timer.TIME.now();
+      var delta = now - this.time.stamp;
+      this.time.elapsed += delta * this.time.speed;
+      this.time.stamp = now;
+
+      this.updateDelayed();
+
+      if (this.duration > 0) this.updatePlaymode();
+
+      this.updateMarkers();
+
+      this.updateKeyframes();
+    }
+  }, {
+    key: 'updateDelayed',
+    value: function updateDelayed() {
+      var now = _Timer.TIME.now();
+      var i = void 0,
+          delay = void 0,
+          total = this.delayed.length;
+      for (i = 0; i < total; ++i) {
+        delay = this.delayed[i];
+        if (now >= delay.time) {
+          delay.callback(delay.params);
+
+          this.delayed.splice(i, 1);
+          --i;
+          --total;
+        }
+      }
+    }
+  }, {
+    key: 'updateKeyframes',
+    value: function updateKeyframes() {
+      var i,
+          now,
+          key,
+          percent,
+          total = this.keyframes.length;
+      var seconds = this.seconds;
+
+      for (i = 0; i < total; ++i) {
+        key = this.keyframes[i];
+        now = seconds;
+        percent = (now - key.timestamp) / key.duration;
+
+        if (key.isActive(now)) {
+          if (!key.active && key.startValue === undefined && this.time.speed > 0) {
+            key.startValue = key.object[key.key];
+          }
+
+          key.active = true;
+          key.update(percent);
+        } else if (key.active) {
+
+          key.active = false;
+          if (this.time.speed < 0) {
+            key.restart();
+          } else {
+            key.complete();
+          }
+        } else {
+
+          key.active = false;
+
+          if (this.duration === 0 && now - key.timestamp > 1) {
+            this.keyframes.splice(i, 1);
+            --i;
+            --total;
+          }
+        }
+      }
+    }
+  }, {
+    key: 'updateMarkers',
+    value: function updateMarkers() {
+      var before = this.prevSeconds;
+      var now = this.seconds;
+      if (before > now) return;
+
+      var min = Math.min(before, now);
+      var max = Math.max(before, now);
+      var total = this.markers.length;
+      for (var i = 0; i < total; ++i) {
+        var marker = this.markers[i];
+        var start = marker.time;
+        var end = marker.duration + start;
+        var active = start > min && start <= max;
+        if (marker.duration > 0) {
+          active = now > start && now <= end;
+        }
+        if (active) {
+          if (!marker.active) this.trigger(i);
+          marker.active = true;
+        } else if (marker.active) {
+          marker.active = false;
+          if (marker.complete !== undefined) {
+            marker.complete();
+          }
+        }
+      }
+    }
+  }, {
+    key: 'updatePlaymode',
+    value: function updatePlaymode() {
+      var seconds = this.seconds;
+      if (this.mode === Timeline.PING_PONG) {
+
+        if (seconds >= this.duration) {
+          this.time.elapsed = this.duration * 1000 - 1;
+          this.time.speed *= -1;
+        } else if (seconds < 0) {
+          this.time.elapsed = 1;
+          this.time.speed = Math.abs(this.time.speed);
+          ++this.timesPlayed;
+
+          if (this.maxPlays > 0 && this.timesPlayed >= this.maxPlays) {
+            this.pause();
+          }
+        }
+      } else if (this.mode === Timeline.LOOP) {
+
+        if (seconds > this.duration) {
+          ++this.timesPlayed;
+          if (this.maxPlays > 0 && this.timesPlayed >= this.maxPlays) {
+            this.pause();
+            this.time.elapsed = 0;
+          } else {
+            this.time.elapsed = 0;
+            var total = this.keyframes.length - 1;
+            for (var i = total; i > -1; --i) {
+              this.keyframes[i].update(0);
+              this.keyframes[i].active = false;
+            }
+          }
+        }
+      } else {
+
+        if (seconds > this.duration) {
+          ++this.timesPlayed;
+          this.pause();
+          this.time.elapsed = 0;
+        }
+      }
+    }
+  }, {
+    key: 'trigger',
+    value: function trigger(index) {
+      var marker = this.markers[index];
+      if (marker === undefined) return false;
+
+      if (marker.action === 'stop') {
+        this.pause();
+        this.seconds = marker.time;
+      } else if (marker.action === 'delay') {
+        marker.trigger();
+      }
+
+      return true;
+    }
+  }, {
+    key: 'goToMarker',
+    value: function goToMarker(name) {
+      var marker = this.getMarker(name);
+      if (marker !== undefined) {
+        this.seconds = marker.time;
+        this.play();
+      }
+      return marker;
+    }
+  }, {
+    key: 'getMarker',
+    value: function getMarker(name) {
+      var i = void 0,
+          total = this.markers.length;
+      for (i = 0; i < total; ++i) {
+        var marker = this.markers[i];
+        if (marker.name === name) {
+          return marker;
+        }
+      }
+      return undefined;
+    }
+  }, {
+    key: 'playMode',
+    get: function get() {
+      return this.mode;
+    },
+    set: function set(value) {
+      this.mode = value;
+      if (value === Timeline.LOOP || value === Timeline.ONCE) {
+        this.time.speed = Math.abs(this.time.speed);
+      }
+    }
+  }, {
+    key: 'seconds',
+    get: function get() {
+      return this.time.elapsed / 1000;
+    },
+    set: function set(value) {
+      this.time.elapsed = value * 1000;
+    }
+  }, {
+    key: 'speed',
+    get: function get() {
+      return this.time.speed;
+    },
+    set: function set(value) {
+      this.time.speed = value;
+    }
+  }, {
+    key: 'restartable',
+    get: function get() {
+      if (!this.playing) return false;
+
+      if (this.maxPlays > 0 && this.timesPlayed >= this.maxPlays) {
+        return false;
+      }
+
+      if (this.mode === Timeline.LOOP && this.timesPlayed > 0) {
+        return false;
+      }
+
+      return true;
+    }
+  }]);
+
+  return Timeline;
+}();
+
+Timeline.LOOP = 'loop';
+Timeline.ONCE = 'once';
+Timeline.PING_PONG = 'pingPong';
+exports.default = Timeline;

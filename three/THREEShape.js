@@ -1,1 +1,359 @@
-"use strict";function _interopRequireDefault(e){return e&&e.__esModule?e:{"default":e}}function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function _possibleConstructorReturn(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function _inherits(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}function organizeList(e){var t=["stroke","fill","transform","trim","repeater"],a=void 0,i=void 0,o=t.length,n=e.length,r=[];for(a=0;a<o;++a){var s=t[a];for(i=0;i<n;++i){var l=e[i].type;if(s===l){r.push(e[i]);break}}}return r}function createPath(e,t){var a=t?window.devicePixelRatio:1,i=[],o=void 0,n=e.vertices.length;for(o=0;o<n;++o)i.push([e.vertices[o].x*a,e.vertices[o].y*a]);return i}var _THREELayer2=require("./THREELayer"),_THREELayer3=_interopRequireDefault(_THREELayer2),StrokeVertex="\n  uniform float thickness;\n  attribute float lineMiter;\n  attribute vec2 lineNormal;\n  attribute vec2 lineDistance; // x = pos, y = total length\n  varying vec2 lineU;\n\n  void main() {\n    lineU = lineDistance;\n    vec3 pointPos = position.xyz + vec3(lineNormal * thickness/2.0 * lineMiter, 0.0);\n    gl_Position = projectionMatrix * modelViewMatrix * vec4( pointPos, 1.0 );\n  }\n",StrokeFragment="\n  varying vec2 lineU;\n\n  uniform vec3 diffuse;\n  uniform float opacity;\n  uniform vec3 dash; // x = dash,  y = gap, z = offset\n  uniform vec3 trim; // x = start, y = end, z = offset\n\n  void main() {\n    float opacityMod = 1.0;\n    \n    // Dash\n    if(dash.x > 0.0 && dash.y > 0.0) {\n      float dashEnd = dash.x + dash.y;\n      float lineUMod = mod(lineU.x + dash.z, dashEnd);\n      opacityMod = 1.0 - smoothstep(dash.x, dash.x + 0.01, lineUMod);\n    }\n    \n    // Trim\n    if(trim.x > 0.0 || trim.y < 1.0) {\n      float a = mod(trim.x + trim.z, 1.0);\n      float b = mod(trim.y + trim.z, 1.0);\n      float per = lineU.x / lineU.y;\n      if(a < b) {\n        if(per < a || per > b) {\n          opacityMod = 0.0;\n        }\n      } else if(a > b) {\n        if(per < a && per > b) {\n          opacityMod = 0.0;\n        }\n      }\n    }\n    \n    if(opacityMod == 0.0) {\n      discard;\n    }\n    gl_FragColor = vec4(diffuse, opacity * opacityMod);\n  }\n";module.exports=function(e){function t(t){return new e.ShaderMaterial({uniforms:{thickness:{type:"f",value:void 0!==t.thickness?t.thickness:4},opacity:{type:"f",value:void 0!==t.opacity?t.opacity:1},diffuse:{type:"c",value:new e.Color(void 0!==t.diffuse?t.diffuse:16777215)},dash:{type:"f",value:void 0!==t.dash?t.dash:new e.Vector3(0,10,0)},trim:{type:"f",value:void 0!==t.trim?t.trim:new e.Vector3(0,1,0)}},vertexShader:StrokeVertex,fragmentShader:StrokeFragment,side:void 0!==t.side?t.side:e.DoubleSide,transparent:void 0===t.transparent||t.transparent})}var a=require("three-line-2d")(e),i=function(i){function o(i,n,r,s){function l(i){var o=void 0,r=i.length,s=void 0,d=void 0,f=void 0,u=void 0;for(o=0;o<r;++o){var v=i[o],m=void 0!==v.paths&&v.paths.length>0;if(m){var p=void 0,y=void 0,M=void 0,T=void 0,_=void 0,b=void 0,g=void 0,w=void 0,E=void 0,k=!0,x={opacity:1,anchor:[0,0,0],position:[0,0,0],rotation:[0,0,0],scale:[1,1,1],timeline:[]};for(f=v.content.length,u=organizeList(v.content),d=0;d<f;++d){var R=u[d];switch(R.type){case"fill":T={alpha:R.value.opacity,color:R.value.color};break;case"stroke":_={alpha:R.value.opacity,color:R.value.color,width:R.value.width*c,dashes:R.value.dashes};break;case"transform":x=R;break;case"trim":w=R;break;case"repeater":E=R}}if(void 0!==_){if(b=new e.Color(_.color[0],_.color[1],_.color[2]),s=new t({diffuse:b.getHex(),opacity:_.alpha,thickness:_.width}),void 0!==_.dashes&&(s.uniforms.dash.value.x=_.dashes.dash*c,s.uniforms.dash.value.y=_.dashes.gap*c,s.uniforms.dash.value.z=_.dashes.offset*c,void 0!==_.dashes.timeline))for(f=_.dashes.timeline.length,d=0;d<f;++d)switch(_.dashes.timeline[d].name){case"dash":_THREELayer3["default"].animate(s.uniforms.dash.value,"x",n,_.dashes.timeline[d],!0);break;case"gap":_THREELayer3["default"].animate(s.uniforms.dash.value,"y",n,_.dashes.timeline[d],!0);break;case"offset":_THREELayer3["default"].animate(s.uniforms.dash.value,"z",n,_.dashes.timeline[d],!0)}if(void 0!==w)for(s.uniforms.trim.value.x=w.value.start,s.uniforms.trim.value.y=w.value.end,s.uniforms.trim.value.z=w.value.offset,f=w.timeline.length,d=0;d<f;++d)switch(w.timeline[d].name){case"start":_THREELayer3["default"].animate(s.uniforms.trim.value,"x",n,w.timeline[d]);break;case"end":_THREELayer3["default"].animate(s.uniforms.trim.value,"y",n,w.timeline[d]);break;case"offset":_THREELayer3["default"].animate(s.uniforms.trim.value,"z",n,w.timeline[d])}}else void 0!==T&&(b=new e.Color(T.color[0],T.color[1],T.color[2]),s=new e.MeshBasicMaterial({color:b,opacity:T.alpha,side:e.DoubleSide,transparent:!0,depthTest:!1}));for(M=new e.Shape,f=v.paths.length,d=0;d<f;++d){var P=void 0,U=void 0,L=void 0,H=void 0,O=void 0,z=void 0,C=void 0,I=void 0,S=void 0,D=v.paths[d];switch(k=!0,D.type){case"ellipse":U=D.x*c,L=D.y*c,H=D.width/2*c,O=D.height/2*c,M.ellipse(U,L,H,O,0,MathU.TWO_PI,!0,Math.PI/2);break;case"rectangle":U=(D.x-D.width/2)*c,L=(D.y-D.height/2)*c,H=D.width*c,O=D.height*c,M.moveTo(U,L),M.lineTo(U+H,L),M.lineTo(U+H,L+O),M.lineTo(U,L+O);break;case"polygon":for(I=D.points,H=D.radius*c,P=MathU.HALF_PI,M.moveTo(Math.cos(P)*H,Math.sin(P)*H),z=1;z<D.points+1;++z)P=z/I*MathU.TWO_PI+MathU.HALF_PI,M.lineTo(Math.cos(P)*H,Math.sin(P)*H);break;case"polystar":for(I=2*D.points,H=D.outRadius*c,O=D.inRadius*c,P=MathU.toRad(D.rotation)+MathU.HALF_PI,M.moveTo(Math.cos(P)*H,Math.sin(P)*H),P=1/I*MathU.TWO_PI+MathU.toRad(D.rotation)+MathU.HALF_PI,M.lineTo(Math.cos(P)*O,Math.sin(P)*O),z=1;z<D.points;++z)P=2*z/I*MathU.TWO_PI+MathU.toRad(D.rotation)+MathU.HALF_PI,M.lineTo(Math.cos(P)*H,Math.sin(P)*H),P=(2*z+1)/I*MathU.TWO_PI+MathU.toRad(D.rotation)+MathU.HALF_PI,M.lineTo(Math.cos(P)*O,Math.sin(P)*O);break;case"shape":for(I=D.vertices.length,S=!1,k=D.closed,M.moveTo(D.vertices[0][0]*c,D.vertices[0][1]*-c),C=0;C<I;++C)if(0!==D.inTangents[C][0]||0!==D.inTangents[C][1]||0!==D.outTangents[C][0]||0!==D.outTangents[C][1]){S=!0;break}if(S)for(C=0;C<I;++C){if(z=C+1,D.closed)z%=I;else if(z>=I)break;M.bezierCurveTo((D.vertices[C][0]+D.outTangents[C][0])*c,(D.vertices[C][1]+D.outTangents[C][1])*-c,(D.vertices[z][0]+D.inTangents[z][0])*c,(D.vertices[z][1]+D.inTangents[z][1])*-c,D.vertices[z][0]*c,D.vertices[z][1]*-c)}else for(C=0;C<I;++C){if(z=C+1,D.closed)z%=I;else if(z>=I)break;M.lineTo(D.vertices[z][0]*c,D.vertices[z][1]*-c)}_THREELayer3["default"].morph(M,D,n,D.closed)}}if(g=new e.Object3D,h.add(g),void 0!==_){var j=M.createPointsGeometry(36),F=createPath(j,!1);p=a(F,{closed:k,distances:void 0!==_.dashes||void 0!==w})}else p=new e.ShapeGeometry(M);y=new e.Mesh(p,s),_THREELayer3["default"].transform(g,y,x,n),g.add(y)}else{var A=new e.Object3D;A.name=v.name,h.add(A),h=A,l(v.content)}}}_classCallCheck(this,o);var d=_possibleConstructorReturn(this,(o.__proto__||Object.getPrototypeOf(o)).call(this,i,n));d.mesh=new e.Object3D,d.item.add(d.mesh);var c=window.devicePixelRatio,h=d.mesh;return l(i.content),_THREELayer3["default"].transform(d.item,d.mesh,i.transform,n),d}return _inherits(o,i),o}(_THREELayer3["default"]);return i};
+'use strict';
+
+var _THREELayer2 = require('./THREELayer');
+
+var _THREELayer3 = _interopRequireDefault(_THREELayer2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var StrokeVertex = '\n  uniform float thickness;\n  attribute float lineMiter;\n  attribute vec2 lineNormal;\n  attribute vec2 lineDistance; // x = pos, y = total length\n  varying vec2 lineU;\n\n  void main() {\n    lineU = lineDistance;\n    vec3 pointPos = position.xyz + vec3(lineNormal * thickness/2.0 * lineMiter, 0.0);\n    gl_Position = projectionMatrix * modelViewMatrix * vec4( pointPos, 1.0 );\n  }\n';
+
+var StrokeFragment = '\n  varying vec2 lineU;\n\n  uniform vec3 diffuse;\n  uniform float opacity;\n  uniform vec3 dash; // x = dash,  y = gap, z = offset\n  uniform vec3 trim; // x = start, y = end, z = offset\n\n  void main() {\n    float opacityMod = 1.0;\n    \n    // Dash\n    if(dash.x > 0.0 && dash.y > 0.0) {\n      float dashEnd = dash.x + dash.y;\n      float lineUMod = mod(lineU.x + dash.z, dashEnd);\n      opacityMod = 1.0 - smoothstep(dash.x, dash.x + 0.01, lineUMod);\n    }\n    \n    // Trim\n    if(trim.x > 0.0 || trim.y < 1.0) {\n      float a = mod(trim.x + trim.z, 1.0);\n      float b = mod(trim.y + trim.z, 1.0);\n      float per = lineU.x / lineU.y;\n      if(a < b) {\n        if(per < a || per > b) {\n          opacityMod = 0.0;\n        }\n      } else if(a > b) {\n        if(per < a && per > b) {\n          opacityMod = 0.0;\n        }\n      }\n    }\n    \n    if(opacityMod == 0.0) {\n      discard;\n    }\n    gl_FragColor = vec4(diffuse, opacity * opacityMod);\n  }\n';
+
+function organizeList(list) {
+  var order = ['stroke', 'fill', 'transform', 'trim', 'repeater'];
+  var i = void 0,
+      n = void 0,
+      total = order.length,
+      nTotal = list.length;
+  var listOrder = [];
+  for (i = 0; i < total; ++i) {
+    var orderName = order[i];
+    for (n = 0; n < nTotal; ++n) {
+      var listName = list[n].type;
+      if (orderName === listName) {
+        listOrder.push(list[n]);
+        break;
+      }
+    }
+  }
+  return listOrder;
+}
+
+function createPath(geometry, scalar) {
+  var s = scalar ? window.devicePixelRatio : 1;
+  var path = [];
+  var i = void 0,
+      total = geometry.vertices.length;
+  for (i = 0; i < total; ++i) {
+    path.push([geometry.vertices[i].x * s, geometry.vertices[i].y * s]);
+  }
+  return path;
+}
+
+module.exports = function (THREE) {
+  var Line = require('three-line-2d')(THREE);
+
+  function THREEStrokeMaterial(opt) {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        thickness: {
+          type: 'f',
+          value: opt.thickness !== undefined ? opt.thickness : 4.0
+        },
+        opacity: {
+          type: 'f',
+          value: opt.opacity !== undefined ? opt.opacity : 1.0
+        },
+        diffuse: {
+          type: 'c',
+          value: new THREE.Color(opt.diffuse !== undefined ? opt.diffuse : 0xffffff)
+        },
+        dash: {
+          type: 'f',
+          value: opt.dash !== undefined ? opt.dash : new THREE.Vector3(0, 10, 0)
+        },
+        trim: {
+          type: 'f',
+          value: opt.trim !== undefined ? opt.trim : new THREE.Vector3(0, 1, 0)
+        }
+      },
+      vertexShader: StrokeVertex,
+      fragmentShader: StrokeFragment,
+      side: opt.side !== undefined ? opt.side : THREE.DoubleSide,
+      transparent: opt.transparent !== undefined ? opt.transparent : true
+    });
+  }
+
+  var THREEShape = function (_THREELayer) {
+    _inherits(THREEShape, _THREELayer);
+
+    function THREEShape(json, timeline, renderer, camera) {
+      _classCallCheck(this, THREEShape);
+
+      var _this = _possibleConstructorReturn(this, (THREEShape.__proto__ || Object.getPrototypeOf(THREEShape)).call(this, json, timeline));
+
+      _this.mesh = new THREE.Object3D();
+      _this.item.add(_this.mesh);
+
+      var s = window.devicePixelRatio;
+      var parent = _this.mesh;
+
+      function createShape(content) {
+        var i = void 0,
+            totalC = content.length,
+            material = void 0,
+            n = void 0,
+            nTotal = void 0,
+            data = void 0;
+        for (i = 0; i < totalC; ++i) {
+          var cLayer = content[i];
+          var isShape = cLayer.paths !== undefined && cLayer.paths.length > 0;
+          if (isShape) {
+            var geometry = void 0,
+                mesh = void 0,
+                shape = void 0,
+                fill = void 0,
+                stroke = void 0,
+                color = void 0,
+                container = void 0,
+                folder = void 0,
+                trim = void 0,
+                repeater = void 0,
+                closed = true,
+                transform = {
+              opacity: 1,
+              anchor: [0, 0, 0],
+              position: [0, 0, 0],
+              rotation: [0, 0, 0],
+              scale: [1, 1, 1],
+              timeline: []
+            };
+            nTotal = cLayer.content.length;
+            data = organizeList(cLayer.content);
+            for (n = 0; n < nTotal; ++n) {
+              var nLayer = data[n];
+              switch (nLayer.type) {
+                case 'fill':
+                  fill = {
+                    alpha: nLayer.value.opacity,
+                    color: nLayer.value.color
+                  };
+                  break;
+
+                case 'stroke':
+                  stroke = {
+                    alpha: nLayer.value.opacity,
+                    color: nLayer.value.color,
+                    width: nLayer.value.width * s,
+                    dashes: nLayer.value.dashes
+                  };
+                  break;
+
+                case 'transform':
+                  transform = nLayer;
+                  break;
+
+                case 'trim':
+                  trim = nLayer;
+                  break;
+
+                case 'repeater':
+                  repeater = nLayer;
+                  break;
+              }
+            }
+
+            if (stroke !== undefined) {
+              color = new THREE.Color(stroke.color[0], stroke.color[1], stroke.color[2]);
+              material = new THREEStrokeMaterial({
+                diffuse: color.getHex(),
+                opacity: stroke.alpha,
+                thickness: stroke.width
+              });
+
+              if (stroke.dashes !== undefined) {
+                material.uniforms.dash.value.x = stroke.dashes.dash * s;
+                material.uniforms.dash.value.y = stroke.dashes.gap * s;
+                material.uniforms.dash.value.z = stroke.dashes.offset * s;
+
+                if (stroke.dashes.timeline !== undefined) {
+                  nTotal = stroke.dashes.timeline.length;
+                  for (n = 0; n < nTotal; ++n) {
+                    switch (stroke.dashes.timeline[n].name) {
+                      case 'dash':
+                        _THREELayer3.default.animate(material.uniforms.dash.value, 'x', timeline, stroke.dashes.timeline[n], true);
+                        break;
+                      case 'gap':
+                        _THREELayer3.default.animate(material.uniforms.dash.value, 'y', timeline, stroke.dashes.timeline[n], true);
+                        break;
+                      case 'offset':
+                        _THREELayer3.default.animate(material.uniforms.dash.value, 'z', timeline, stroke.dashes.timeline[n], true);
+                        break;
+                    }
+                  }
+                }
+              }
+
+              if (trim !== undefined) {
+                material.uniforms.trim.value.x = trim.value.start;
+                material.uniforms.trim.value.y = trim.value.end;
+                material.uniforms.trim.value.z = trim.value.offset;
+
+                nTotal = trim.timeline.length;
+                for (n = 0; n < nTotal; ++n) {
+                  switch (trim.timeline[n].name) {
+                    case 'start':
+                      _THREELayer3.default.animate(material.uniforms.trim.value, 'x', timeline, trim.timeline[n]);
+                      break;
+                    case 'end':
+                      _THREELayer3.default.animate(material.uniforms.trim.value, 'y', timeline, trim.timeline[n]);
+                      break;
+                    case 'offset':
+                      _THREELayer3.default.animate(material.uniforms.trim.value, 'z', timeline, trim.timeline[n]);
+                      break;
+                  }
+                }
+              }
+            } else if (fill !== undefined) {
+              color = new THREE.Color(fill.color[0], fill.color[1], fill.color[2]);
+              material = new THREE.MeshBasicMaterial({
+                color: color,
+                opacity: fill.alpha,
+                side: THREE.DoubleSide,
+                transparent: true,
+                depthTest: false
+              });
+            }
+
+            shape = new THREE.Shape();
+
+            nTotal = cLayer.paths.length;
+
+            for (n = 0; n < nTotal; ++n) {
+              var angle = void 0,
+                  pt = void 0,
+                  pts = void 0,
+                  x = void 0,
+                  y = void 0,
+                  w = void 0,
+                  h = void 0,
+                  t = void 0,
+                  u = void 0,
+                  poly = void 0,
+                  totalPoints = void 0,
+                  curved = void 0,
+                  path = cLayer.paths[n];
+              closed = true;
+              switch (path.type) {
+                case 'ellipse':
+                  x = path.x * s;
+                  y = path.y * s;
+                  w = path.width / 2 * s;
+                  h = path.height / 2 * s;
+                  shape.ellipse(x, y, w, h, 0, MathU.TWO_PI, true, Math.PI / 2);
+                  break;
+
+                case 'rectangle':
+                  x = (path.x - path.width / 2) * s;
+                  y = (path.y - path.height / 2) * s;
+                  w = path.width * s;
+                  h = path.height * s;
+                  shape.moveTo(x, y);
+                  shape.lineTo(x + w, y);
+                  shape.lineTo(x + w, y + h);
+                  shape.lineTo(x, y + h);
+                  break;
+
+                case 'polygon':
+                  totalPoints = path.points;
+                  w = path.radius * s;
+                  angle = MathU.HALF_PI;
+                  shape.moveTo(Math.cos(angle) * w, Math.sin(angle) * w);
+                  for (t = 1; t < path.points + 1; ++t) {
+                    angle = t / totalPoints * MathU.TWO_PI + MathU.HALF_PI;
+                    shape.lineTo(Math.cos(angle) * w, Math.sin(angle) * w);
+                  }
+                  break;
+
+                case 'polystar':
+                  totalPoints = path.points * 2;
+                  w = path.outRadius * s;
+                  h = path.inRadius * s;
+                  angle = MathU.toRad(path.rotation) + MathU.HALF_PI;
+                  shape.moveTo(Math.cos(angle) * w, Math.sin(angle) * w);
+
+                  angle = 1 / totalPoints * MathU.TWO_PI + MathU.toRad(path.rotation) + MathU.HALF_PI;
+                  shape.lineTo(Math.cos(angle) * h, Math.sin(angle) * h);
+
+                  for (t = 1; t < path.points; ++t) {
+                    angle = t * 2 / totalPoints * MathU.TWO_PI + MathU.toRad(path.rotation) + MathU.HALF_PI;
+                    shape.lineTo(Math.cos(angle) * w, Math.sin(angle) * w);
+
+                    angle = (t * 2 + 1) / totalPoints * MathU.TWO_PI + MathU.toRad(path.rotation) + MathU.HALF_PI;
+                    shape.lineTo(Math.cos(angle) * h, Math.sin(angle) * h);
+                  }
+                  break;
+
+                case 'shape':
+                  totalPoints = path.vertices.length;
+                  curved = false;
+                  closed = path.closed;
+                  shape.moveTo(path.vertices[0][0] * s, path.vertices[0][1] * -s);
+                  for (u = 0; u < totalPoints; ++u) {
+                    if (path.inTangents[u][0] !== 0 || path.inTangents[u][1] !== 0 || path.outTangents[u][0] !== 0 || path.outTangents[u][1] !== 0) {
+                      curved = true;
+                      break;
+                    }
+                  }
+
+                  if (curved) {
+                    for (u = 0; u < totalPoints; ++u) {
+                      t = u + 1;
+                      if (path.closed) t = t % totalPoints;else if (t >= totalPoints) break;
+                      shape.bezierCurveTo((path.vertices[u][0] + path.outTangents[u][0]) * s, (path.vertices[u][1] + path.outTangents[u][1]) * -s, (path.vertices[t][0] + path.inTangents[t][0]) * s, (path.vertices[t][1] + path.inTangents[t][1]) * -s, path.vertices[t][0] * s, path.vertices[t][1] * -s);
+                    }
+                  } else {
+                    for (u = 0; u < totalPoints; ++u) {
+                      t = u + 1;
+                      if (path.closed) t = t % totalPoints;else if (t >= totalPoints) break;
+                      shape.lineTo(path.vertices[t][0] * s, path.vertices[t][1] * -s);
+                    }
+                  }
+                  _THREELayer3.default.morph(shape, path, timeline, path.closed);
+                  break;
+              }
+            }
+
+            container = new THREE.Object3D();
+            parent.add(container);
+
+            if (stroke !== undefined) {
+              var geom = shape.createPointsGeometry(36);
+              var _pts = createPath(geom, false);
+              geometry = Line(_pts, {
+                closed: closed,
+                distances: stroke.dashes !== undefined || trim !== undefined
+              });
+            } else {
+              geometry = new THREE.ShapeGeometry(shape);
+            }
+
+            mesh = new THREE.Mesh(geometry, material);
+            _THREELayer3.default.transform(container, mesh, transform, timeline);
+            container.add(mesh);
+          } else {
+            var group = new THREE.Object3D();
+            group.name = cLayer.name;
+            parent.add(group);
+            parent = group;
+            createShape(cLayer.content);
+          }
+        }
+      }
+      createShape(json.content);
+      _THREELayer3.default.transform(_this.item, _this.mesh, json.transform, timeline);
+      return _this;
+    }
+
+    return THREEShape;
+  }(_THREELayer3.default);
+
+  return THREEShape;
+};

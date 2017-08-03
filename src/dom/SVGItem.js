@@ -12,6 +12,7 @@ import {
   SVGAnimate,
   SVGMorph
 } from './SVGUtil';
+import Keyframe from '../Keyframe';
 
 export default class SVGItem {
   constructor(json, timeline) {

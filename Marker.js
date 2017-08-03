@@ -1,1 +1,27 @@
-"use strict";function _classCallCheck(t,i){if(!(t instanceof i))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(exports,"__esModule",{value:!0});var Marker=function t(i,e,o){_classCallCheck(this,t),this.name=i,this.time=e,this.active=!1,this.duration=0,this.action="",this.trigger=void 0,this.complete=void 0,void 0!==o&&(void 0!==o.duration&&(this.duration=o.duration),void 0!==o.action&&(this.action=o.action),void 0!==o.trigger&&(this.trigger=o.trigger),void 0!==o.complete&&(this.complete=o.complete))};exports["default"]=Marker;
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Marker = function Marker(name, time, params) {
+  _classCallCheck(this, Marker);
+
+  this.name = name;
+  this.time = time;
+  this.active = false;
+  this.duration = 0;
+  this.action = '';
+  this.trigger = undefined;
+  this.complete = undefined;
+  if (params !== undefined) {
+    if (params.duration !== undefined) this.duration = params.duration;
+    if (params.action !== undefined) this.action = params.action;
+    if (params.trigger !== undefined) this.trigger = params.trigger;
+    if (params.complete !== undefined) this.complete = params.complete;
+  }
+};
+
+exports.default = Marker;

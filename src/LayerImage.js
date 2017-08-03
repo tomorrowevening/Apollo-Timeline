@@ -1,7 +1,7 @@
 import TimelineConfig from './TimelineConfig';
 import Layer from './Layer';
 
-export class LayerImage extends Layer {
+export default class LayerImage extends Layer {
   constructor(obj) {
     super(obj);
 

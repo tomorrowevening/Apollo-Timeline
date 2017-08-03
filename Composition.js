@@ -1,1 +1,111 @@
-"use strict";function _interopRequireDefault(e){return e&&e.__esModule?e:{"default":e}}function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function _possibleConstructorReturn(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function _inherits(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}Object.defineProperty(exports,"__esModule",{value:!0});var _createClass=function(){function e(e,t){for(var i=0;i<t.length;i++){var n=t[i];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,i,n){return i&&e(t.prototype,i),n&&e(t,n),t}}(),_Layer2=require("./Layer"),_Layer3=_interopRequireDefault(_Layer2),_Timeline=require("./Timeline"),_Timer=require("apollo-utils/Timer"),Composition=function(e){function t(e){_classCallCheck(this,t);var i=_possibleConstructorReturn(this,(t.__proto__||Object.getPrototypeOf(t)).call(this,e));return i.layers=[],i.timeline=new _Timeline.Timeline,void 0!==e.duration&&(i.timeline.duration=e.duration),void 0!==e.maxPlays&&(i.timeline.maxPlays=e.maxPlays),void 0!==e.mode&&(i.timeline.mode=e.mode),i.showing=0===i.start,i}return _inherits(t,e),_createClass(t,[{key:"addLayer",value:function(e){e.showing=0===this.start&&0===e.start,this.layers.push(e)}},{key:"update",value:function(e){this.timeline.update(),this.updateLayers()}},{key:"updateHandler",value:function(){this.update(this.seconds),this.draw()}},{key:"updateLayers",value:function(){for(var e=this.seconds,i=this.layers.length,n=0;n<i;++n){var r=this.layers[n],o=r.showable(e);o?r instanceof t?(!r.showing&&r.timeline.restartable&&(r.timeline.time.stamp=_Timer.TIME.now()),r.update(e-r.start)):r.update(e-r.start):r.showing&&r.timeline.playing&&r.timeline.seconds>0&&(r.timeline.seconds=r.timeline.duration,r.timeline.time.speed<0&&(r.timeline.seconds=0),(r.timeline.maxPlays>0&&r.timeline.timesPlayed>=r.timeline.maxPlays||"once"===r.timeline.mode)&&(r.timeline.playing=!1)),r.showing=o}}},{key:"seconds",get:function(){return this.timeline.seconds}}]),t}(_Layer3["default"]);exports["default"]=Composition;
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Layer2 = require('./Layer');
+
+var _Layer3 = _interopRequireDefault(_Layer2);
+
+var _Timeline = require('./Timeline');
+
+var _Timer = require('apollo-utils/Timer');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Composition = function (_Layer) {
+  _inherits(Composition, _Layer);
+
+  function Composition(obj) {
+    _classCallCheck(this, Composition);
+
+    var _this = _possibleConstructorReturn(this, (Composition.__proto__ || Object.getPrototypeOf(Composition)).call(this, obj));
+
+    _this.layers = [];
+
+    _this.timeline = new _Timeline.Timeline();
+    if (obj.duration !== undefined) {
+      _this.timeline.duration = obj.duration;
+    }
+    if (obj.maxPlays !== undefined) {
+      _this.timeline.maxPlays = obj.maxPlays;
+    }
+    if (obj.mode !== undefined) {
+      _this.timeline.mode = obj.mode;
+    }
+
+    _this.showing = _this.start === 0;
+    return _this;
+  }
+
+  _createClass(Composition, [{
+    key: 'addLayer',
+    value: function addLayer(layer) {
+      layer.showing = this.start === 0 && layer.start === 0;
+      this.layers.push(layer);
+    }
+  }, {
+    key: 'update',
+    value: function update(time) {
+      this.timeline.update();
+      this.updateLayers();
+    }
+  }, {
+    key: 'updateHandler',
+    value: function updateHandler() {
+      this.update(this.seconds);
+      this.draw();
+    }
+  }, {
+    key: 'updateLayers',
+    value: function updateLayers() {
+      var time = this.seconds;
+      var total = this.layers.length;
+      for (var i = 0; i < total; ++i) {
+        var l = this.layers[i];
+        var visible = l.showable(time);
+        if (visible) {
+          if (l instanceof Composition) {
+            if (!l.showing && l.timeline.restartable) {
+              l.timeline.time.stamp = _Timer.TIME.now();
+            }
+            l.update(time - l.start);
+          } else {
+            l.update(time - l.start);
+          }
+        } else if (l.showing) {
+          if (l.timeline.playing && l.timeline.seconds > 0) {
+            l.timeline.seconds = l.timeline.duration;
+
+            if (l.timeline.time.speed < 0) {
+              l.timeline.seconds = 0;
+            }
+
+            if (l.timeline.maxPlays > 0 && l.timeline.timesPlayed >= l.timeline.maxPlays || l.timeline.mode === 'once') {
+              l.timeline.playing = false;
+            }
+          }
+        }
+        l.showing = visible;
+      }
+    }
+  }, {
+    key: 'seconds',
+    get: function get() {
+      return this.timeline.seconds;
+    }
+  }]);
+
+  return Composition;
+}(_Layer3.default);
+
+exports.default = Composition;

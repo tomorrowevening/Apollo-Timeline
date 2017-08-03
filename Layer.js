@@ -1,1 +1,63 @@
-"use strict";function _classCallCheck(t,i){if(!(t instanceof i))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(exports,"__esModule",{value:!0});var _createClass=function(){function t(t,i){for(var e=0;e<i.length;e++){var a=i[e];a.enumerable=a.enumerable||!1,a.configurable=!0,"value"in a&&(a.writable=!0),Object.defineProperty(t,a.key,a)}}return function(i,e,a){return e&&t(i.prototype,e),a&&t(i,a),i}}(),Layer=function(){function t(i){_classCallCheck(this,t),this.name=void 0!==i.name?i.name:"",this.start=void 0!==i.start?i.start:0,this.duration=void 0!==i.duration?i.duration:0,this.fileID="",this.file=void 0,this.item=void 0,this.showing=void 0===i.showing||i.showing}return _createClass(t,[{key:"update",value:function(t){void 0!==this.item&&void 0!==this.item.update&&this.item.update(t)}},{key:"draw",value:function(){void 0!==this.item&&void 0!==this.item.draw&&this.item.draw()}},{key:"animate",value:function(t,i){void 0!==this.item&&void 0!==this.item.animate&&this.item.animate(t,i)}},{key:"transform",value:function(t,i){void 0!==this.item&&void 0!==this.item.transform&&this.item.transform(t,i)}},{key:"showable",value:function(t){var i=this.start+this.duration;return!(this.duration>0)||t>=this.start&&t<=i}}]),t}();exports["default"]=Layer;
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Layer = function () {
+  function Layer(obj) {
+    _classCallCheck(this, Layer);
+
+    this.name = obj.name !== undefined ? obj.name : '';
+    this.start = obj.start !== undefined ? obj.start : 0;
+    this.duration = obj.duration !== undefined ? obj.duration : 0;
+    this.fileID = '';
+    this.file = undefined;
+    this.item = undefined;
+    this.showing = obj.showing !== undefined ? obj.showing : true;
+  }
+
+  _createClass(Layer, [{
+    key: 'update',
+    value: function update(time) {
+      if (this.item !== undefined && this.item.update !== undefined) {
+        this.item.update(time);
+      }
+    }
+  }, {
+    key: 'draw',
+    value: function draw() {
+      if (this.item !== undefined && this.item.draw !== undefined) {
+        this.item.draw();
+      }
+    }
+  }, {
+    key: 'animate',
+    value: function animate(json, timeline) {
+      if (this.item !== undefined && this.item.animate !== undefined) {
+        this.item.animate(json, timeline);
+      }
+    }
+  }, {
+    key: 'transform',
+    value: function transform(json, timeline) {
+      if (this.item !== undefined && this.item.transform !== undefined) {
+        this.item.transform(json, timeline);
+      }
+    }
+  }, {
+    key: 'showable',
+    value: function showable(time) {
+      var endTime = this.start + this.duration;
+      return this.duration > 0 ? time >= this.start && time <= endTime : true;
+    }
+  }]);
+
+  return Layer;
+}();
+
+exports.default = Layer;

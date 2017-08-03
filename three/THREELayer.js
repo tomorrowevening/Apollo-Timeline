@@ -1,1 +1,175 @@
-"use strict";function _interopRequireDefault(e){return e&&e.__esModule?e:{"default":e}}function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function _possibleConstructorReturn(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function _inherits(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}var _createClass=function(){function e(e,t){for(var a=0;a<t.length;a++){var r=t[a];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,a,r){return a&&e(t.prototype,a),r&&e(t,r),t}}(),_MathUtil=require("apollo-utils/MathUtil"),_Keyframe=require("../Keyframe"),_Keyframe2=_interopRequireDefault(_Keyframe),_Layer2=require("../Layer"),_Layer3=_interopRequireDefault(_Layer2);module.exports=function(e){var t=function(t){function a(t,r){_classCallCheck(this,a);var o=_possibleConstructorReturn(this,(a.__proto__||Object.getPrototypeOf(a)).call(this,t));return o.item=new e.Object3D,o.mesh=void 0,o}return _inherits(a,t),_createClass(a,null,[{key:"animate",value:function(e,t,a,r,o){var i=void 0!==o?window.devicePixelRatio:1,n=void 0,s=r.keys.length;for(n=0;n<s;++n){var l=r.keys[n],c=(l.value,l.target*i),u=(l.start,l.duration),f={ease:[l.x0,l.y0,l.x1,l.y1],start:l.value*i,delay:l.start},y=new _Keyframe2["default"](e,t,c,u,f);y.easeType=l.type,a.addKeyframe(y)}}},{key:"transform",value:function(e,t,a,r){var o=window.devicePixelRatio,i=a,n=i.anchor.length>2?i.anchor:[i.anchor[0],i.anchor[1],0],s=i.position.length>2?i.position:[i.position[0],i.position[1],0],l=i.rotation.length>2?i.rotation:[i.rotation[0],i.rotation[1],0],c=i.scale.length>2?i.scale:[i.scale[0],i.scale[1],1];if(e.position.set(s[0]*o,-s[1]*o,s[2]*o),e.scale.set(c[0],c[1],c[2]),e.rotation.set((0,_MathUtil.toRad)(l[0]),(0,_MathUtil.toRad)(l[1]),-(0,_MathUtil.toRad)(l[2])),void 0!==t&&(t.position.set(-n[0]*o,n[1]*o,n[2]*o),void 0!==t.material&&(t.material.opacity=i.opacity)),void 0!==i.timeline){var u=void 0,f=void 0,y=void 0,d=void 0;for(y=i.timeline.length,u=0;u<y;++u){var p=i.timeline[u];for(d=p.keys.length,f=0;f<d;++f){var _=p.keys[f],h=_.target,m=_.duration,v=_.x0,b=_.y0,w=_.x1,k=_.y1,K={ease:[v,b,w,k],start:_.value,delay:_.start},R=void 0;switch(p.name){case"opacity":void 0!==t&&void 0!==t.material&&(R=new _Keyframe2["default"](t.material,"opacity",h,m,K));break;case"anchorX":void 0!==t&&(K.start*=-o,R=new _Keyframe2["default"](t.position,"x",-h*o,m,K));break;case"anchorY":void 0!==t&&(K.start*=o,R=new _Keyframe2["default"](t.position,"y",h*o,m,K));break;case"positionX":K.start*=o,R=new _Keyframe2["default"](e.position,"x",h*o,m,K);break;case"positionY":K.start*=-o,R=new _Keyframe2["default"](e.position,"y",-h*o,m,K);break;case"positionZ":K.start*=o,R=new _Keyframe2["default"](e.position,"z",h*o,m,K);break;case"rotationX":K.start=(0,_MathUtil.toRad)(K.start),R=new _Keyframe2["default"](e.rotation,"x",(0,_MathUtil.toRad)(h),m,K);break;case"rotationY":K.start=-(0,_MathUtil.toRad)(K.start),R=new _Keyframe2["default"](e.rotation,"y",(-(0,_MathUtil.toRad)(h)),m,K);break;case"rotationZ":K.start=-(0,_MathUtil.toRad)(K.start),R=new _Keyframe2["default"](e.rotation,"z",(-(0,_MathUtil.toRad)(h)),m,K);break;case"scaleX":R=new _Keyframe2["default"](e.scale,"x",h,m,K);break;case"scaleY":R=new _Keyframe2["default"](e.scale,"y",h,m,K);break;case"scaleZ":R=new _Keyframe2["default"](e.scale,"z",h,m,K)}void 0!==R&&(R.easeType=_.type,r.addKeyframe(R))}}}}},{key:"morph",value:function(e,t,a,r){}}]),a}(_Layer3["default"]);return t};
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _MathUtil = require('apollo-utils/MathUtil');
+
+var _Keyframe = require('../Keyframe');
+
+var _Keyframe2 = _interopRequireDefault(_Keyframe);
+
+var _Layer2 = require('../Layer');
+
+var _Layer3 = _interopRequireDefault(_Layer2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+module.exports = function (THREE) {
+  var THREELayer = function (_Layer) {
+    _inherits(THREELayer, _Layer);
+
+    function THREELayer(json, timeline) {
+      _classCallCheck(this, THREELayer);
+
+      var _this = _possibleConstructorReturn(this, (THREELayer.__proto__ || Object.getPrototypeOf(THREELayer)).call(this, json));
+
+      _this.item = new THREE.Object3D();
+      _this.mesh = undefined;return _this;
+    }
+
+    _createClass(THREELayer, null, [{
+      key: 'animate',
+      value: function animate(object, key, timeline, animation, deviceRatio) {
+        var scale = deviceRatio !== undefined ? window.devicePixelRatio : 1;
+        var i = void 0,
+            total = animation.keys.length;
+        for (i = 0; i < total; ++i) {
+          var frame = animation.keys[i];
+          var from = frame.value;
+          var target = frame.target * scale;
+          var delay = frame.start;
+          var duration = frame.duration;
+          var params = {
+            ease: [frame.x0, frame.y0, frame.x1, frame.y1],
+            start: frame.value * scale,
+            delay: frame.start
+          };
+          var keyframe = new _Keyframe2.default(object, key, target, duration, params);
+          keyframe.easeType = frame.type;
+          timeline.addKeyframe(keyframe);
+        }
+      }
+    }, {
+      key: 'transform',
+      value: function transform(container, mesh, _transform, timeline) {
+        var scale = window.devicePixelRatio;
+        var t = _transform;
+        var a = t.anchor.length > 2 ? t.anchor : [t.anchor[0], t.anchor[1], 0];
+        var p = t.position.length > 2 ? t.position : [t.position[0], t.position[1], 0];
+        var r = t.rotation.length > 2 ? t.rotation : [t.rotation[0], t.rotation[1], 0];
+        var s = t.scale.length > 2 ? t.scale : [t.scale[0], t.scale[1], 1];
+
+        container.position.set(p[0] * scale, -p[1] * scale, p[2] * scale);
+        container.scale.set(s[0], s[1], s[2]);
+        container.rotation.set((0, _MathUtil.toRad)(r[0]), (0, _MathUtil.toRad)(r[1]), -(0, _MathUtil.toRad)(r[2]));
+        if (mesh !== undefined) {
+          mesh.position.set(-a[0] * scale, a[1] * scale, a[2] * scale);
+          if (mesh.material !== undefined) mesh.material.opacity = t.opacity;
+        }
+
+        if (t.timeline === undefined) return;
+
+        var i = void 0,
+            n = void 0,
+            total = void 0,
+            nTotal = void 0;
+        total = t.timeline.length;
+        for (i = 0; i < total; ++i) {
+          var ani = t.timeline[i];
+          nTotal = ani.keys.length;
+
+          for (n = 0; n < nTotal; ++n) {
+            var key = ani.keys[n];
+            var target = key.target;
+            var duration = key.duration;
+            var x0 = key.x0;
+            var y0 = key.y0;
+            var x1 = key.x1;
+            var y1 = key.y1;
+            var params = {
+              ease: [x0, y0, x1, y1],
+              start: key.value,
+              delay: key.start
+            };
+            var keyframe = undefined;
+
+            switch (ani.name) {
+              case 'opacity':
+                if (mesh !== undefined && mesh.material !== undefined) {
+                  keyframe = new _Keyframe2.default(mesh.material, 'opacity', target, duration, params);
+                }
+                break;
+
+              case 'anchorX':
+                if (mesh !== undefined) {
+                  params.start *= -scale;
+                  keyframe = new _Keyframe2.default(mesh.position, 'x', -target * scale, duration, params);
+                }
+                break;
+              case 'anchorY':
+                if (mesh !== undefined) {
+                  params.start *= scale;
+                  keyframe = new _Keyframe2.default(mesh.position, 'y', target * scale, duration, params);
+                }
+                break;
+
+              case 'positionX':
+                params.start *= scale;
+                keyframe = new _Keyframe2.default(container.position, 'x', target * scale, duration, params);
+                break;
+              case 'positionY':
+                params.start *= -scale;
+                keyframe = new _Keyframe2.default(container.position, 'y', -target * scale, duration, params);
+                break;
+              case 'positionZ':
+                params.start *= scale;
+                keyframe = new _Keyframe2.default(container.position, 'z', target * scale, duration, params);
+                break;
+
+              case 'rotationX':
+                params.start = (0, _MathUtil.toRad)(params.start);
+                keyframe = new _Keyframe2.default(container.rotation, 'x', (0, _MathUtil.toRad)(target), duration, params);
+                break;
+              case 'rotationY':
+                params.start = -(0, _MathUtil.toRad)(params.start);
+                keyframe = new _Keyframe2.default(container.rotation, 'y', -(0, _MathUtil.toRad)(target), duration, params);
+                break;
+              case 'rotationZ':
+                params.start = -(0, _MathUtil.toRad)(params.start);
+                keyframe = new _Keyframe2.default(container.rotation, 'z', -(0, _MathUtil.toRad)(target), duration, params);
+                break;
+
+              case 'scaleX':
+                keyframe = new _Keyframe2.default(container.scale, 'x', target, duration, params);
+                break;
+              case 'scaleY':
+                keyframe = new _Keyframe2.default(container.scale, 'y', target, duration, params);
+                break;
+              case 'scaleZ':
+                keyframe = new _Keyframe2.default(container.scale, 'z', target, duration, params);
+                break;
+            }
+
+            if (keyframe !== undefined) {
+              keyframe.easeType = key.type;
+              timeline.addKeyframe(keyframe);
+            }
+          }
+        }
+      }
+    }, {
+      key: 'morph',
+      value: function morph(layer, path, timeline, closed) {}
+    }]);
+
+    return THREELayer;
+  }(_Layer3.default);
+
+  return THREELayer;
+};

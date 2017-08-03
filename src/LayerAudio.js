@@ -1,7 +1,8 @@
+import Loader from 'apollo-utils/Loader';
 import TimelineConfig from './TimelineConfig';
 import Layer from './Layer';
 
-export class LayerAudio extends Layer {
+export default class LayerAudio extends Layer {
   constructor(obj) {
     super(obj);
     this.timestamp = 0;
@@ -18,7 +19,7 @@ export class LayerAudio extends Layer {
 
     if (delta > 1) {
       this.file.play();
-      // Loader.playAudio( this.fileID );
+      Loader.playAudio( this.fileID );
     }
 
     this.timestamp = now;

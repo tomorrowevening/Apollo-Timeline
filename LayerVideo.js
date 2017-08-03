@@ -1,1 +1,43 @@
-"use strict";function _interopRequireDefault(e){return e&&e.__esModule?e:{"default":e}}function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function _possibleConstructorReturn(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function _inherits(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}Object.defineProperty(exports,"__esModule",{value:!0}),exports.LayerVideo=void 0;var _TimelineConfig=require("./TimelineConfig"),_TimelineConfig2=_interopRequireDefault(_TimelineConfig),_Layer2=require("./Layer"),_Layer3=_interopRequireDefault(_Layer2),LayerVideo=exports.LayerVideo=function(e){function t(e){_classCallCheck(this,t);var r=_possibleConstructorReturn(this,(t.__proto__||Object.getPrototypeOf(t)).call(this,e));return r.timeStamp=0,void 0!==e.content&&(r.fileID=_TimelineConfig2["default"].fileID(e.content.source),r.file=_TimelineConfig2["default"].video[r.fileID]),r}return _inherits(t,e),t}(_Layer3["default"]);
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _TimelineConfig = require('./TimelineConfig');
+
+var _TimelineConfig2 = _interopRequireDefault(_TimelineConfig);
+
+var _Layer2 = require('./Layer');
+
+var _Layer3 = _interopRequireDefault(_Layer2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var LayerVideo = function (_Layer) {
+  _inherits(LayerVideo, _Layer);
+
+  function LayerVideo(obj) {
+    _classCallCheck(this, LayerVideo);
+
+    var _this = _possibleConstructorReturn(this, (LayerVideo.__proto__ || Object.getPrototypeOf(LayerVideo)).call(this, obj));
+
+    _this.timeStamp = 0;
+
+    if (obj.content !== undefined) {
+      _this.fileID = _TimelineConfig2.default.fileID(obj.content.source);
+      _this.file = _TimelineConfig2.default.video[_this.fileID];
+    }
+    return _this;
+  }
+
+  return LayerVideo;
+}(_Layer3.default);
+
+exports.default = LayerVideo;

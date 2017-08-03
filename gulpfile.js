@@ -3,9 +3,9 @@ var babel = require('gulp-babel');
 var concat = require("gulp-concat");
 var uglify = require("gulp-uglify");
 var gutil = require("gulp-util");
+
 var defaultPaths = [
   'src/TimelineConfig.js',
-  'src/Bezier.js',
   'src/Marker.js',
   'src/Keyframe.js',
   'src/Layer.js',
@@ -18,7 +18,6 @@ var defaultPaths = [
   'src/Composition.js'
 ];
 var domPaths = [
-  'src/dom/SVGUtil.js',
   'src/dom/SVGItem.js'
 ];
 var threePaths = [
@@ -35,11 +34,11 @@ function compile(srcPaths, distPath, minify) {
   return gulp.src(srcPaths)
     .pipe(babel({
       comments: false,
-      presets: ["es2015"],
+      presets: ["es2015", "stage-0"],
       plugins: ["glslify"]
     }))
     .pipe(concat(distPath))
-    .pipe(minify ? uglify() : gutil.noop())
+    // .pipe(minify ? uglify() : gutil.noop())
     .pipe(gulp.dest(''));
 }
 

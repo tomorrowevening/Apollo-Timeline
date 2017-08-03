@@ -1,1 +1,318 @@
-"use strict";function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function styleOptions(e,t,a){var i={fill:"none",fillAlpha:1,stroke:void 0,strokeAlpha:1,strokeCap:"butt",strokeCorner:"miter",strokeDashes:void 0,strokeWidth:void 0,transform:void 0,timeline:[]},r=void 0,n=t.length;for(r=0;r<n;++r){var o=t[r];if("fill"===o.type){var l=Math.round(255*o.value.color[0]).toString(),s=Math.round(255*o.value.color[1]).toString(),c=Math.round(255*o.value.color[2]).toString(),h=o.value.opacity;i.fill="rgb("+l+", "+s+", "+c+")",i.fillAlpha=h,o.timeline.length>0&&(i.timeline=i.timeline.concat(o.timeline))}else if("stroke"===o.type){var m=Math.round(255*o.value.color[0]).toString(),f=Math.round(255*o.value.color[1]).toString(),p=Math.round(255*o.value.color[2]).toString();i.stroke="rgb("+m+", "+f+", "+p+")",i.strokeAlpha=o.value.opacity,i.strokeCap=o.value.cap,i.strokeCorner=o.value.corner,i.strokeDashes=o.value.dashes,i.strokeWidth=o.value.width,o.timeline.length>0&&(i.timeline=i.timeline.concat(o.timeline))}else if("transform"===o.type)i.transform=o;else if("trim"===o.type)for(var v=e.children.length,u=0;u<v;++u){var y=e.children[u];"path"===y.tagName&&applyTrimPath(y,o,a)}}return i}function applyTrimPath(e,t,a){e._startPercent=t.value.start,e._endPercent=t.value.end,e._offsetPercent=t.value.offset,e.updatePath();var i={start:"startPercent",end:"endPercent",offset:"offsetPercent"},r=void 0,n=t.timeline.length-1;for(r=n;r>-1;--r){var o=t.timeline[r],l=i[o.name];if(void 0!==l){var s=void 0,c=o.keys.length;for(s=0;s<c;++s){var h=o.keys[s],m=h.target,f=h.duration,p=h.x0,v=h.y0,u=h.x1,y=h.y1,d={ease:[p,v,u,y],start:h.value,delay:h.start},g=new Keyframe(e,l,m,f,d);g.easeType=h.type,a.addKeyframe(g)}}}}Object.defineProperty(exports,"__esModule",{value:!0});var _createClass=function(){function e(e,t){for(var a=0;a<t.length;a++){var i=t[a];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(t,a,i){return a&&e(t.prototype,a),i&&e(t,i),t}}(),_CSSUtil=require("apollo-utils/CSSUtil"),_SVGUtil=require("apollo-utils/SVGUtil"),_SVGUtil2=require("./SVGUtil"),SVGItem=function(){function e(t,a){_classCallCheck(this,e),this.item=(0,_SVGUtil.SVGCreate)(),(0,_CSSUtil.CSSExtend)(this.item),this.item.title=t.name;var i=(0,_SVGUtil.createMasks)(this.item,t);void 0!==t.transform&&transform(this.item,t.transform,a);for(var r=t.content.length,n=0;n<r;++n){var o=t.content[n],l=void 0,s=void 0;if("shape"===o.type){var c=styleOptions(this.item,o.content,a),h=(0,_SVGUtil.getMaxBorder)(c);for(s=o.paths.length,l=0;l<s;++l){var m=o.paths[l],f=void 0;switch(m.type){case"rectangle":f=(0,_SVGUtil.SVGRectangle)(m,c,this.item,a);break;case"ellipse":f=(0,_SVGUtil.SVGEllipse)(m,c,this.item,a),this.item.x-=h/2,this.item.y-=h/2;break;case"polygon":break;case"polystar":break;case"shape":f=(0,_SVGUtil.SVGShape)(m,c,this.item,a),this.item.x-=h/2,this.item.y-=h/2,void 0!==m.timeline&&m.timeline.length>0&&(0,_SVGUtil2.SVGMorph)(f,m.timeline,c,a)}void 0!==f&&(this.item.x-=h/2,this.item.y-=h/2,(0,_SVGUtil.applyMasks)(f,i),c.timeline.length>0&&void 0!==a&&(0,_SVGUtil2.SVGAnimate)(f,c.timeline,a),this.item.appendChild(f))}for(s=o.content.length,l=0;l<s;++l){var p=o.content[l];"trim"===p.type&&applyTrimPath(this.item.children[0],p,a)}}else if("trim"===o.type)for(s=this.item.children.length,l=0;l<s;++l){var v=this.item.children[l];"path"===v.tagName&&applyTrimPath(v,o,a)}}}return _createClass(e,null,[{key:"transform",value:function(e){function t(t,a,i){return e.apply(this,arguments)}return t.toString=function(){return e.toString()},t}(function(e,t,a){var i=t.anchor,r=t.position,n=t.rotation,o=t.scale,l=i[0]/e.width*100,s=i[1]/e.height*100;if(e.style.position="absolute",e.x=r[0],e.y=r[1],e.rotateX=n[0],e.rotateY=n[1],e.rotateZ=n[2],e.scaleX=o[0],e.scaleY=o[1],e.originX=l,e.originY=s,e.translateX=-i[0],e.translateY=-i[1],e.translateZ=r.length>2?r[2]:0,e.opacity=t.opacity,void 0!==t.timeline){var c=void 0,h=void 0,m=void 0,f=t.timeline.length;for(c=0;c<f;++c){var p=t.timeline[c];for(m=p.keys.length,h=0;h<m;++h){var v=p.keys[h],u=v.target,y=v.duration,d=v.x0,g=v.y0,S=v.x1,k=v.y1,b=void 0,_={ease:[d,g,S,k],start:v.value,delay:v.start};switch(p.name){case"opacity":b=new Keyframe(e,"opacity",u,y,_);break;case"positionX":b=new Keyframe(e,"x",u,y,_);break;case"positionY":b=new Keyframe(e,"y",u,y,_);break;case"positionZ":b=new Keyframe(e,"translateZ",u,y,_);break;case"rotationX":_.start*=-1,b=new Keyframe(e,"rotateX",(-u),y,_);break;case"rotationY":_.start*=-1,b=new Keyframe(e,"rotateY",(-u),y,_);break;case"rotationZ":b=new Keyframe(e,"rotateZ",u,y,_);break;case"scaleX":b=new Keyframe(e,"scaleX",u,y,_);break;case"scaleY":b=new Keyframe(e,"scaleY",u,y,_);break;case"scaleZ":b=new Keyframe(e,"scaleZ",u,y,_)}void 0!==b&&(b.easeType=v.type,a.addKeyframe(b))}}}})}]),e}();exports["default"]=SVGItem;
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _CSSUtil = require('apollo-utils/CSSUtil');
+
+var _SVGUtil = require('apollo-utils/SVGUtil');
+
+var _SVGUtil2 = require('./SVGUtil');
+
+var _Keyframe = require('../Keyframe');
+
+var _Keyframe2 = _interopRequireDefault(_Keyframe);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var SVGItem = function () {
+  function SVGItem(json, timeline) {
+    _classCallCheck(this, SVGItem);
+
+    this.item = (0, _SVGUtil.SVGCreate)();
+    (0, _CSSUtil.CSSExtend)(this.item);
+
+    this.item.title = json.name;
+    var masks = (0, _SVGUtil.createMasks)(this.item, json);
+    if (json.transform !== undefined) {
+      transform(this.item, json.transform, timeline);
+    }
+
+    var width = 0;
+    var height = 0;
+
+    var total = json.content.length;
+    for (var i = 0; i < total; ++i) {
+      var layer = json.content[i];
+      var n = void 0,
+          nTotal = void 0;
+      if (layer.type === 'shape') {
+        var style = styleOptions(this.item, layer.content, timeline);
+        var border = (0, _SVGUtil.getMaxBorder)(style);
+
+        nTotal = layer.paths.length;
+        for (n = 0; n < nTotal; ++n) {
+          var p = layer.paths[n];
+          var svg = undefined;
+          switch (p.type) {
+            case 'rectangle':
+              svg = (0, _SVGUtil.SVGRectangle)(p, style, this.item, timeline);
+              break;
+            case 'ellipse':
+              svg = (0, _SVGUtil.SVGEllipse)(p, style, this.item, timeline);
+              this.item.x -= border / 2;
+              this.item.y -= border / 2;
+              break;
+            case 'polygon':
+              break;
+            case 'polystar':
+              break;
+            case 'shape':
+              svg = (0, _SVGUtil.SVGShape)(p, style, this.item, timeline);
+              this.item.x -= border / 2;
+              this.item.y -= border / 2;
+              if (p.timeline !== undefined && p.timeline.length > 0) {
+                (0, _SVGUtil2.SVGMorph)(svg, p.timeline, style, timeline);
+              }
+              break;
+          }
+
+          if (svg !== undefined) {
+            this.item.x -= border / 2;
+            this.item.y -= border / 2;
+            (0, _SVGUtil.applyMasks)(svg, masks);
+
+            if (style.timeline.length > 0 && timeline !== undefined) {
+              (0, _SVGUtil2.SVGAnimate)(svg, style.timeline, timeline);
+            }
+            this.item.appendChild(svg);
+          }
+        }
+
+        nTotal = layer.content.length;
+        for (n = 0; n < nTotal; ++n) {
+          var _p = layer.content[n];
+          if (_p.type === 'trim') {
+            applyTrimPath(this.item.children[0], _p, timeline);
+          }
+        }
+      } else if (layer.type === 'trim') {
+        nTotal = this.item.children.length;
+        for (n = 0; n < nTotal; ++n) {
+          var kid = this.item.children[n];
+          if (kid.tagName === 'path') {
+            applyTrimPath(kid, layer, timeline);
+          }
+        }
+      }
+    }
+  }
+
+  _createClass(SVGItem, null, [{
+    key: 'transform',
+    value: function (_transform) {
+      function transform(_x, _x2, _x3) {
+        return _transform.apply(this, arguments);
+      }
+
+      transform.toString = function () {
+        return _transform.toString();
+      };
+
+      return transform;
+    }(function (element, transform, timeline) {
+      var a = transform.anchor;
+      var p = transform.position;
+      var r = transform.rotation;
+      var s = transform.scale;
+      var originX = a[0] / element.width * 100;
+      var originY = a[1] / element.height * 100;
+
+      element.style.position = 'absolute';
+
+      element.x = p[0];
+      element.y = p[1];
+      element.rotateX = r[0];
+      element.rotateY = r[1];
+      element.rotateZ = r[2];
+      element.scaleX = s[0];
+      element.scaleY = s[1];
+      element.originX = originX;
+      element.originY = originY;
+      element.translateX = -a[0];
+      element.translateY = -a[1];
+      element.translateZ = p.length > 2 ? p[2] : 0;
+      element.opacity = transform.opacity;
+
+      if (transform.timeline === undefined) return;
+
+      var i = void 0,
+          n = void 0,
+          nTotal = void 0,
+          total = transform.timeline.length;
+      for (i = 0; i < total; ++i) {
+        var ani = transform.timeline[i];
+        nTotal = ani.keys.length;
+
+        for (n = 0; n < nTotal; ++n) {
+          var key = ani.keys[n];
+          var target = key.target;
+          var duration = key.duration;
+          var x0 = key.x0;
+          var y0 = key.y0;
+          var x1 = key.x1;
+          var y1 = key.y1;
+          var keyframe = undefined;
+          var params = {
+            ease: [x0, y0, x1, y1],
+            start: key.value,
+            delay: key.start
+          };
+
+          switch (ani.name) {
+            case 'opacity':
+              keyframe = new _Keyframe2.default(element, 'opacity', target, duration, params);
+              break;
+
+            case 'positionX':
+              keyframe = new _Keyframe2.default(element, 'x', target, duration, params);
+              break;
+            case 'positionY':
+              keyframe = new _Keyframe2.default(element, 'y', target, duration, params);
+              break;
+            case 'positionZ':
+              keyframe = new _Keyframe2.default(element, 'translateZ', target, duration, params);
+              break;
+
+            case 'rotationX':
+              params.start *= -1;
+              keyframe = new _Keyframe2.default(element, 'rotateX', -target, duration, params);
+              break;
+            case 'rotationY':
+              params.start *= -1;
+              keyframe = new _Keyframe2.default(element, 'rotateY', -target, duration, params);
+              break;
+            case 'rotationZ':
+              keyframe = new _Keyframe2.default(element, 'rotateZ', target, duration, params);
+              break;
+
+            case 'scaleX':
+              keyframe = new _Keyframe2.default(element, 'scaleX', target, duration, params);
+              break;
+            case 'scaleY':
+              keyframe = new _Keyframe2.default(element, 'scaleY', target, duration, params);
+              break;
+            case 'scaleZ':
+              keyframe = new _Keyframe2.default(element, 'scaleZ', target, duration, params);
+              break;
+          }
+
+          if (keyframe !== undefined) {
+            keyframe.easeType = key.type;
+            timeline.addKeyframe(keyframe);
+          }
+        }
+      }
+    })
+  }]);
+
+  return SVGItem;
+}();
+
+exports.default = SVGItem;
+
+
+function styleOptions(element, content, timeline) {
+  var obj = {
+    'fill': 'none',
+    'fillAlpha': 1,
+    'stroke': undefined,
+    'strokeAlpha': 1,
+    'strokeCap': 'butt',
+    'strokeCorner': 'miter',
+    'strokeDashes': undefined,
+    'strokeWidth': undefined,
+    'transform': undefined,
+    'timeline': []
+  };
+
+  var i = void 0,
+      total = content.length;
+  for (i = 0; i < total; ++i) {
+    var n = content[i];
+
+    if (n.type === 'fill') {
+      var r = Math.round(n.value.color[0] * 255).toString();
+      var g = Math.round(n.value.color[1] * 255).toString();
+      var b = Math.round(n.value.color[2] * 255).toString();
+      var a = n.value.opacity;
+      obj.fill = 'rgb(' + r + ', ' + g + ', ' + b + ')';
+      obj.fillAlpha = a;
+      if (n.timeline.length > 0) {
+        obj.timeline = obj.timeline.concat(n.timeline);
+      }
+    } else if (n.type === 'stroke') {
+      var _r = Math.round(n.value.color[0] * 255).toString();
+      var _g = Math.round(n.value.color[1] * 255).toString();
+      var _b = Math.round(n.value.color[2] * 255).toString();
+      obj.stroke = 'rgb(' + _r + ', ' + _g + ', ' + _b + ')';
+      obj.strokeAlpha = n.value.opacity;
+      obj.strokeCap = n.value.cap;
+      obj.strokeCorner = n.value.corner;
+      obj.strokeDashes = n.value.dashes;
+      obj.strokeWidth = n.value.width;
+      if (n.timeline.length > 0) {
+        obj.timeline = obj.timeline.concat(n.timeline);
+      }
+    } else if (n.type === 'transform') {
+      obj.transform = n;
+    } else if (n.type === 'trim') {
+      var kTotal = element.children.length;
+      for (var k = 0; k < kTotal; ++k) {
+        var kid = element.children[k];
+        if (kid.tagName === 'path') {
+          applyTrimPath(kid, n, timeline);
+        }
+      }
+    }
+  }
+
+  return obj;
+}
+
+function applyTrimPath(element, json, timeline) {
+  element._startPercent = json.value.start;
+  element._endPercent = json.value.end;
+  element._offsetPercent = json.value.offset;
+  element.updatePath();
+
+  var map = {
+    'start': 'startPercent',
+    'end': 'endPercent',
+    'offset': 'offsetPercent'
+  };
+
+  var i = void 0,
+      total = json.timeline.length - 1;
+  for (i = total; i > -1; --i) {
+    var type = json.timeline[i];
+    var param = map[type.name];
+    if (param !== undefined) {
+      var n = void 0,
+          nTotal = type.keys.length;
+      for (n = 0; n < nTotal; ++n) {
+        var key = type.keys[n];
+        var target = key.target;
+        var duration = key.duration;
+        var x0 = key.x0;
+        var y0 = key.y0;
+        var x1 = key.x1;
+        var y1 = key.y1;
+        var params = {
+          ease: [x0, y0, x1, y1],
+          start: key.value,
+          delay: key.start
+        };
+
+        var keyframe = new _Keyframe2.default(element, param, target, duration, params);
+        keyframe.easeType = key.type;
+        timeline.addKeyframe(keyframe);
+      }
+    }
+  }
+}
