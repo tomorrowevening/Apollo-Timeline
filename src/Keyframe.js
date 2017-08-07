@@ -44,6 +44,10 @@ export default class Keyframe {
       this.onUpdate(progress, percent);
     }
   }
+  
+  restart() {
+    this.update(0);
+  }
 
   complete() {
     this.update(1);

@@ -8,10 +8,6 @@ var _threeText2d = require('three-text2d');
 
 var _threeText2d2 = _interopRequireDefault(_threeText2d);
 
-var _THREELayer2 = require('./THREELayer');
-
-var _THREELayer3 = _interopRequireDefault(_THREELayer2);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -21,6 +17,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 module.exports = function (THREE) {
+  var THREELayer = require('./THREELayer')(THREE);
+
   var THREEText = function (_THREELayer) {
     _inherits(THREEText, _THREELayer);
 
@@ -46,7 +44,7 @@ module.exports = function (THREE) {
       _this.txtSprite.position.y = offY;
       _this.mesh.add(_this.txtSprite);
 
-      _THREELayer3.default.transform(_this.item, _this.mesh, json.transform, timeline);
+      THREELayer.transform(_this.item, _this.mesh, json.transform, timeline);
       return _this;
     }
 
@@ -61,7 +59,7 @@ module.exports = function (THREE) {
     }]);
 
     return THREEText;
-  }(_THREELayer3.default);
+  }(THREELayer);
 
   return THREEText;
 };

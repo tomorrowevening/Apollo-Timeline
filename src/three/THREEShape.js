@@ -1,60 +1,3 @@
-import THREELayer from './THREELayer';
-
-const StrokeVertex = `
-  uniform float thickness;
-  attribute float lineMiter;
-  attribute vec2 lineNormal;
-  attribute vec2 lineDistance; // x = pos, y = total length
-  varying vec2 lineU;
-
-  void main() {
-    lineU = lineDistance;
-    vec3 pointPos = position.xyz + vec3(lineNormal * thickness/2.0 * lineMiter, 0.0);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( pointPos, 1.0 );
-  }
-`;
-
-const StrokeFragment = `
-  varying vec2 lineU;
-
-  uniform vec3 diffuse;
-  uniform float opacity;
-  uniform vec3 dash; // x = dash,  y = gap, z = offset
-  uniform vec3 trim; // x = start, y = end, z = offset
-
-  void main() {
-    float opacityMod = 1.0;
-    
-    // Dash
-    if(dash.x > 0.0 && dash.y > 0.0) {
-      float dashEnd = dash.x + dash.y;
-      float lineUMod = mod(lineU.x + dash.z, dashEnd);
-      opacityMod = 1.0 - smoothstep(dash.x, dash.x + 0.01, lineUMod);
-    }
-    
-    // Trim
-    if(trim.x > 0.0 || trim.y < 1.0) {
-      float a = mod(trim.x + trim.z, 1.0);
-      float b = mod(trim.y + trim.z, 1.0);
-      float per = lineU.x / lineU.y;
-      if(a < b) {
-        if(per < a || per > b) {
-          opacityMod = 0.0;
-        }
-      } else if(a > b) {
-        if(per < a && per > b) {
-          opacityMod = 0.0;
-        }
-      }
-    }
-    
-    if(opacityMod == 0.0) {
-      discard;
-    }
-    gl_FragColor = vec4(diffuse, opacity * opacityMod);
-  }
-`;
-
 function organizeList(list) {
   const order = ['stroke', 'fill', 'transform', 'trim', 'repeater'];
   let i, n, total = order.length,
@@ -73,52 +16,13 @@ function organizeList(list) {
   return listOrder;
 }
 
-function createPath(geometry, scalar) {
-  const s = scalar ? window.devicePixelRatio : 1;
-  var path = [];
-  let i, total = geometry.vertices.length;
-  for(i = 0; i < total; ++i) {
-    path.push([geometry.vertices[i].x * s, geometry.vertices[i].y * s]);
-  }
-  return path;
-}
-
 module.exports = function(THREE) {
-  var Line = require('three-line-2d')(THREE);
-
-  function THREEStrokeMaterial(opt) {
-    return new THREE.ShaderMaterial({
-      uniforms: {
-        thickness: {
-          type: 'f',
-          value: opt.thickness !== undefined ? opt.thickness : 4.0
-        },
-        opacity: {
-          type: 'f',
-          value: opt.opacity !== undefined ? opt.opacity : 1.0
-        },
-        diffuse: {
-          type: 'c',
-          value: new THREE.Color(opt.diffuse !== undefined ? opt.diffuse : 0xffffff)
-        },
-        dash: {
-          type: 'f',
-          value: opt.dash !== undefined ? opt.dash : new THREE.Vector3(0, 10, 0)
-        },
-        trim: {
-          type: 'f',
-          value: opt.trim !== undefined ? opt.trim : new THREE.Vector3(0, 1, 0)
-        }
-      },
-      vertexShader: StrokeVertex,
-      fragmentShader: StrokeFragment,
-      side: opt.side !== undefined ? opt.side : THREE.DoubleSide,
-      transparent: opt.transparent !== undefined ? opt.transparent : true
-    });
-  }
+  var THREELayer = require('./THREELayer')(THREE);
+  var THREELineGeometry = require('./THREELineGeometry')(THREE);
+  var THREEStrokeMaterial = require('./THREEStrokeMaterial')(THREE);
 
   class THREEShape extends THREELayer {
-    constructor(json, timeline, renderer, camera) {
+    constructor(json, timeline) {
       super(json, timeline);
 
       this.mesh = new THREE.Object3D();
@@ -391,10 +295,11 @@ module.exports = function(THREE) {
 
             if(stroke !== undefined) {
               let geom = shape.createPointsGeometry(36);
-              let pts = createPath(geom, false);
-              geometry = Line(pts, {
+              let pts  = THREELineGeometry.createPath(geom, false);
+              let dst  = stroke.dashes !== undefined || trim !== undefined;
+              geometry = new THREELineGeometry(pts, {
                 closed: closed,
-                distances: stroke.dashes !== undefined || trim !== undefined
+                distances: dst
               });
             } else {
               geometry = new THREE.ShapeGeometry(shape);

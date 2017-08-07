@@ -22,12 +22,14 @@ var domPaths = [
 ];
 var threePaths = [
   'src/three/EffectComposer.js',
-  'src/three/THREEConfig.js',
   'src/three/THREELayer.js',
   'src/three/THREEImage.js',
+  'src/three/THREELineGeometry.js',
+  'src/three/THREEStrokeMaterial.js',
   'src/three/THREEShape.js',
   'src/three/THREEText.js',
-  'src/three/THREEVideo.js'
+  'src/three/THREEVideo.js',
+  'src/three/THREEComposition.js'
 ];
 
 function compile(srcPaths, distPath, minify) {

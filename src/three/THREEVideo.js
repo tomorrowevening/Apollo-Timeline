@@ -1,8 +1,9 @@
 import TimelineConfig from '../TimelineConfig';
-import THREELayer from './THREELayer';
-require('apollo-utils/ThreeUtil')(THREE);
 
 module.exports = function(THREE) {
+  require('apollo-utils/ThreeUtil')(THREE);
+  var THREELayer = require('./THREELayer')(THREE);
+  
   class THREEVideo extends THREELayer {
     constructor(json, timeline) {
       super(json, timeline);

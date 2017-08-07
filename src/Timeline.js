@@ -1,12 +1,14 @@
 import Keyframe from './Keyframe';
+import Dispatcher from 'apollo-utils/Dispatcher';
 import { Timer, TIME } from 'apollo-utils/Timer';
 
-export default class Timeline {
+export default class Timeline extends Dispatcher {
   static LOOP = 'loop';
   static ONCE = 'once';
   static PING_PONG = 'pingPong';
   
   constructor() {
+    super();
     this.duration = 0;
     this.timesPlayed = 0;
     this.maxPlays = 0;
@@ -16,6 +18,7 @@ export default class Timeline {
     this.delayed = [];
     this.playing = true;
     this.lastMarker = undefined;
+    this.additive = true;
     this.time = {
       elapsed: 0,
       stamp: 0,
@@ -47,6 +50,7 @@ export default class Timeline {
   }
 
   delay(wait, callback, params) {
+    let time = 0;
     this.delayed.push({
       time: wait * 1000 + TIME.now(),
       callback: callback,
@@ -78,11 +82,15 @@ export default class Timeline {
 
   update() {
     if(!this.playing) return;
-
-    let now = TIME.now();
-    let delta = now - this.time.stamp;
-    this.time.elapsed += delta * this.time.speed;
-    this.time.stamp = now;
+    
+    if(this.additive) {
+      this.time.elapsed += (1/60) * 1000 * this.time.speed;
+    } else {
+      let now = TIME.now();
+      let delta = now - this.time.stamp;
+      this.time.elapsed += delta * this.time.speed;
+      this.time.stamp = now;
+    }
 
     // Update delayed calls
     this.updateDelayed();
@@ -234,13 +242,18 @@ export default class Timeline {
     if(marker === undefined) return false;
 
     // Timeline actions
-    if(marker.action === 'stop') {
+    if(marker.action === 'play') {
+      this.seconds = marker.time;
+      this.play();
+    } else if(marker.action === 'stop') {
       this.pause();
       this.seconds = marker.time;
     } else if(marker.action === 'delay') {
       // delay call
       marker.trigger();
     }
+    
+    this.notify('marker', marker);
 
     return true;
   }

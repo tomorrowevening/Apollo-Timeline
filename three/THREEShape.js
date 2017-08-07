@@ -1,20 +1,10 @@
 'use strict';
 
-var _THREELayer2 = require('./THREELayer');
-
-var _THREELayer3 = _interopRequireDefault(_THREELayer2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var StrokeVertex = '\n  uniform float thickness;\n  attribute float lineMiter;\n  attribute vec2 lineNormal;\n  attribute vec2 lineDistance; // x = pos, y = total length\n  varying vec2 lineU;\n\n  void main() {\n    lineU = lineDistance;\n    vec3 pointPos = position.xyz + vec3(lineNormal * thickness/2.0 * lineMiter, 0.0);\n    gl_Position = projectionMatrix * modelViewMatrix * vec4( pointPos, 1.0 );\n  }\n';
-
-var StrokeFragment = '\n  varying vec2 lineU;\n\n  uniform vec3 diffuse;\n  uniform float opacity;\n  uniform vec3 dash; // x = dash,  y = gap, z = offset\n  uniform vec3 trim; // x = start, y = end, z = offset\n\n  void main() {\n    float opacityMod = 1.0;\n    \n    // Dash\n    if(dash.x > 0.0 && dash.y > 0.0) {\n      float dashEnd = dash.x + dash.y;\n      float lineUMod = mod(lineU.x + dash.z, dashEnd);\n      opacityMod = 1.0 - smoothstep(dash.x, dash.x + 0.01, lineUMod);\n    }\n    \n    // Trim\n    if(trim.x > 0.0 || trim.y < 1.0) {\n      float a = mod(trim.x + trim.z, 1.0);\n      float b = mod(trim.y + trim.z, 1.0);\n      float per = lineU.x / lineU.y;\n      if(a < b) {\n        if(per < a || per > b) {\n          opacityMod = 0.0;\n        }\n      } else if(a > b) {\n        if(per < a && per > b) {\n          opacityMod = 0.0;\n        }\n      }\n    }\n    \n    if(opacityMod == 0.0) {\n      discard;\n    }\n    gl_FragColor = vec4(diffuse, opacity * opacityMod);\n  }\n';
 
 function organizeList(list) {
   var order = ['stroke', 'fill', 'transform', 'trim', 'repeater'];
@@ -36,55 +26,15 @@ function organizeList(list) {
   return listOrder;
 }
 
-function createPath(geometry, scalar) {
-  var s = scalar ? window.devicePixelRatio : 1;
-  var path = [];
-  var i = void 0,
-      total = geometry.vertices.length;
-  for (i = 0; i < total; ++i) {
-    path.push([geometry.vertices[i].x * s, geometry.vertices[i].y * s]);
-  }
-  return path;
-}
-
 module.exports = function (THREE) {
-  var Line = require('three-line-2d')(THREE);
-
-  function THREEStrokeMaterial(opt) {
-    return new THREE.ShaderMaterial({
-      uniforms: {
-        thickness: {
-          type: 'f',
-          value: opt.thickness !== undefined ? opt.thickness : 4.0
-        },
-        opacity: {
-          type: 'f',
-          value: opt.opacity !== undefined ? opt.opacity : 1.0
-        },
-        diffuse: {
-          type: 'c',
-          value: new THREE.Color(opt.diffuse !== undefined ? opt.diffuse : 0xffffff)
-        },
-        dash: {
-          type: 'f',
-          value: opt.dash !== undefined ? opt.dash : new THREE.Vector3(0, 10, 0)
-        },
-        trim: {
-          type: 'f',
-          value: opt.trim !== undefined ? opt.trim : new THREE.Vector3(0, 1, 0)
-        }
-      },
-      vertexShader: StrokeVertex,
-      fragmentShader: StrokeFragment,
-      side: opt.side !== undefined ? opt.side : THREE.DoubleSide,
-      transparent: opt.transparent !== undefined ? opt.transparent : true
-    });
-  }
+  var THREELayer = require('./THREELayer')(THREE);
+  var THREELineGeometry = require('./THREELineGeometry')(THREE);
+  var THREEStrokeMaterial = require('./THREEStrokeMaterial')(THREE);
 
   var THREEShape = function (_THREELayer) {
     _inherits(THREEShape, _THREELayer);
 
-    function THREEShape(json, timeline, renderer, camera) {
+    function THREEShape(json, timeline) {
       _classCallCheck(this, THREEShape);
 
       var _this = _possibleConstructorReturn(this, (THREEShape.__proto__ || Object.getPrototypeOf(THREEShape)).call(this, json, timeline));
@@ -178,13 +128,13 @@ module.exports = function (THREE) {
                   for (n = 0; n < nTotal; ++n) {
                     switch (stroke.dashes.timeline[n].name) {
                       case 'dash':
-                        _THREELayer3.default.animate(material.uniforms.dash.value, 'x', timeline, stroke.dashes.timeline[n], true);
+                        THREELayer.animate(material.uniforms.dash.value, 'x', timeline, stroke.dashes.timeline[n], true);
                         break;
                       case 'gap':
-                        _THREELayer3.default.animate(material.uniforms.dash.value, 'y', timeline, stroke.dashes.timeline[n], true);
+                        THREELayer.animate(material.uniforms.dash.value, 'y', timeline, stroke.dashes.timeline[n], true);
                         break;
                       case 'offset':
-                        _THREELayer3.default.animate(material.uniforms.dash.value, 'z', timeline, stroke.dashes.timeline[n], true);
+                        THREELayer.animate(material.uniforms.dash.value, 'z', timeline, stroke.dashes.timeline[n], true);
                         break;
                     }
                   }
@@ -200,13 +150,13 @@ module.exports = function (THREE) {
                 for (n = 0; n < nTotal; ++n) {
                   switch (trim.timeline[n].name) {
                     case 'start':
-                      _THREELayer3.default.animate(material.uniforms.trim.value, 'x', timeline, trim.timeline[n]);
+                      THREELayer.animate(material.uniforms.trim.value, 'x', timeline, trim.timeline[n]);
                       break;
                     case 'end':
-                      _THREELayer3.default.animate(material.uniforms.trim.value, 'y', timeline, trim.timeline[n]);
+                      THREELayer.animate(material.uniforms.trim.value, 'y', timeline, trim.timeline[n]);
                       break;
                     case 'offset':
-                      _THREELayer3.default.animate(material.uniforms.trim.value, 'z', timeline, trim.timeline[n]);
+                      THREELayer.animate(material.uniforms.trim.value, 'z', timeline, trim.timeline[n]);
                       break;
                   }
                 }
@@ -316,7 +266,7 @@ module.exports = function (THREE) {
                       shape.lineTo(path.vertices[t][0] * s, path.vertices[t][1] * -s);
                     }
                   }
-                  _THREELayer3.default.morph(shape, path, timeline, path.closed);
+                  THREELayer.morph(shape, path, timeline, path.closed);
                   break;
               }
             }
@@ -326,17 +276,18 @@ module.exports = function (THREE) {
 
             if (stroke !== undefined) {
               var geom = shape.createPointsGeometry(36);
-              var _pts = createPath(geom, false);
-              geometry = Line(_pts, {
+              var _pts = THREELineGeometry.createPath(geom, false);
+              var dst = stroke.dashes !== undefined || trim !== undefined;
+              geometry = new THREELineGeometry(_pts, {
                 closed: closed,
-                distances: stroke.dashes !== undefined || trim !== undefined
+                distances: dst
               });
             } else {
               geometry = new THREE.ShapeGeometry(shape);
             }
 
             mesh = new THREE.Mesh(geometry, material);
-            _THREELayer3.default.transform(container, mesh, transform, timeline);
+            THREELayer.transform(container, mesh, transform, timeline);
             container.add(mesh);
           } else {
             var group = new THREE.Object3D();
@@ -348,12 +299,12 @@ module.exports = function (THREE) {
         }
       }
       createShape(json.content);
-      _THREELayer3.default.transform(_this.item, _this.mesh, json.transform, timeline);
+      THREELayer.transform(_this.item, _this.mesh, json.transform, timeline);
       return _this;
     }
 
     return THREEShape;
-  }(_THREELayer3.default);
+  }(THREELayer);
 
   return THREEShape;
 };

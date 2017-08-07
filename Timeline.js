@@ -10,30 +10,44 @@ var _Keyframe = require('./Keyframe');
 
 var _Keyframe2 = _interopRequireDefault(_Keyframe);
 
+var _Dispatcher2 = require('apollo-utils/Dispatcher');
+
+var _Dispatcher3 = _interopRequireDefault(_Dispatcher2);
+
 var _Timer = require('apollo-utils/Timer');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Timeline = function () {
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Timeline = function (_Dispatcher) {
+  _inherits(Timeline, _Dispatcher);
+
   function Timeline() {
     _classCallCheck(this, Timeline);
 
-    this.duration = 0;
-    this.timesPlayed = 0;
-    this.maxPlays = 0;
-    this.mode = Timeline.LOOP;
-    this.keyframes = [];
-    this.markers = [];
-    this.delayed = [];
-    this.playing = true;
-    this.lastMarker = undefined;
-    this.time = {
+    var _this = _possibleConstructorReturn(this, (Timeline.__proto__ || Object.getPrototypeOf(Timeline)).call(this));
+
+    _this.duration = 0;
+    _this.timesPlayed = 0;
+    _this.maxPlays = 0;
+    _this.mode = Timeline.LOOP;
+    _this.keyframes = [];
+    _this.markers = [];
+    _this.delayed = [];
+    _this.playing = true;
+    _this.lastMarker = undefined;
+    _this.additive = true;
+    _this.time = {
       elapsed: 0,
       stamp: 0,
       speed: 1
     };
+    return _this;
   }
 
   _createClass(Timeline, [{
@@ -65,6 +79,7 @@ var Timeline = function () {
   }, {
     key: 'delay',
     value: function delay(wait, callback, params) {
+      var time = 0;
       this.delayed.push({
         time: wait * 1000 + _Timer.TIME.now(),
         callback: callback,
@@ -101,10 +116,14 @@ var Timeline = function () {
     value: function update() {
       if (!this.playing) return;
 
-      var now = _Timer.TIME.now();
-      var delta = now - this.time.stamp;
-      this.time.elapsed += delta * this.time.speed;
-      this.time.stamp = now;
+      if (this.additive) {
+        this.time.elapsed += 1 / 60 * 1000 * this.time.speed;
+      } else {
+        var now = _Timer.TIME.now();
+        var delta = now - this.time.stamp;
+        this.time.elapsed += delta * this.time.speed;
+        this.time.stamp = now;
+      }
 
       this.updateDelayed();
 
@@ -252,12 +271,17 @@ var Timeline = function () {
       var marker = this.markers[index];
       if (marker === undefined) return false;
 
-      if (marker.action === 'stop') {
+      if (marker.action === 'play') {
+        this.seconds = marker.time;
+        this.play();
+      } else if (marker.action === 'stop') {
         this.pause();
         this.seconds = marker.time;
       } else if (marker.action === 'delay') {
         marker.trigger();
       }
+
+      this.notify('marker', marker);
 
       return true;
     }
@@ -329,7 +353,7 @@ var Timeline = function () {
   }]);
 
   return Timeline;
-}();
+}(_Dispatcher3.default);
 
 Timeline.LOOP = 'loop';
 Timeline.ONCE = 'once';

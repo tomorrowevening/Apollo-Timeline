@@ -55,6 +55,11 @@ var Keyframe = function () {
       }
     }
   }, {
+    key: 'restart',
+    value: function restart() {
+      this.update(0);
+    }
+  }, {
     key: 'complete',
     value: function complete() {
       this.update(1);
