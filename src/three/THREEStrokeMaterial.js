@@ -32,17 +32,22 @@ const StrokeFragment = `
     
     // Trim
     if(trim.x > 0.0 || trim.y < 1.0) {
-      float a = mod(trim.x + trim.z, 1.0);
-      float b = mod(trim.y + trim.z, 1.0);
       float per = lineU.x / lineU.y;
-      if(a < b) {
-        if(per < a || per > b) {
+      float start = min(trim.x, trim.y) + trim.z;
+      float end = max(trim.x, trim.y) + trim.z;
+      
+      if(start == end) {
+        opacityMod = 0.0;
+      } else if(end > 1.0) {
+        if(per > end - 1.0 && per < start) {
           opacityMod = 0.0;
         }
-      } else if(a > b) {
-        if(per < a && per > b) {
+      } else if(start < 0.0) {
+        if(per > end && per < start + 1.0) {
           opacityMod = 0.0;
         }
+      } else if(per < start || per > end) {
+        opacityMod = 0.0;
       }
     }
     
