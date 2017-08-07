@@ -44,6 +44,7 @@ var Timeline = function (_Dispatcher) {
     _this.additive = true;
     _this.time = {
       elapsed: 0,
+      previous: 0,
       stamp: 0,
       speed: 1
     };
@@ -115,6 +116,8 @@ var Timeline = function (_Dispatcher) {
     key: 'update',
     value: function update() {
       if (!this.playing) return;
+
+      this.time.previous = this.seconds;
 
       if (this.additive) {
         this.time.elapsed += 1 / 60 * 1000 * this.time.speed;
@@ -196,7 +199,7 @@ var Timeline = function (_Dispatcher) {
   }, {
     key: 'updateMarkers',
     value: function updateMarkers() {
-      var before = this.prevSeconds;
+      var before = this.time.previous;
       var now = this.seconds;
       if (before > now) return;
 

@@ -21,6 +21,7 @@ export default class Timeline extends Dispatcher {
     this.additive = true;
     this.time = {
       elapsed: 0,
+      previous: 0,
       stamp: 0,
       speed: 1
     };
@@ -82,6 +83,8 @@ export default class Timeline extends Dispatcher {
 
   update() {
     if(!this.playing) return;
+    
+    this.time.previous = this.seconds;
     
     if(this.additive) {
       this.time.elapsed += (1/60) * 1000 * this.time.speed;
@@ -165,7 +168,7 @@ export default class Timeline extends Dispatcher {
   }
 
   updateMarkers() {
-    var before = this.prevSeconds;
+    var before = this.time.previous;
     var now = this.seconds;
     if(before > now) return; // looping
 
