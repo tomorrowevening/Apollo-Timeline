@@ -1,6 +1,6 @@
 {
   "name": "apollo-timeline",
-  "version": "1.2.286",
+  "version": "1.2.287",
   "description": "After Effects style Timeline",
   "files": [
     "package.json",
@@ -41,21 +41,21 @@
   "license": "Apache-2.0",
   "homepage": "https://github.com/tomorrowevening/Apollo-Timeline",
   "devDependencies": {
-    "apollo-utils": "^1.3.025",
     "babel-cli": "^6.24.1",
     "babel-polyfill": "^6.23.0",
     "babel-plugin-glslify": "^2.0.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
-    "glslify": "^6.0.1",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.1",
     "gulp-concat": "^2.6.1",
     "gulp-uglify": "^1.4.1",
-    "gulp-util": "^3.0.8",
+    "gulp-util": "^3.0.8"
+  },
+  "dependencies": {
+    "apollo-utils": "^1.3.025",
+    "glslify": "^6.0.1",
     "polyline-normals": "^2.0.2",
-    "three": "^0.83.0",
-    "three-line-2d": "^1.1.6",
-    "three-text2d": "^0.3.0"
+    "three": "^0.83.0"
   }
 }
