@@ -1,8 +1,8 @@
 import { getHex } from 'apollo-utils/DOMUtil';
-import text2d from 'three-text2d';
 
 module.exports = function(THREE) {
   var THREELayer = require('./THREELayer')(THREE);
+  var text2d = require('three-text2d');
   
   class THREEText extends THREELayer {
     constructor(json, timeline) {

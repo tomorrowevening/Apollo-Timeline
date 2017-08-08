@@ -4,12 +4,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _DOMUtil = require('apollo-utils/DOMUtil');
 
-var _threeText2d = require('three-text2d');
-
-var _threeText2d2 = _interopRequireDefault(_threeText2d);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -18,6 +12,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 module.exports = function (THREE) {
   var THREELayer = require('./THREELayer')(THREE);
+  var text2d = require('three-text2d');
 
   var THREEText = function (_THREELayer) {
     _inherits(THREEText, _THREELayer);
@@ -35,8 +30,8 @@ module.exports = function (THREE) {
       var offY = Math.round(fSize * 0.33);
       var fColor = (0, _DOMUtil.getHex)(json.content.fillColor[0], json.content.fillColor[1], json.content.fillColor[2]);
       var tColor = new THREE.Color(fColor);
-      _this.txtSprite = new _threeText2d2.default.SpriteText2D(json.content.text, {
-        align: _threeText2d2.default.textAlign.bottomLeft,
+      _this.txtSprite = new text2d.SpriteText2D(json.content.text, {
+        align: text2d.textAlign.bottomLeft,
         font: fSize.toString() + 'px ' + fName,
         fillStyle: tColor.getStyle(),
         antialias: true
