@@ -1,5 +1,7 @@
 'use strict';
 
+var _MathUtil = require('apollo-utils/MathUtil');
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -29,7 +31,7 @@ function organizeList(list) {
 module.exports = function (THREE) {
   var THREELayer = require('./THREELayer')(THREE);
   var THREELineGeometry = require('./THREELineGeometry')(THREE);
-  var THREEStrokeMaterial = require('./THREEStrokeMaterial')(THREE);
+  var THREEStrokeMaterial = require('./materials/THREEStrokeMaterial')(THREE);
 
   var THREEShape = function (_THREELayer) {
     _inherits(THREEShape, _THREELayer);
@@ -197,7 +199,7 @@ module.exports = function (THREE) {
                   y = path.y * s;
                   w = path.width / 2 * s;
                   h = path.height / 2 * s;
-                  shape.ellipse(x, y, w, h, 0, MathU.TWO_PI, true, Math.PI / 2);
+                  shape.ellipse(x, y, w, h, 0, _MathUtil.TWO_PI, true, Math.PI / 2);
                   break;
 
                 case 'rectangle':
@@ -214,10 +216,10 @@ module.exports = function (THREE) {
                 case 'polygon':
                   totalPoints = path.points;
                   w = path.radius * s;
-                  angle = MathU.HALF_PI;
+                  angle = _MathUtil.HALF_PI;
                   shape.moveTo(Math.cos(angle) * w, Math.sin(angle) * w);
                   for (t = 1; t < path.points + 1; ++t) {
-                    angle = t / totalPoints * MathU.TWO_PI + MathU.HALF_PI;
+                    angle = t / totalPoints * _MathUtil.TWO_PI + _MathUtil.HALF_PI;
                     shape.lineTo(Math.cos(angle) * w, Math.sin(angle) * w);
                   }
                   break;
@@ -226,17 +228,17 @@ module.exports = function (THREE) {
                   totalPoints = path.points * 2;
                   w = path.outRadius * s;
                   h = path.inRadius * s;
-                  angle = MathU.toRad(path.rotation) + MathU.HALF_PI;
+                  angle = (0, _MathUtil.toRad)(path.rotation) + _MathUtil.HALF_PI;
                   shape.moveTo(Math.cos(angle) * w, Math.sin(angle) * w);
 
-                  angle = 1 / totalPoints * MathU.TWO_PI + MathU.toRad(path.rotation) + MathU.HALF_PI;
+                  angle = 1 / totalPoints * _MathUtil.TWO_PI + (0, _MathUtil.toRad)(path.rotation) + _MathUtil.HALF_PI;
                   shape.lineTo(Math.cos(angle) * h, Math.sin(angle) * h);
 
                   for (t = 1; t < path.points; ++t) {
-                    angle = t * 2 / totalPoints * MathU.TWO_PI + MathU.toRad(path.rotation) + MathU.HALF_PI;
+                    angle = t * 2 / totalPoints * _MathUtil.TWO_PI + (0, _MathUtil.toRad)(path.rotation) + _MathUtil.HALF_PI;
                     shape.lineTo(Math.cos(angle) * w, Math.sin(angle) * w);
 
-                    angle = (t * 2 + 1) / totalPoints * MathU.TWO_PI + MathU.toRad(path.rotation) + MathU.HALF_PI;
+                    angle = (t * 2 + 1) / totalPoints * _MathUtil.TWO_PI + (0, _MathUtil.toRad)(path.rotation) + _MathUtil.HALF_PI;
                     shape.lineTo(Math.cos(angle) * h, Math.sin(angle) * h);
                   }
                   break;

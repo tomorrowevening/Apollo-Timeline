@@ -1,3 +1,9 @@
+import {
+  HALF_PI,
+  TWO_PI,
+  toRad
+} from 'apollo-utils/MathUtil';
+
 function organizeList(list) {
   const order = ['stroke', 'fill', 'transform', 'trim', 'repeater'];
   let i, n, total = order.length,
@@ -19,7 +25,7 @@ function organizeList(list) {
 module.exports = function(THREE) {
   var THREELayer = require('./THREELayer')(THREE);
   var THREELineGeometry = require('./THREELineGeometry')(THREE);
-  var THREEStrokeMaterial = require('./THREEStrokeMaterial')(THREE);
+  var THREEStrokeMaterial = require('./materials/THREEStrokeMaterial')(THREE);
 
   class THREEShape extends THREELayer {
     constructor(json, timeline) {
@@ -179,7 +185,7 @@ module.exports = function(THREE) {
                   y = path.y * s;
                   w = (path.width / 2) * s;
                   h = (path.height / 2) * s;
-                  shape.ellipse(x, y, w, h, 0, MathU.TWO_PI, true, Math.PI / 2);
+                  shape.ellipse(x, y, w, h, 0, TWO_PI, true, Math.PI / 2);
                   break;
 
                 case 'rectangle':
@@ -196,13 +202,13 @@ module.exports = function(THREE) {
                 case 'polygon':
                   totalPoints = path.points;
                   w = path.radius * s;
-                  angle = MathU.HALF_PI; // 90 degrees
+                  angle = HALF_PI; // 90 degrees
                   shape.moveTo(
                     Math.cos(angle) * w,
                     Math.sin(angle) * w
                   );
                   for(t = 1; t < path.points + 1; ++t) {
-                    angle = (t / totalPoints) * MathU.TWO_PI + MathU.HALF_PI; // 90 degrees
+                    angle = (t / totalPoints) * TWO_PI + HALF_PI; // 90 degrees
                     shape.lineTo(
                       Math.cos(angle) * w,
                       Math.sin(angle) * w
@@ -214,26 +220,26 @@ module.exports = function(THREE) {
                   totalPoints = path.points * 2;
                   w = path.outRadius * s;
                   h = path.inRadius * s;
-                  angle = MathU.toRad(path.rotation) + MathU.HALF_PI; // 90 degrees
+                  angle = toRad(path.rotation) + HALF_PI; // 90 degrees
                   shape.moveTo(
                     Math.cos(angle) * w,
                     Math.sin(angle) * w
                   );
 
-                  angle = (1 / totalPoints) * MathU.TWO_PI + MathU.toRad(path.rotation) + MathU.HALF_PI; // 90 degrees
+                  angle = (1 / totalPoints) * TWO_PI + toRad(path.rotation) + HALF_PI; // 90 degrees
                   shape.lineTo(
                     Math.cos(angle) * h,
                     Math.sin(angle) * h
                   );
 
                   for(t = 1; t < path.points; ++t) {
-                    angle = ((t * 2) / totalPoints) * MathU.TWO_PI + MathU.toRad(path.rotation) + MathU.HALF_PI; // 90 degrees
+                    angle = ((t * 2) / totalPoints) * TWO_PI + toRad(path.rotation) + HALF_PI; // 90 degrees
                     shape.lineTo(
                       Math.cos(angle) * w,
                       Math.sin(angle) * w
                     );
 
-                    angle = ((t * 2 + 1) / totalPoints) * MathU.TWO_PI + MathU.toRad(path.rotation) + MathU.HALF_PI; // 90 degrees
+                    angle = ((t * 2 + 1) / totalPoints) * TWO_PI + toRad(path.rotation) + HALF_PI; // 90 degrees
                     shape.lineTo(
                       Math.cos(angle) * h,
                       Math.sin(angle) * h
