@@ -1,6 +1,6 @@
 {
   "name": "apollo-timeline",
-  "version": "1.2.281",
+  "version": "1.2.282",
   "description": "After Effects style Timeline",
   "files": [
     "package.json",
@@ -24,7 +24,7 @@
     "three/THREEImage.js",
     "three/THREELineGeometry.js",
     "three/THREEShape.js",
-    "three/THREEStrokeMaterial",
+    "three/THREEStrokeMaterial.js",
     "three/THREEText.js",
     "three/THREEVideo.js"
   ],
