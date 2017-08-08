@@ -25,7 +25,7 @@ function organizeList(list) {
 module.exports = function(THREE) {
   var THREELayer = require('./THREELayer')(THREE);
   var THREELineGeometry = require('./THREELineGeometry')(THREE);
-  var THREEStrokeMaterial = require('./materials/THREEStrokeMaterial')(THREE);
+  var THREEStrokeMaterial = require('./THREEStrokeMaterial')(THREE);
 
   class THREEShape extends THREELayer {
     constructor(json, timeline) {

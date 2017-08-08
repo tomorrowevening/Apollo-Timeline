@@ -31,7 +31,7 @@ function organizeList(list) {
 module.exports = function (THREE) {
   var THREELayer = require('./THREELayer')(THREE);
   var THREELineGeometry = require('./THREELineGeometry')(THREE);
-  var THREEStrokeMaterial = require('./materials/THREEStrokeMaterial')(THREE);
+  var THREEStrokeMaterial = require('./THREEStrokeMaterial')(THREE);
 
   var THREEShape = function (_THREELayer) {
     _inherits(THREEShape, _THREELayer);
