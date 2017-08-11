@@ -12,49 +12,334 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 module.exports = function (THREE) {
   var THREELayer = require('./THREELayer')(THREE);
-  var text2d = require('three-text2d');
 
-  var THREEText = function (_THREELayer) {
-    _inherits(THREEText, _THREELayer);
+  var dpr = window.devicePixelRatio;
 
-    function THREEText(json, timeline) {
+  var THREEText = function (_THREE$Object3D) {
+    _inherits(THREEText, _THREE$Object3D);
+
+    function THREEText(text, options) {
       _classCallCheck(this, THREEText);
 
-      var _this = _possibleConstructorReturn(this, (THREEText.__proto__ || Object.getPrototypeOf(THREEText)).call(this, json, timeline));
+      var _this = _possibleConstructorReturn(this, (THREEText.__proto__ || Object.getPrototypeOf(THREEText)).call(this));
 
-      _this.mesh = new THREE.Object3D();
-      _this.item.add(_this.mesh);
+      _this.canvas = new CanvasText();
+      _this._text = '';
+      _this._color = '#FFFFFF';
+      _this._font = 'Arial';
+      _this._fontSize = 30;
+      _this._weight = 'normal';
+      _this._letterSpacing = 20;
+      _this._textTop = 0;
+      _this.texture = undefined;
+      _this.material = undefined;
+      _this.sprite = undefined;
 
-      var fName = json.content.font;
-      var fSize = json.content.fontSize * window.devicePixelRatio;
-      var offY = Math.round(fSize * 0.33);
-      var fColor = (0, _DOMUtil.getHex)(json.content.fillColor[0], json.content.fillColor[1], json.content.fillColor[2]);
-      var tColor = new THREE.Color(fColor);
-      _this.txtSprite = new text2d.SpriteText2D(json.content.text, {
-        align: text2d.textAlign.bottomLeft,
-        font: fSize.toString() + 'px ' + fName,
-        fillStyle: tColor.getStyle(),
-        antialias: true
-      });
-      _this.txtSprite.position.y = offY;
-      _this.mesh.add(_this.txtSprite);
+      if (options !== undefined) {
+        if (options.color !== undefined) _this._color = options.color;
+        if (options.font !== undefined) _this._font = options.font;
+        if (options.fontSize !== undefined) _this._fontSize = options.fontSize;
+        if (options.weight !== undefined) _this._weight = options.weight;
+        if (options.textTop !== undefined) _this._textTop = options.textTop;
+        if (options.letterSpacing !== undefined) {
+          _this._letterSpacing = options.letterSpacing;
+        }
+        if (options.lineHeight !== undefined) {
+          _this.canvas.lineHeight = options.lineHeight;
+        }
+      }
 
-      THREELayer.transform(_this.item, _this.mesh, json.transform, timeline);
+      _this.text = text;
       return _this;
     }
 
     _createClass(THREEText, [{
-      key: 'text',
+      key: 'dispose',
+      value: function dispose() {
+        if (this.texture !== undefined) {
+          this.texture.dispose();
+          this.texture = undefined;
+        }
+      }
+    }, {
+      key: 'update',
+      value: function update() {
+        this.canvas.draw(this._text, this._font, this._fontSize, this._weight, this._color, this._letterSpacing, this._textTop);
+        this.dispose();
+
+        this.texture = new THREE.Texture(this.canvas.canvas);
+        this.texture.repeat.x = this.canvas.textWidth / this.canvas.width;
+        this.texture.repeat.y = this.canvas.textHeight / this.canvas.height;
+        this.texture.offset.y = 1 - this.texture.repeat.y;
+        this.texture.needsUpdate = true;
+
+        if (this.material === undefined) {
+          this.material = new THREE.SpriteMaterial({
+            map: this.texture,
+            depthTest: false,
+            depthWrite: false
+          });
+        } else {
+          this.material.map = this.texture;
+        }
+
+        if (this.sprite === undefined) {
+          this.sprite = new THREE.Sprite(this.material);
+          this.add(this.sprite);
+        }
+
+        this.sprite.position.x = this.canvas.textWidth / 2 / dpr;
+        this.sprite.position.y = this.canvas.textHeight / 2 / dpr;
+        this.sprite.scale.set(this.canvas.textWidth / dpr, this.canvas.textHeight / dpr, 1);
+      }
+    }, {
+      key: 'color',
       get: function get() {
-        return this.txtSprite.text;
+        return this._color;
       },
       set: function set(value) {
-        this.txtSprite.text = value;
+        this._color = value;
+        this.update();
+      }
+    }, {
+      key: 'font',
+      get: function get() {
+        return this._font;
+      },
+      set: function set(value) {
+        this._font = value;
+        this.update();
+      }
+    }, {
+      key: 'fontSize',
+      get: function get() {
+        return this._fontSize;
+      },
+      set: function set(value) {
+        this._fontSize = value;
+        this.update();
+      }
+    }, {
+      key: 'letterSpacing',
+      get: function get() {
+        return this._letterSpacing;
+      },
+      set: function set(value) {
+        this._letterSpacing = value;
+        this.update();
+      }
+    }, {
+      key: 'lineHeight',
+      get: function get() {
+        return this.canvas.lineHeight;
+      },
+      set: function set(value) {
+        this.canvas.lineHeight = value;
+        this.update();
+      }
+    }, {
+      key: 'text',
+      get: function get() {
+        return this._text;
+      },
+      set: function set(value) {
+        this._text = value;
+        this.update();
+      }
+    }, {
+      key: 'textTop',
+      get: function get() {
+        return this._textTop;
+      },
+      set: function set(value) {
+        this._textTop = value;
+        this.update();
+      }
+    }, {
+      key: 'weight',
+      get: function get() {
+        return this._weight;
+      },
+      set: function set(value) {
+        this._weight = value;
+        this.update();
       }
     }]);
 
     return THREEText;
+  }(THREE.Object3D);
+
+  var CanvasText = function () {
+    function CanvasText() {
+      _classCallCheck(this, CanvasText);
+
+      this.canvas = document.createElement('canvas');
+      this.ctx = this.canvas.getContext('2d');
+      this.textWidth = 0;
+      this.textHeight = 0;
+      this.lineHeight = 30;
+      this.totalLines = 0;
+      this.textAlign = 'left';
+      this.textBaseline = 'top';
+    }
+
+    _createClass(CanvasText, [{
+      key: 'draw',
+      value: function draw(text, font, fontSize, weight, fill, letterSpacing, textTop) {
+        var _this2 = this;
+
+        var lSpacing = letterSpacing * dpr;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        var ctxFont = weight + ' ' + (fontSize * dpr).toString() + 'px ' + font;
+        this.ctx.font = ctxFont;
+
+        var lines = text.split('\n');
+        this.totalLines = lines.length;
+        var textW = 0;
+        lines.forEach(function (line) {
+          var wid = getLineWidth(line, lSpacing, _this2.ctx);
+          textW = Math.max(textW, wid);
+        });
+
+        this.textWidth = Math.floor(textW * dpr);
+        this.textHeight = Math.floor((this.totalLines * this.lineHeight + textTop) * dpr);
+        this.textWidth = Math.max(32, this.textWidth);
+        this.textHeight = Math.max(32, this.textHeight);
+
+        this.canvas.width = THREE.Math.nextPowerOfTwo(this.textWidth);
+        this.canvas.height = THREE.Math.nextPowerOfTwo(this.textHeight);
+
+        this.ctx.font = ctxFont;
+        this.ctx.fillStyle = fill;
+        this.ctx.textAlign = this.textAlign;
+        this.ctx.textBaseline = this.textBaseline;
+        for (var i = 0; i < this.totalLines; ++i) {
+          var txt = lines[i];
+          var yPos = (i * this.lineHeight + textTop) * dpr;
+          var spacing = getWordSpacing(txt, lSpacing, this.ctx);
+          var letters = txt.split('');
+          var n = void 0,
+              nTotal = letters.length;
+          for (n = 0; n < nTotal; ++n) {
+            var letter = letters[n];
+            this.ctx.fillText(letter, spacing.pos[n], yPos);
+          }
+        }
+      }
+    }, {
+      key: 'width',
+      get: function get() {
+        return this.canvas.width;
+      }
+    }, {
+      key: 'height',
+      get: function get() {
+        return this.canvas.height;
+      }
+    }]);
+
+    return CanvasText;
+  }();
+
+  function getLineWidth(line, spacing, ctx) {
+    var words = line.split('');
+    var totalWidth = 0;
+    var i = void 0,
+        total = words.length,
+        iTotal = total - 1;
+    if (total > 0) {
+      for (i = 0; i < total; ++i) {
+        totalWidth += getWordSpacing(words[i], spacing, ctx).width;
+        if (i < iTotal) {
+          totalWidth += spacing;
+        }
+      }
+    }
+    return totalWidth;
+  }
+
+  function getWordSpacing(word, spacing, ctx) {
+    var letters = word.split('');
+    var letterPos = [];
+    var i = void 0,
+        total = letters.length,
+        iTotal = total - 1;
+
+    var totalWidth = 0;
+    if (total > 0) {
+      letterPos.push(0);
+      totalWidth = Math.ceil(ctx.measureText(letters[0]).width);
+      for (i = 1; i < total; ++i) {
+        letterPos.push(totalWidth + spacing);
+
+        var letter = letters[i];
+        var wid = Math.ceil(ctx.measureText(letter).width);
+        if (i < iTotal) wid += spacing;
+        totalWidth += wid;
+      }
+    }
+    return {
+      pos: letterPos,
+      width: totalWidth
+    };
+  }
+
+  var THREETextLayer = function (_THREELayer) {
+    _inherits(THREETextLayer, _THREELayer);
+
+    function THREETextLayer(json, timeline) {
+      _classCallCheck(this, THREETextLayer);
+
+      var _this3 = _possibleConstructorReturn(this, (THREETextLayer.__proto__ || Object.getPrototypeOf(THREETextLayer)).call(this, json, timeline));
+
+      _this3.mesh = new THREE.Object3D();
+      _this3.item.add(_this3.mesh);
+
+      var content = json.content;
+      var fontSize = content.fontSize * window.devicePixelRatio;
+      var fColor = (0, _DOMUtil.getHex)(content.fillColor[0], content.fillColor[1], content.fillColor[2]);
+      var tColor = new THREE.Color(fColor);
+      var color = '#' + tColor.getHexString();
+      var weight = content.weight === 'regular' ? 'normal' : content.weight;
+
+      _this3.tText = new THREEText(content.text, {
+        color: color,
+        font: content.font,
+        fontSize: fontSize,
+        weight: weight,
+        letterSpacing: content.spacing,
+        lineHeight: fontSize
+      });
+      _this3.tText.name = 'tText';
+      _this3.mesh.add(_this3.tText);
+
+      THREELayer.transform(_this3.item, _this3.mesh, json.transform, timeline);
+
+      content.timeline.forEach(function (ani) {
+        if (ani.name === 'text') {
+          THREELayer.animate(_this3, 'text', timeline, ani);
+        }
+      });
+      return _this3;
+    }
+
+    _createClass(THREETextLayer, [{
+      key: 'text',
+      get: function get() {
+        return this.tText.text;
+      },
+      set: function set(value) {
+        this.tText.text = value;
+      }
+    }]);
+
+    return THREETextLayer;
   }(THREELayer);
 
-  return THREEText;
+  return {
+    CanvasText: CanvasText,
+    THREEText: THREEText,
+    THREETextLayer: THREETextLayer
+  };
 };
