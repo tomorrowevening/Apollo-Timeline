@@ -26,19 +26,17 @@ export default class Keyframe {
   }
 
   update(progress) {
-    let percent = progress; // Keyframe.LINEAR
-
-    if(this.easeType === Keyframe.BEZIER) {
-      percent = curveAt(percent, this.ease[0], this.ease[1], this.ease[2], this.ease[3]);
-    } else if(this.easeType === Keyframe.HOLD) {
-      percent = progress < 1 ? 0 : 1;
-    }
+    let percent = this.getPercent(progress);
 
     if(!this.active && this.startValue === undefined) {
       this.startValue = this.object[this.key];
     }
-
-    this.object[this.key] = lerp(percent, this.startValue, this.endValue);
+    
+    if((typeof this.startValue) === 'number') {
+      this.object[this.key] = lerp(percent, this.startValue, this.endValue);
+    } else {
+      this.object[this.key] = percent < 0.5 ? this.startValue : this.endValue; // prob Keyframe.HOLD
+    }
 
     if(this.onUpdate !== undefined) {
       this.onUpdate(progress, percent);
@@ -61,7 +59,19 @@ export default class Keyframe {
   }
 
   // Getters
+  
+  getPercent(progress) {
+    let percent = progress; // Keyframe.LINEAR
 
+    if(this.easeType === Keyframe.BEZIER) {
+      percent = curveAt(percent, this.ease[0], this.ease[1], this.ease[2], this.ease[3]);
+    } else if(this.easeType === Keyframe.HOLD) {
+      percent = progress < 1 ? 0 : 1;
+    }
+    
+    return percent;
+  }
+  
   get startTime() {
     return this.timestamp;
   }
