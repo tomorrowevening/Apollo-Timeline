@@ -85,7 +85,8 @@ module.exports = function (THREE) {
                 case 'fill':
                   fill = {
                     alpha: nLayer.value.opacity,
-                    color: nLayer.value.color
+                    color: nLayer.value.color,
+                    timeline: nLayer.timeline[0]
                   };
                   break;
 
@@ -94,7 +95,8 @@ module.exports = function (THREE) {
                     alpha: nLayer.value.opacity,
                     color: nLayer.value.color,
                     width: nLayer.value.width * s,
-                    dashes: nLayer.value.dashes
+                    dashes: nLayer.value.dashes,
+                    timeline: nLayer.timeline[0]
                   };
                   break;
 
@@ -110,68 +112,6 @@ module.exports = function (THREE) {
                   repeater = nLayer;
                   break;
               }
-            }
-
-            if (stroke !== undefined) {
-              color = new THREE.Color(stroke.color[0], stroke.color[1], stroke.color[2]);
-              material = new THREEStrokeMaterial({
-                diffuse: color.getHex(),
-                opacity: stroke.alpha,
-                thickness: stroke.width
-              });
-
-              if (stroke.dashes !== undefined) {
-                material.uniforms.dash.value.x = stroke.dashes.dash * s;
-                material.uniforms.dash.value.y = stroke.dashes.gap * s;
-                material.uniforms.dash.value.z = stroke.dashes.offset * s;
-
-                if (stroke.dashes.timeline !== undefined) {
-                  nTotal = stroke.dashes.timeline.length;
-                  for (n = 0; n < nTotal; ++n) {
-                    switch (stroke.dashes.timeline[n].name) {
-                      case 'dash':
-                        THREELayer.animate(material.uniforms.dash.value, 'x', timeline, stroke.dashes.timeline[n], true);
-                        break;
-                      case 'gap':
-                        THREELayer.animate(material.uniforms.dash.value, 'y', timeline, stroke.dashes.timeline[n], true);
-                        break;
-                      case 'offset':
-                        THREELayer.animate(material.uniforms.dash.value, 'z', timeline, stroke.dashes.timeline[n], true);
-                        break;
-                    }
-                  }
-                }
-              }
-
-              if (trim !== undefined) {
-                material.uniforms.trim.value.x = trim.value.start;
-                material.uniforms.trim.value.y = trim.value.end;
-                material.uniforms.trim.value.z = trim.value.offset;
-
-                nTotal = trim.timeline.length;
-                for (n = 0; n < nTotal; ++n) {
-                  switch (trim.timeline[n].name) {
-                    case 'start':
-                      THREELayer.animate(material.uniforms.trim.value, 'x', timeline, trim.timeline[n]);
-                      break;
-                    case 'end':
-                      THREELayer.animate(material.uniforms.trim.value, 'y', timeline, trim.timeline[n]);
-                      break;
-                    case 'offset':
-                      THREELayer.animate(material.uniforms.trim.value, 'z', timeline, trim.timeline[n]);
-                      break;
-                  }
-                }
-              }
-            } else if (fill !== undefined) {
-              color = new THREE.Color(fill.color[0], fill.color[1], fill.color[2]);
-              material = new THREE.MeshBasicMaterial({
-                color: color,
-                opacity: fill.alpha,
-                side: THREE.DoubleSide,
-                transparent: true,
-                depthTest: false
-              });
             }
 
             shape = new THREE.Shape();
@@ -276,7 +216,105 @@ module.exports = function (THREE) {
             container = new THREE.Object3D();
             parent.add(container);
 
+            if (fill !== undefined) {
+              color = new THREE.Color(fill.color[0], fill.color[1], fill.color[2]);
+              material = new THREE.MeshBasicMaterial({
+                color: color,
+                opacity: fill.alpha,
+                side: THREE.DoubleSide,
+                transparent: true,
+                depthTest: false
+              });
+              geometry = new THREE.ShapeGeometry(shape);
+              mesh = new THREE.Mesh(geometry, material);
+              THREELayer.transform(container, mesh, transform, timeline);
+              container.add(mesh);
+
+              if (fill.timeline !== undefined) {
+                (function () {
+                  var ani = {
+                    color: [color.r, color.g, color.b, 1],
+                    onUpdate: function onUpdate() {
+                      material.color.r = ani.color[0];
+                      material.color.g = ani.color[1];
+                      material.color.b = ani.color[2];
+                    }
+                  };
+                  THREELayer.animate(ani, 'color', timeline, fill.timeline, false, {
+                    onUpdate: ani.onUpdate
+                  });
+                })();
+              }
+            }
+
             if (stroke !== undefined) {
+              color = new THREE.Color(stroke.color[0], stroke.color[1], stroke.color[2]);
+              material = new THREEStrokeMaterial({
+                diffuse: color.getHex(),
+                opacity: stroke.alpha,
+                thickness: stroke.width
+              });
+
+              if (stroke.timeline !== undefined) {
+                (function () {
+                  var ani = {
+                    color: [color.r, color.g, color.b, 1],
+                    onUpdate: function onUpdate() {
+                      material.uniforms.diffuse.value.r = ani.color[0];
+                      material.uniforms.diffuse.value.g = ani.color[1];
+                      material.uniforms.diffuse.value.b = ani.color[2];
+                    }
+                  };
+                  THREELayer.animate(ani, 'color', timeline, stroke.timeline, false, {
+                    onUpdate: ani.onUpdate
+                  });
+                })();
+              }
+
+              if (stroke.dashes !== undefined) {
+                material.uniforms.dash.value.x = stroke.dashes.dash * s;
+                material.uniforms.dash.value.y = stroke.dashes.gap * s;
+                material.uniforms.dash.value.z = stroke.dashes.offset * s;
+
+                if (stroke.dashes.timeline !== undefined) {
+                  nTotal = stroke.dashes.timeline.length;
+                  for (n = 0; n < nTotal; ++n) {
+                    switch (stroke.dashes.timeline[n].name) {
+                      case 'dash':
+                        THREELayer.animate(material.uniforms.dash.value, 'x', timeline, stroke.dashes.timeline[n], true);
+                        break;
+                      case 'gap':
+                        THREELayer.animate(material.uniforms.dash.value, 'y', timeline, stroke.dashes.timeline[n], true);
+                        break;
+                      case 'offset':
+                        THREELayer.animate(material.uniforms.dash.value, 'z', timeline, stroke.dashes.timeline[n], true);
+                        break;
+                    }
+                  }
+                }
+              }
+
+              if (trim !== undefined) {
+                material.uniforms.trim.value.x = trim.value.start;
+                material.uniforms.trim.value.y = trim.value.end;
+                material.uniforms.trim.value.z = trim.value.offset;
+
+                nTotal = trim.timeline.length;
+                for (n = 0; n < nTotal; ++n) {
+                  switch (trim.timeline[n].name) {
+                    case 'start':
+                      THREELayer.animate(material.uniforms.trim.value, 'x', timeline, trim.timeline[n]);
+                      break;
+                    case 'end':
+                      THREELayer.animate(material.uniforms.trim.value, 'y', timeline, trim.timeline[n]);
+                      break;
+                    case 'offset':
+                      THREELayer.animate(material.uniforms.trim.value, 'z', timeline, trim.timeline[n]);
+                      break;
+                  }
+                }
+              }
+
               var geom = shape.createPointsGeometry(36);
               var _pts = THREELineGeometry.createPath(geom, false);
               var dst = stroke.dashes !== undefined || trim !== undefined;
@@ -284,13 +322,11 @@ module.exports = function (THREE) {
                 closed: closed,
                 distances: dst
               });
-            } else {
-              geometry = new THREE.ShapeGeometry(shape);
-            }
 
-            mesh = new THREE.Mesh(geometry, material);
-            THREELayer.transform(container, mesh, transform, timeline);
-            container.add(mesh);
+              mesh = new THREE.Mesh(geometry, material);
+              THREELayer.transform(container, mesh, transform, timeline);
+              container.add(mesh);
+            }
           } else {
             var group = new THREE.Object3D();
             group.name = cLayer.name;
