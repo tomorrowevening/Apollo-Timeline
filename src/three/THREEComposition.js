@@ -5,7 +5,8 @@ import Composition from '../Composition';
 module.exports = function(THREE) {
   var THREEImage = require('./THREEImage')(THREE);
   var THREEShape = require('./THREEShape')(THREE);
-  var THREEText = require('./THREEText')(THREE);
+  var txt = require('./THREEText')(THREE);
+  var THREETextLayer = txt.THREETextLayer;
   var THREEVideo = require('./THREEVideo')(THREE);
   require('./EffectComposer')(THREE);
   
@@ -148,7 +149,7 @@ module.exports = function(THREE) {
     }
     
     buildLayerText(json) {
-      let layer = new THREEText( json, this.timeline );
+      let layer = new THREETextLayer( json, this.timeline );
       this.item.add( layer.item );
       return layer;
     }

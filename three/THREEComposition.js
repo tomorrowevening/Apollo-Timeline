@@ -23,7 +23,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 module.exports = function (THREE) {
   var THREEImage = require('./THREEImage')(THREE);
   var THREEShape = require('./THREEShape')(THREE);
-  var THREEText = require('./THREEText')(THREE);
+  var txt = require('./THREEText')(THREE);
+  var THREETextLayer = txt.THREETextLayer;
   var THREEVideo = require('./THREEVideo')(THREE);
   require('./EffectComposer')(THREE);
 
@@ -175,7 +176,7 @@ module.exports = function (THREE) {
     }, {
       key: 'buildLayerText',
       value: function buildLayerText(json) {
-        var layer = new THREEText(json, this.timeline);
+        var layer = new THREETextLayer(json, this.timeline);
         this.item.add(layer.item);
         return layer;
       }
