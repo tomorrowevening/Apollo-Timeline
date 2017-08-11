@@ -1,4 +1,5 @@
 import Keyframe from './Keyframe';
+import ArrayKeyframe from './ArrayKeyframe';
 import Dispatcher from 'apollo-utils/Dispatcher';
 import { Timer, TIME } from 'apollo-utils/Timer';
 
@@ -31,6 +32,19 @@ export default class Timeline extends Dispatcher {
     params = params !== undefined ? params : {};
     const now = this.seconds;
     let newKey = new Keyframe(target, key, to, duration, {
+      delay: params.delay !== undefined ? params.delay + now : now,
+      ease: params.ease,
+      start: params.start,
+      onUpdate: params.onUpdate,
+      onComplete: params.onComplete
+    });
+    return this.addKeyframe(newKey);
+  }
+  
+  addArray(target, key, to, duration, params) {
+    params = params !== undefined ? params : {};
+    const now = this.seconds;
+    let newKey = new ArrayKeyframe(target, key, to, duration, {
       delay: params.delay !== undefined ? params.delay + now : now,
       ease: params.ease,
       start: params.start,

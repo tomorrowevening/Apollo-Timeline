@@ -8,6 +8,7 @@ var defaultPaths = [
   'src/TimelineConfig.js',
   'src/Marker.js',
   'src/Keyframe.js',
+  'src/ArrayKeyframe.js',
   'src/Layer.js',
   'src/LayerAudio.js',
   'src/LayerImage.js',

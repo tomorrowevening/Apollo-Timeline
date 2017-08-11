@@ -9,6 +9,7 @@
     "TimelineConfig.js",
     "Marker.js",
     "Keyframe.js",
+    "ArrayKeyframe.js",
     "Layer.js",
     "LayerAudio.js",
     "LayerImage.js",

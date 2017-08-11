@@ -10,6 +10,10 @@ var _Keyframe = require('./Keyframe');
 
 var _Keyframe2 = _interopRequireDefault(_Keyframe);
 
+var _ArrayKeyframe = require('./ArrayKeyframe');
+
+var _ArrayKeyframe2 = _interopRequireDefault(_ArrayKeyframe);
+
 var _Dispatcher2 = require('apollo-utils/Dispatcher');
 
 var _Dispatcher3 = _interopRequireDefault(_Dispatcher2);
@@ -57,6 +61,20 @@ var Timeline = function (_Dispatcher) {
       params = params !== undefined ? params : {};
       var now = this.seconds;
       var newKey = new _Keyframe2.default(target, key, to, duration, {
+        delay: params.delay !== undefined ? params.delay + now : now,
+        ease: params.ease,
+        start: params.start,
+        onUpdate: params.onUpdate,
+        onComplete: params.onComplete
+      });
+      return this.addKeyframe(newKey);
+    }
+  }, {
+    key: 'addArray',
+    value: function addArray(target, key, to, duration, params) {
+      params = params !== undefined ? params : {};
+      var now = this.seconds;
+      var newKey = new _ArrayKeyframe2.default(target, key, to, duration, {
         delay: params.delay !== undefined ? params.delay + now : now,
         ease: params.ease,
         start: params.start,
