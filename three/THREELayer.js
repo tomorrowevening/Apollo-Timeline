@@ -8,6 +8,10 @@ var _Keyframe = require('../Keyframe');
 
 var _Keyframe2 = _interopRequireDefault(_Keyframe);
 
+var _ArrayKeyframe = require('../ArrayKeyframe');
+
+var _ArrayKeyframe2 = _interopRequireDefault(_ArrayKeyframe);
+
 var _Layer2 = require('../Layer');
 
 var _Layer3 = _interopRequireDefault(_Layer2);
@@ -30,27 +34,40 @@ module.exports = function (THREE) {
       var _this = _possibleConstructorReturn(this, (THREELayer.__proto__ || Object.getPrototypeOf(THREELayer)).call(this, json));
 
       _this.item = new THREE.Object3D();
+      _this.item.name = 'item';
       _this.mesh = undefined;return _this;
     }
 
     _createClass(THREELayer, null, [{
       key: 'animate',
-      value: function animate(object, key, timeline, animation, deviceRatio) {
+      value: function animate(object, key, timeline, animation, deviceRatio, opt) {
+        if (opt === undefined) opt = {};
         var scale = deviceRatio !== undefined ? window.devicePixelRatio : 1;
         var i = void 0,
+            keyframe = void 0,
             total = animation.keys.length;
         for (i = 0; i < total; ++i) {
           var frame = animation.keys[i];
           var from = frame.value;
-          var target = frame.target * scale;
+          var isArr = Array.isArray(from);
+          var isStr = typeof from === 'string';
+          var noScale = isArr || isStr;
+          var target = noScale ? frame.target : frame.target * scale;
           var delay = frame.start;
           var duration = frame.duration;
           var params = {
             ease: [frame.x0, frame.y0, frame.x1, frame.y1],
-            start: frame.value * scale,
-            delay: frame.start
+            start: noScale ? from : from * scale,
+            delay: delay,
+            onUpdate: opt.onUpdate,
+            onComplete: opt.onComplete
           };
-          var keyframe = new _Keyframe2.default(object, key, target, duration, params);
+
+          if (isArr) {
+            keyframe = new _ArrayKeyframe2.default(object, key, target, duration, params);
+          } else {
+            keyframe = new _Keyframe2.default(object, key, target, duration, params);
+          }
           keyframe.easeType = frame.type;
           timeline.addKeyframe(keyframe);
         }

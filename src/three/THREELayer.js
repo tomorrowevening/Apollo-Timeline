@@ -1,5 +1,6 @@
 import { toRad } from 'apollo-utils/MathUtil';
 import Keyframe from '../Keyframe';
+import ArrayKeyframe from '../ArrayKeyframe';
 import Layer from '../Layer';
 
 module.exports = function(THREE) {
@@ -7,6 +8,7 @@ module.exports = function(THREE) {
     constructor(json, timeline) {
       super(json);
       this.item = new THREE.Object3D();
+      this.item.name = 'item';
       this.mesh = undefined; // add to this.item
     }
 
@@ -21,21 +23,32 @@ module.exports = function(THREE) {
      * @param  {JSON} animation [description]
      * @param  {Boolean} deviceRatio [description]
      */
-    static animate(object, key, timeline, animation, deviceRatio) {
+    static animate(object, key, timeline, animation, deviceRatio, opt) {
+      if(opt === undefined) opt = {};
       const scale = deviceRatio !== undefined ? window.devicePixelRatio : 1;
-      let i, total = animation.keys.length;
+      let i, keyframe, total = animation.keys.length;
       for(i = 0; i < total; ++i) {
         const frame = animation.keys[i];
         const from = frame.value;
-        const target = frame.target * scale;
+        const isArr = Array.isArray(from);
+        const isStr = (typeof from) === 'string';
+        const noScale = isArr || isStr;
+        const target = noScale ? frame.target : frame.target * scale;
         const delay = frame.start;
         const duration = frame.duration;
         let params = {
           ease: [frame.x0, frame.y0, frame.x1, frame.y1],
-          start: frame.value * scale,
-          delay: frame.start
+          start: noScale ? from : from * scale,
+          delay: delay,
+          onUpdate: opt.onUpdate,
+          onComplete: opt.onComplete
         };
-        let keyframe = new Keyframe(object, key, target, duration, params);
+        
+        if(isArr) {
+          keyframe = new ArrayKeyframe(object, key, target, duration, params);
+        } else {
+          keyframe = new Keyframe(object, key, target, duration, params);
+        }
         keyframe.easeType = frame.type;
         timeline.addKeyframe(keyframe);
       }
