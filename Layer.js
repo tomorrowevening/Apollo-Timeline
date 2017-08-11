@@ -36,6 +36,13 @@ var Layer = function () {
       }
     }
   }, {
+    key: 'resize',
+    value: function resize(w, h) {
+      if (this.item !== undefined && this.item.resize !== undefined) {
+        this.item.resize(w, h);
+      }
+    }
+  }, {
     key: 'animate',
     value: function animate(json, timeline) {
       if (this.item !== undefined && this.item.animate !== undefined) {

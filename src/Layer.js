@@ -23,6 +23,12 @@ export default class Layer {
       this.item.draw();
     }
   }
+  
+  resize(w, h) {
+    if (this.item !== undefined && this.item.resize !== undefined) {
+      this.item.resize(w, h);
+    }
+  }
 
   animate(json, timeline) {
     if (this.item !== undefined && this.item.animate !== undefined) {

@@ -166,6 +166,13 @@ var Composition = function (_Layer) {
       }
     }
   }, {
+    key: 'resize',
+    value: function resize(w, h) {
+      this.layers.forEach(function (layer) {
+        layer.resize(w, h);
+      });
+    }
+  }, {
     key: 'build',
     value: function build(json, parentComp) {
       this.name = json.name;

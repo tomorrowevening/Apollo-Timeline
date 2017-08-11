@@ -122,6 +122,12 @@ export default class Composition extends Layer {
     }
   }
   
+  resize(w, h) {
+    this.layers.forEach(function(layer) {
+      layer.resize(w, h);
+    });
+  }
+  
   // Build
   
   build(json, parentComp) {
