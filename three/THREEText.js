@@ -11,9 +11,21 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 module.exports = function (THREE) {
-  var THREELayer = require('./THREELayer')(THREE);
+  var THREELayer = require('apollo-timeline/three/THREELayer')(THREE);
 
   var dpr = window.devicePixelRatio;
+
+  var TextAlign = {
+    LEFT_BOTTOM: new THREE.Vector2(1.0, 1.0),
+    CENTER_BOTTOM: new THREE.Vector2(0.5, 1.0),
+    RIGHT_BOTTOM: new THREE.Vector2(0.0, 1.0),
+    LEFT_CENTER: new THREE.Vector2(1.0, 0.5),
+    CENTER_CENTER: new THREE.Vector2(0.5, 0.5),
+    RIGHT_CENTER: new THREE.Vector2(0.0, 0.5),
+    LEFT_TOP: new THREE.Vector2(1.0, 0.0),
+    CENTER_TOP: new THREE.Vector2(0.5, 0.0),
+    RIGHT_TOP: new THREE.Vector2(0.0, 0.0)
+  };
 
   var THREEText = function (_THREE$Object3D) {
     _inherits(THREEText, _THREE$Object3D);
@@ -31,11 +43,13 @@ module.exports = function (THREE) {
       _this._weight = 'normal';
       _this._letterSpacing = 20;
       _this._textTop = 0;
+      _this._align = TextAlign.LEFT_BOTTOM;
       _this.texture = undefined;
       _this.material = undefined;
       _this.sprite = undefined;
 
       if (options !== undefined) {
+        if (options.align !== undefined) _this._align = options.align;
         if (options.color !== undefined) _this._color = options.color;
         if (options.font !== undefined) _this._font = options.font;
         if (options.fontSize !== undefined) _this._fontSize = options.fontSize;
@@ -88,9 +102,21 @@ module.exports = function (THREE) {
           this.add(this.sprite);
         }
 
-        this.sprite.position.x = this.canvas.textWidth / 2 / dpr;
-        this.sprite.position.y = this.canvas.textHeight / 2 / dpr;
+        this.sprite.position.x = this.canvas.textWidth / 2 / dpr * this._align.x;
+        this.sprite.position.y = this.canvas.textHeight / 2 / dpr * this._align.y;
         this.sprite.scale.set(this.canvas.textWidth / dpr, this.canvas.textHeight / dpr, 1);
+
+        window.spr = this.sprite;
+        window.txt = this;
+      }
+    }, {
+      key: 'align',
+      get: function get() {
+        return this._align;
+      },
+      set: function set(value) {
+        this._align = value;
+        this.update();
       }
     }, {
       key: 'color',
@@ -163,6 +189,16 @@ module.exports = function (THREE) {
       set: function set(value) {
         this._weight = value;
         this.update();
+      }
+    }, {
+      key: 'width',
+      get: function get() {
+        return this.canvas.textWidth;
+      }
+    }, {
+      key: 'height',
+      get: function get() {
+        return this.canvas.textHeight;
       }
     }]);
 
@@ -338,6 +374,7 @@ module.exports = function (THREE) {
   }(THREELayer);
 
   return {
+    TextAlign: TextAlign,
     CanvasText: CanvasText,
     THREEText: THREEText,
     THREETextLayer: THREETextLayer

@@ -1,9 +1,21 @@
 import { getHex } from 'apollo-utils/DOMUtil';
 
 module.exports = function(THREE) {
-  var THREELayer = require('./THREELayer')(THREE);
+  var THREELayer = require('apollo-timeline/three/THREELayer')(THREE);
   
   const dpr = window.devicePixelRatio;
+  
+  const TextAlign = {
+    LEFT_BOTTOM   : new THREE.Vector2(1.0, 1.0),
+    CENTER_BOTTOM : new THREE.Vector2(0.5, 1.0),
+    RIGHT_BOTTOM  : new THREE.Vector2(0.0, 1.0),
+    LEFT_CENTER   : new THREE.Vector2(1.0, 0.5),
+    CENTER_CENTER : new THREE.Vector2(0.5, 0.5),
+    RIGHT_CENTER  : new THREE.Vector2(0.0, 0.5),
+    LEFT_TOP      : new THREE.Vector2(1.0, 0.0),
+    CENTER_TOP    : new THREE.Vector2(0.5, 0.0),
+    RIGHT_TOP     : new THREE.Vector2(0.0, 0.0)
+  };
   
   //////////////////////////////////////////////////
   // Text
@@ -20,11 +32,13 @@ module.exports = function(THREE) {
       this._weight  = 'normal';
       this._letterSpacing = 20;
       this._textTop = 0;
+      this._align   = TextAlign.LEFT_BOTTOM;
       this.texture  = undefined;
       this.material = undefined;
       this.sprite   = undefined;
 
       if(options !== undefined) {
+        if(options.align      !== undefined) this._align    = options.align;
         if(options.color      !== undefined) this._color    = options.color;
         if(options.font       !== undefined) this._font     = options.font;
         if(options.fontSize   !== undefined) this._fontSize = options.fontSize;
@@ -81,13 +95,20 @@ module.exports = function(THREE) {
         this.add(this.sprite);
       }
 
-      this.sprite.position.x = (this.canvas.textWidth /2/dpr);
-      this.sprite.position.y = (this.canvas.textHeight/2/dpr);
+      this.sprite.position.x = (this.canvas.textWidth /2/dpr) * this._align.x;
+      this.sprite.position.y = (this.canvas.textHeight/2/dpr) * this._align.y;
       this.sprite.scale.set(this.canvas.textWidth/dpr, this.canvas.textHeight/dpr, 1);
+      
+      window.spr = this.sprite;
+      window.txt = this;
     }
 
     // Getters
-
+    
+    get align() {
+      return this._align;
+    }
+    
     get color() {
       return this._color;
     }
@@ -119,9 +140,22 @@ module.exports = function(THREE) {
     get weight() {
       return this._weight;
     }
+    
+    get width() {
+      return this.canvas.textWidth;
+    }
+    
+    get height() {
+      return this.canvas.textHeight;
+    }
 
     // Setters
-
+    
+    set align(value) {
+      this._align = value;
+      this.update();
+    }
+    
     set color(value) {
       this._color = value;
       this.update();
@@ -317,6 +351,7 @@ module.exports = function(THREE) {
   }
 
   return {
+    TextAlign: TextAlign,
     CanvasText: CanvasText,
     THREEText: THREEText,
     THREETextLayer: THREETextLayer
