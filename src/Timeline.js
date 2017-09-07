@@ -95,12 +95,14 @@ export default class Timeline extends Dispatcher {
     this.playing = false;
   }
 
-  update() {
+  update(time) {
     if(!this.playing) return;
     
     this.time.previous = this.seconds;
     
-    if(this.additive) {
+    if(time !== undefined) {
+      this.time.elapsed = time * 1000;
+    } else if(this.additive) {
       this.time.elapsed += (1/60) * 1000 * this.time.speed;
     } else {
       let now = TIME.now();

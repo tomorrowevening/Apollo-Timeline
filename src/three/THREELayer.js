@@ -25,7 +25,7 @@ module.exports = function(THREE) {
      */
     static animate(object, key, timeline, animation, deviceRatio, opt) {
       if(opt === undefined) opt = {};
-      const scale = deviceRatio !== undefined ? window.devicePixelRatio : 1;
+      const scale = deviceRatio !== undefined ? deviceRatio : 1;
       let i, keyframe, total = animation.keys.length;
       for(i = 0; i < total; ++i) {
         const frame = animation.keys[i];

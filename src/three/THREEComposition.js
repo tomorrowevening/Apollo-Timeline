@@ -1,14 +1,20 @@
+import Loader from 'apollo-utils/Loader';
 import { toRad } from 'apollo-utils/MathUtil';
 import Keyframe from '../Keyframe';
 import Composition from '../Composition';
+import TimelineConfig from '../TimelineConfig';
 
 module.exports = function(THREE) {
+  var THREELayer = require('./THREELayer')(THREE);
   var THREEImage = require('./THREEImage')(THREE);
   var THREEShape = require('./THREEShape')(THREE);
-  var txt = require('./THREEText')(THREE);
-  var THREETextLayer = txt.THREETextLayer;
+  var THREETextLayer = require('./THREEText')(THREE).THREETextLayer;
   var THREEVideo = require('./THREEVideo')(THREE);
+  var setupPostEffects = require('./THREEPost')(THREE);
+  // Effects
   require('./EffectComposer')(THREE);
+  var BlurPass = require('./passes/BlurPass')(THREE);
+  var TrackMattePass = require('./passes/TrackMattePass')(THREE);
   
   class THREEComposition extends Composition {
     constructor(json, renderer) {
@@ -17,7 +23,7 @@ module.exports = function(THREE) {
       this.renderer = renderer;
       this.item = new THREE.Scene();
       this.setupPerspectiveCam();
-      this.setupPost();
+      this.post = setupPostEffects(this.item, this.camera, renderer);
     }
     
     setupPerspectiveCam() {
@@ -36,59 +42,10 @@ module.exports = function(THREE) {
     }
     
     setupEffects() {
-      //
-    }
-    
-    setupPost() {
-      this.post = {
-        effects : [],
-        enabled : true,
-        composer: undefined,
-        resize  : function(w, h) {
-          const dpr = this.renderer.getPixelRatio();
-          this.composer.setSize(w * dpr, h * dpr);
-          this.effects.forEach(pass => {
-            pass.setSize(w, h);
-          });
-        },
-        getLastPass: function() {
-          return this.composer.passes[this.composer.passes.length-1];
-        }
-      };
-
-      // Setup
-      const pixelRatio = this.renderer.getPixelRatio();
-      const width  = Math.floor(this.renderer.context.canvas.width  / pixelRatio) || 1;
-      const height = Math.floor(this.renderer.context.canvas.height / pixelRatio) || 1;
-      const parameters = {
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter,
-        format: THREE.RGBAFormat,
-        stencilBuffer: false
-      };
-      var renderTarget = new THREE.WebGLRenderTarget( width, height, parameters );
-      this.post.composer = new THREE.EffectComposer( this.renderer, renderTarget );
-      let renderPass = new THREE.RenderPass(this.item, this.camera);
-      let copyPass = new THREE.ShaderPass( THREE.CopyShader );
-
-      copyPass.renderToScreen       = true;
-      copyPass.material.transparent = true;
-
-      this.post.composer.addPass( renderPass );
-
-      // Apply
-      const total = this.post.effects.length;
-      for(let i = 0; i < total; ++i) {
-          this.post.composer.addPass(this.post.effects[i]);
-      }
-
-      // this.post.composer.addPass( copyPass );
-      this.post.composer.setSize( width * pixelRatio, height * pixelRatio );
     }
     
     update(time) {
-      // if(!this.timeline.playing) return;
-      this.timeline.update();
+      this.timeline.update(time);
       this.updateLayers();
       this.updateCamera();
     }
@@ -98,6 +55,14 @@ module.exports = function(THREE) {
         this.post.composer.render();
       } else {
         this.renderer.render(this.item, this.camera);
+      }
+      
+      const time = this.seconds;
+      let total = this.layers.length;
+      for (let i = 0; i < total; ++i) {
+        let l = this.layers[i];
+        let visible = l.showable(time);
+        if(visible) l.draw();
       }
     }
     
@@ -125,7 +90,32 @@ module.exports = function(THREE) {
       this.camera.updateProjectionMatrix();
     }
     
+    resize(w, h) {
+      this.post.resize(w, h);
+      super.resize(w, h);
+    }
+    
     // Build
+    
+    applyEffects(effects) {
+      effects.forEach((effect) => {
+        let efft;
+        
+        if(effect.name === 'Gaussian Blur') {
+          const multiplier = 1/5;
+          efft = new BlurPass(this.camera);
+          efft.uniforms.radius.value = effect.blurriness * multiplier;
+          efft.uniforms.dir.value.set(effect.direction[0], effect.direction[1]);
+          if(effect.timeline.blurriness !== undefined) {
+            THREELayer.animate(efft.uniforms.radius, 'value', this.timeline, effect.timeline.blurriness, multiplier);
+          }
+        }
+        
+        if(efft !== undefined) {
+          this.post.add(efft);
+        }
+      });
+    }
     
     buildLayerComposition(json) {
       let cJSON = Loader.json.project.compositions[json.name];
@@ -133,6 +123,19 @@ module.exports = function(THREE) {
       let layer = new THREEComposition(json, this.renderer);
       layer.build(cJSON, this);
       layer.buildAtlas(atlas);
+      layer.applyEffects(json.effects);
+      if(json.matte !== undefined) {
+        let src = TimelineConfig.fileID(json.matte.src);
+        let mask = TimelineConfig.textures[src];
+        let effect = new TrackMattePass({
+          matte: mask
+        });
+        window.effect = effect;
+        window.config = TimelineConfig;
+        layer.post.add(effect);
+        layer.post.enabled = true;
+      }
+      layer.setupEffects();
       return layer;
     }
     

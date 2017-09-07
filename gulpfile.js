@@ -23,10 +23,14 @@ var domPaths = [
 ];
 var threePaths = [
   'src/three/EffectComposer.js',
+  'src/three/THREEPost.js',
   'src/three/THREELayer.js',
   'src/three/THREEImage.js',
   'src/three/THREELineGeometry.js',
-  'src/three/THREEStrokeMaterial.js',
+  'src/three/materials/StrokeMaterial.js',
+  'src/three/passes/BlurPass.js',
+  'src/three/passes/FXAAPass.js',
+  'src/three/passes/TrackMattePass.js',
   'src/three/THREEShape.js',
   'src/three/THREEText.js',
   'src/three/THREEVideo.js',
@@ -42,7 +46,7 @@ function compile(srcPaths, distPath, minify) {
     }))
     .pipe(concat(distPath))
     // .pipe(minify ? uglify() : gutil.noop())
-    .pipe(gulp.dest(''));
+    .pipe(gulp.dest('dist'));
 }
 
 gulp.task('default', function() {

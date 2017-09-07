@@ -2,6 +2,8 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _Loader = require('apollo-utils/Loader');
 
 var _Loader2 = _interopRequireDefault(_Loader);
@@ -16,6 +18,10 @@ var _Composition2 = require('../Composition');
 
 var _Composition3 = _interopRequireDefault(_Composition2);
 
+var _TimelineConfig = require('../TimelineConfig');
+
+var _TimelineConfig2 = _interopRequireDefault(_TimelineConfig);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -25,12 +31,16 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 module.exports = function (THREE) {
+  var THREELayer = require('./THREELayer')(THREE);
   var THREEImage = require('./THREEImage')(THREE);
   var THREEShape = require('./THREEShape')(THREE);
-  var txt = require('./THREEText')(THREE);
-  var THREETextLayer = txt.THREETextLayer;
+  var THREETextLayer = require('./THREEText')(THREE).THREETextLayer;
   var THREEVideo = require('./THREEVideo')(THREE);
+  var setupPostEffects = require('./THREEPost')(THREE);
+
   require('./EffectComposer')(THREE);
+  var BlurPass = require('./passes/BlurPass')(THREE);
+  var TrackMattePass = require('./passes/TrackMattePass')(THREE);
 
   var THREEComposition = function (_Composition) {
     _inherits(THREEComposition, _Composition);
@@ -43,7 +53,7 @@ module.exports = function (THREE) {
       _this.renderer = renderer;
       _this.item = new THREE.Scene();
       _this.setupPerspectiveCam();
-      _this.setupPost();
+      _this.post = setupPostEffects(_this.item, _this.camera, renderer);
       return _this;
     }
 
@@ -68,54 +78,9 @@ module.exports = function (THREE) {
       key: 'setupEffects',
       value: function setupEffects() {}
     }, {
-      key: 'setupPost',
-      value: function setupPost() {
-        this.post = {
-          effects: [],
-          enabled: true,
-          composer: undefined,
-          resize: function resize(w, h) {
-            var dpr = this.renderer.getPixelRatio();
-            this.composer.setSize(w * dpr, h * dpr);
-            this.effects.forEach(function (pass) {
-              pass.setSize(w, h);
-            });
-          },
-          getLastPass: function getLastPass() {
-            return this.composer.passes[this.composer.passes.length - 1];
-          }
-        };
-
-        var pixelRatio = this.renderer.getPixelRatio();
-        var width = Math.floor(this.renderer.context.canvas.width / pixelRatio) || 1;
-        var height = Math.floor(this.renderer.context.canvas.height / pixelRatio) || 1;
-        var parameters = {
-          minFilter: THREE.LinearFilter,
-          magFilter: THREE.LinearFilter,
-          format: THREE.RGBAFormat,
-          stencilBuffer: false
-        };
-        var renderTarget = new THREE.WebGLRenderTarget(width, height, parameters);
-        this.post.composer = new THREE.EffectComposer(this.renderer, renderTarget);
-        var renderPass = new THREE.RenderPass(this.item, this.camera);
-        var copyPass = new THREE.ShaderPass(THREE.CopyShader);
-
-        copyPass.renderToScreen = true;
-        copyPass.material.transparent = true;
-
-        this.post.composer.addPass(renderPass);
-
-        var total = this.post.effects.length;
-        for (var i = 0; i < total; ++i) {
-          this.post.composer.addPass(this.post.effects[i]);
-        }
-
-        this.post.composer.setSize(width * pixelRatio, height * pixelRatio);
-      }
-    }, {
       key: 'update',
       value: function update(time) {
-        this.timeline.update();
+        this.timeline.update(time);
         this.updateLayers();
         this.updateCamera();
       }
@@ -126,6 +91,14 @@ module.exports = function (THREE) {
           this.post.composer.render();
         } else {
           this.renderer.render(this.item, this.camera);
+        }
+
+        var time = this.seconds;
+        var total = this.layers.length;
+        for (var i = 0; i < total; ++i) {
+          var l = this.layers[i];
+          var visible = l.showable(time);
+          if (visible) l.draw();
         }
       }
     }, {
@@ -154,6 +127,35 @@ module.exports = function (THREE) {
         this.camera.updateProjectionMatrix();
       }
     }, {
+      key: 'resize',
+      value: function resize(w, h) {
+        this.post.resize(w, h);
+        _get(THREEComposition.prototype.__proto__ || Object.getPrototypeOf(THREEComposition.prototype), 'resize', this).call(this, w, h);
+      }
+    }, {
+      key: 'applyEffects',
+      value: function applyEffects(effects) {
+        var _this2 = this;
+
+        effects.forEach(function (effect) {
+          var efft = void 0;
+
+          if (effect.name === 'Gaussian Blur') {
+            var multiplier = 1 / 5;
+            efft = new BlurPass(_this2.camera);
+            efft.uniforms.radius.value = effect.blurriness * multiplier;
+            efft.uniforms.dir.value.set(effect.direction[0], effect.direction[1]);
+            if (effect.timeline.blurriness !== undefined) {
+              THREELayer.animate(efft.uniforms.radius, 'value', _this2.timeline, effect.timeline.blurriness, multiplier);
+            }
+          }
+
+          if (efft !== undefined) {
+            _this2.post.add(efft);
+          }
+        });
+      }
+    }, {
       key: 'buildLayerComposition',
       value: function buildLayerComposition(json) {
         var cJSON = _Loader2.default.json.project.compositions[json.name];
@@ -161,6 +163,19 @@ module.exports = function (THREE) {
         var layer = new THREEComposition(json, this.renderer);
         layer.build(cJSON, this);
         layer.buildAtlas(atlas);
+        layer.applyEffects(json.effects);
+        if (json.matte !== undefined) {
+          var src = _TimelineConfig2.default.fileID(json.matte.src);
+          var mask = _TimelineConfig2.default.textures[src];
+          var effect = new TrackMattePass({
+            matte: mask
+          });
+          window.effect = effect;
+          window.config = _TimelineConfig2.default;
+          layer.post.add(effect);
+          layer.post.enabled = true;
+        }
+        layer.setupEffects();
         return layer;
       }
     }, {

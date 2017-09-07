@@ -1,6 +1,6 @@
 {
   "name": "apollo-timeline",
-  "version": "1.2.289",
+  "version": "1.2.29",
   "description": "After Effects style Timeline",
   "files": [
     "package.json",
@@ -20,12 +20,16 @@
     "Composition.js",
     "dom/SVGItem.js",
     "three/EffectComposer.js",
+    "three/THREEPost.js",
     "three/THREEComposition.js",
     "three/THREELayer.js",
     "three/THREEImage.js",
     "three/THREELineGeometry.js",
     "three/THREEShape.js",
-    "three/THREEStrokeMaterial.js",
+    "three/materials/StrokeMaterial.js",
+    "three/passes/FXAAPass.js",
+    "three/passes/BlurPass.js",
+    "three/passes/TrackMattePass.js",
     "three/THREEText.js",
     "three/THREEVideo.js"
   ],
@@ -55,6 +59,7 @@
   },
   "dependencies": {
     "apollo-utils": "^1.3.025",
+    "glsl-fast-gaussian-blur": "^1.0.2",
     "glslify": "^6.0.1",
     "polyline-normals": "^2.0.2",
     "three": "^0.83.0"

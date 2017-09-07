@@ -38,7 +38,7 @@ export default class Composition extends Layer {
   }
 
   update(time) {
-    this.timeline.update();
+    this.timeline.update(time);
     this.updateLayers();
   }
 

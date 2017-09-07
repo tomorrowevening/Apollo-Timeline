@@ -1,8 +1,4 @@
-import {
-  HALF_PI,
-  TWO_PI,
-  toRad
-} from 'apollo-utils/MathUtil';
+import { HALF_PI, TWO_PI, toRad } from 'apollo-utils/MathUtil';
 
 function organizeList(list) {
   const order = ['stroke', 'fill', 'transform', 'trim', 'repeater'];
@@ -25,7 +21,7 @@ function organizeList(list) {
 module.exports = function(THREE) {
   var THREELayer = require('./THREELayer')(THREE);
   var THREELineGeometry = require('./THREELineGeometry')(THREE);
-  var THREEStrokeMaterial = require('./THREEStrokeMaterial')(THREE);
+  var StrokeMaterial = require('./materials/StrokeMaterial')(THREE);
 
   class THREEShape extends THREELayer {
     constructor(json, timeline) {
@@ -254,7 +250,7 @@ module.exports = function(THREE) {
                     material.color.b = ani.color[2];
                   }
                 };
-                THREELayer.animate(ani, 'color', timeline, fill.timeline, false, {
+                THREELayer.animate(ani, 'color', timeline, fill.timeline, 1, {
                   onUpdate: ani.onUpdate
                 });
               }
@@ -262,7 +258,7 @@ module.exports = function(THREE) {
             
             if(stroke !== undefined) {
               color = new THREE.Color(stroke.color[0], stroke.color[1], stroke.color[2]);
-              material = new THREEStrokeMaterial({
+              material = new StrokeMaterial({
                 diffuse: color.getHex(),
                 opacity: stroke.alpha,
                 thickness: stroke.width
@@ -277,7 +273,7 @@ module.exports = function(THREE) {
                     material.uniforms.diffuse.value.b = ani.color[2];
                   }
                 };
-                THREELayer.animate(ani, 'color', timeline, stroke.timeline, false, {
+                THREELayer.animate(ani, 'color', timeline, stroke.timeline, 1, {
                   onUpdate: ani.onUpdate
                 });
               }
@@ -296,13 +292,13 @@ module.exports = function(THREE) {
                   for(n = 0; n < nTotal; ++n) {
                     switch(stroke.dashes.timeline[n].name) {
                       case 'dash':
-                        THREELayer.animate(material.uniforms.dash.value, 'x', timeline, stroke.dashes.timeline[n], true);
+                        THREELayer.animate(material.uniforms.dash.value, 'x', timeline, stroke.dashes.timeline[n], s);
                         break;
                       case 'gap':
-                        THREELayer.animate(material.uniforms.dash.value, 'y', timeline, stroke.dashes.timeline[n], true);
+                        THREELayer.animate(material.uniforms.dash.value, 'y', timeline, stroke.dashes.timeline[n], s);
                         break;
                       case 'offset':
-                        THREELayer.animate(material.uniforms.dash.value, 'z', timeline, stroke.dashes.timeline[n], true);
+                        THREELayer.animate(material.uniforms.dash.value, 'z', timeline, stroke.dashes.timeline[n], s);
                         break;
                     }
                   }
