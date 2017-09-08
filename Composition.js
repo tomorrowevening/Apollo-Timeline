@@ -284,6 +284,14 @@ var Composition = function (_Layer) {
       return layer;
     }
   }, {
+    key: 'getLayer',
+    value: function getLayer(name) {
+      this.layers.forEach(function (layer) {
+        if (layer.name === name) return layer;
+      });
+      return undefined;
+    }
+  }, {
     key: 'seconds',
     get: function get() {
       return this.timeline.seconds;
