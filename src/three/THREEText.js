@@ -334,6 +334,7 @@ module.exports = function(THREE) {
       var weight = content.weight === 'regular' ? 'normal' : content.weight;
       
       this.tText = new THREEText(content.text, {
+        align: content.align,
         color: color,
         font: content.font,
         fontSize: fontSize,
