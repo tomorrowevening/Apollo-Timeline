@@ -41,7 +41,7 @@ module.exports = function (THREE) {
       _this._font = 'Arial';
       _this._fontSize = 30;
       _this._weight = 'normal';
-      _this._letterSpacing = 20;
+      _this._spacing = 20;
       _this._textTop = 0;
       _this._align = TextAlign.LEFT_BOTTOM;
       _this.texture = undefined;
@@ -49,14 +49,14 @@ module.exports = function (THREE) {
       _this.sprite = undefined;
 
       if (options !== undefined) {
-        if (options.align !== undefined) _this._align = options.align;
+        if (options.align !== undefined) _this.align = options.align;
         if (options.color !== undefined) _this._color = options.color;
         if (options.font !== undefined) _this._font = options.font;
         if (options.fontSize !== undefined) _this._fontSize = options.fontSize;
         if (options.weight !== undefined) _this._weight = options.weight;
         if (options.textTop !== undefined) _this._textTop = options.textTop;
-        if (options.letterSpacing !== undefined) {
-          _this._letterSpacing = options.letterSpacing;
+        if (options.spacing !== undefined) {
+          _this._spacing = options.spacing;
         }
         if (options.lineHeight !== undefined) {
           _this.canvas.lineHeight = options.lineHeight;
@@ -78,7 +78,7 @@ module.exports = function (THREE) {
     }, {
       key: 'update',
       value: function update() {
-        this.canvas.draw(this._text, this._font, this._fontSize, this._weight, this._color, this._letterSpacing, this._textTop);
+        this.canvas.draw(this._text, this._font, this._fontSize, this._weight, this._color, this._spacing, this._textTop);
         this.dispose();
 
         this.texture = new THREE.Texture(this.canvas.canvas);
@@ -115,7 +115,23 @@ module.exports = function (THREE) {
         return this._align;
       },
       set: function set(value) {
-        this._align = value;
+        if (typeof value === 'string') {
+          switch (value) {
+            case 'left':
+              this._align = TextAlign.LEFT_BOTTOM;
+              break;
+
+            case 'center':
+              this._align = TextAlign.CENTER_BOTTOM;
+              break;
+
+            case 'right':
+              this._align = TextAlign.RIGHT_BOTTOM;
+              break;
+          }
+        } else {
+          this._align = value;
+        }
         this.update();
       }
     }, {
@@ -146,12 +162,12 @@ module.exports = function (THREE) {
         this.update();
       }
     }, {
-      key: 'letterSpacing',
+      key: 'spacing',
       get: function get() {
-        return this._letterSpacing;
+        return this._spacing;
       },
       set: function set(value) {
-        this._letterSpacing = value;
+        this._spacing = value;
         this.update();
       }
     }, {
@@ -221,10 +237,10 @@ module.exports = function (THREE) {
 
     _createClass(CanvasText, [{
       key: 'draw',
-      value: function draw(text, font, fontSize, weight, fill, letterSpacing, textTop) {
+      value: function draw(text, font, fontSize, weight, fill, spacing, textTop) {
         var _this2 = this;
 
-        var lSpacing = letterSpacing * dpr;
+        var lSpacing = spacing * dpr;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         var ctxFont = weight + ' ' + (fontSize * dpr).toString() + 'px ' + font;
@@ -253,13 +269,13 @@ module.exports = function (THREE) {
         for (var i = 0; i < this.totalLines; ++i) {
           var txt = lines[i];
           var yPos = (i * this.lineHeight + textTop) * dpr;
-          var spacing = getWordSpacing(txt, lSpacing, this.ctx);
+          var _spacing = getWordSpacing(txt, lSpacing, this.ctx);
           var letters = txt.split('');
           var n = void 0,
               nTotal = letters.length;
           for (n = 0; n < nTotal; ++n) {
             var letter = letters[n];
-            this.ctx.fillText(letter, spacing.pos[n], yPos);
+            this.ctx.fillText(letter, _spacing.pos[n], yPos);
           }
         }
       }
@@ -334,7 +350,7 @@ module.exports = function (THREE) {
 
       var content = json.content;
       var fontSize = content.fontSize * window.devicePixelRatio;
-      var fColor = (0, _DOMUtil.getHex)(content.fillColor[0], content.fillColor[1], content.fillColor[2]);
+      var fColor = (0, _DOMUtil.getHex)(content.color[0], content.color[1], content.color[2]);
       var tColor = new THREE.Color(fColor);
       var color = '#' + tColor.getHexString();
       var weight = content.weight === 'regular' ? 'normal' : content.weight;
@@ -344,7 +360,7 @@ module.exports = function (THREE) {
         font: content.font,
         fontSize: fontSize,
         weight: weight,
-        letterSpacing: content.spacing,
+        spacing: content.spacing,
         lineHeight: fontSize
       });
       _this3.tText.name = 'tText';

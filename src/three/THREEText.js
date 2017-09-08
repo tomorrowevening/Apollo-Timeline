@@ -328,7 +328,7 @@ module.exports = function(THREE) {
       
       var content = json.content;
       var fontSize = content.fontSize * window.devicePixelRatio;
-      var fColor = getHex(content.fillColor[0], content.fillColor[1], content.fillColor[2]);
+      var fColor = getHex(content.color[0], content.color[1], content.color[2]);
       var tColor = new THREE.Color(fColor);
       var color = '#' + tColor.getHexString();
       var weight = content.weight === 'regular' ? 'normal' : content.weight;
