@@ -46,7 +46,7 @@ function compile(srcPaths, distPath, minify) {
     }))
     .pipe(concat(distPath))
     // .pipe(minify ? uglify() : gutil.noop())
-    .pipe(gulp.dest('dist'));
+    .pipe(gulp.dest(''));
 }
 
 gulp.task('default', function() {
