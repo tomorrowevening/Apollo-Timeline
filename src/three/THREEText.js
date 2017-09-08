@@ -30,7 +30,7 @@ module.exports = function(THREE) {
       this._font    = 'Arial';
       this._fontSize= 30;
       this._weight  = 'normal';
-      this._letterSpacing = 20;
+      this._spacing = 20;
       this._textTop = 0;
       this._align   = TextAlign.LEFT_BOTTOM;
       this.texture  = undefined;
@@ -38,14 +38,14 @@ module.exports = function(THREE) {
       this.sprite   = undefined;
 
       if(options !== undefined) {
-        if(options.align      !== undefined) this._align    = options.align;
+        if(options.align      !== undefined) this.align     = options.align;
         if(options.color      !== undefined) this._color    = options.color;
         if(options.font       !== undefined) this._font     = options.font;
         if(options.fontSize   !== undefined) this._fontSize = options.fontSize;
         if(options.weight     !== undefined) this._weight   = options.weight;
         if(options.textTop    !== undefined) this._textTop  = options.textTop;
-        if(options.letterSpacing !== undefined) {
-          this._letterSpacing = options.letterSpacing;
+        if(options.spacing !== undefined) {
+          this._spacing = options.spacing;
         }
         if(options.lineHeight !== undefined) {
           this.canvas.lineHeight = options.lineHeight;
@@ -69,7 +69,7 @@ module.exports = function(THREE) {
         this._fontSize,
         this._weight,
         this._color,
-        this._letterSpacing,
+        this._spacing,
         this._textTop
       );
       this.dispose();
@@ -121,8 +121,8 @@ module.exports = function(THREE) {
       return this._fontSize;
     }
 
-    get letterSpacing() {
-      return this._letterSpacing;
+    get spacing() {
+      return this._spacing;
     }
 
     get lineHeight() {
@@ -152,7 +152,23 @@ module.exports = function(THREE) {
     // Setters
     
     set align(value) {
-      this._align = value;
+      if(typeof value === 'string') {
+        switch(value) {
+          case 'left':
+            this._align = TextAlign.LEFT_BOTTOM;
+          break;
+          
+          case 'center':
+            this._align = TextAlign.CENTER_BOTTOM;
+          break;
+          
+          case 'right':
+            this._align = TextAlign.RIGHT_BOTTOM;
+          break;
+        }
+      } else {
+        this._align = value;
+      }
       this.update();
     }
     
@@ -171,8 +187,8 @@ module.exports = function(THREE) {
       this.update();
     }
 
-    set letterSpacing(value) {
-      this._letterSpacing = value;
+    set spacing(value) {
+      this._spacing = value;
       this.update();
     }
 
@@ -212,8 +228,8 @@ module.exports = function(THREE) {
       this.textBaseline = 'top';
     }
 
-    draw(text, font, fontSize, weight, fill, letterSpacing, textTop) {
-      const lSpacing = letterSpacing * dpr;
+    draw(text, font, fontSize, weight, fill, spacing, textTop) {
+      const lSpacing = spacing * dpr;
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       let ctxFont = weight + ' ' + (fontSize * dpr).toString() + 'px ' + font;
@@ -322,7 +338,7 @@ module.exports = function(THREE) {
         font: content.font,
         fontSize: fontSize,
         weight: weight,
-        letterSpacing: content.spacing,
+        spacing: content.spacing,
         lineHeight: fontSize
       });
       this.tText.name = 'tText';
