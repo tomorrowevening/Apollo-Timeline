@@ -240,9 +240,13 @@ export default class Composition extends Layer {
   // Getters
 
   getLayer(name) {
-    this.layers.forEach(function(layer) {
-      if (layer.name === name) return layer;
-    });
+    let i, total = this.layers.length;
+    for(i = 0; i < total; ++i) {
+      let layer = this.layers[i];
+      if(layer.name === name) {
+        return layer;
+      }
+    }
     return undefined;
   }
 

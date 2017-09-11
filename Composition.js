@@ -286,9 +286,14 @@ var Composition = function (_Layer) {
   }, {
     key: 'getLayer',
     value: function getLayer(name) {
-      this.layers.forEach(function (layer) {
-        if (layer.name === name) return layer;
-      });
+      var i = void 0,
+          total = this.layers.length;
+      for (i = 0; i < total; ++i) {
+        var layer = this.layers[i];
+        if (layer.name === name) {
+          return layer;
+        }
+      }
       return undefined;
     }
   }, {
