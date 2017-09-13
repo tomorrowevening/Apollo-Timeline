@@ -1,7 +1,7 @@
 import { getHex } from 'apollo-utils/DOMUtil';
 
 module.exports = function(THREE) {
-  var THREELayer = require('apollo-timeline/three/THREELayer')(THREE);
+  var THREELayer = require('./THREELayer')(THREE);
   
   const dpr = window.devicePixelRatio;
   
@@ -250,6 +250,12 @@ module.exports = function(THREE) {
 
       this.canvas.width  = THREE.Math.nextPowerOfTwo(this.textWidth);
       this.canvas.height = THREE.Math.nextPowerOfTwo(this.textHeight);
+      
+      // DEBUG
+      // this.ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+      // this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      // this.ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
+      // this.ctx.fillRect(0, 0, this.canvas.width, textTop);
 
       this.ctx.font = ctxFont;
       this.ctx.fillStyle = fill;
@@ -257,7 +263,7 @@ module.exports = function(THREE) {
       this.ctx.textBaseline = this.textBaseline;
       for(let i = 0; i < this.totalLines; ++i) {
         let txt = lines[i];
-        let yPos = ((i * this.lineHeight) + textTop) * dpr;
+        let yPos = ((i * this.lineHeight) - textTop) * dpr;
         let spacing = getWordSpacing(txt, lSpacing, this.ctx);
         let letters = txt.split('');
         let n, nTotal = letters.length;

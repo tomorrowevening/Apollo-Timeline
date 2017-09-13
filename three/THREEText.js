@@ -11,7 +11,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 module.exports = function (THREE) {
-  var THREELayer = require('apollo-timeline/three/THREELayer')(THREE);
+  var THREELayer = require('./THREELayer')(THREE);
 
   var dpr = window.devicePixelRatio;
 
@@ -268,7 +268,7 @@ module.exports = function (THREE) {
         this.ctx.textBaseline = this.textBaseline;
         for (var i = 0; i < this.totalLines; ++i) {
           var txt = lines[i];
-          var yPos = (i * this.lineHeight + textTop) * dpr;
+          var yPos = (i * this.lineHeight - textTop) * dpr;
           var _spacing = getWordSpacing(txt, lSpacing, this.ctx);
           var letters = txt.split('');
           var n = void 0,
