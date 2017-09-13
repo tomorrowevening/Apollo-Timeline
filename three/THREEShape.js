@@ -147,9 +147,9 @@ module.exports = function (THREE) {
                   y = (path.y - path.height / 2) * s;
                   w = path.width * s;
                   h = path.height * s;
-                  shape.moveTo(x, y);
+                  shape.moveTo(x + w, y + h);
                   shape.lineTo(x + w, y);
-                  shape.lineTo(x + w, y + h);
+                  shape.lineTo(x, y);
                   shape.lineTo(x, y + h);
                   break;
 
