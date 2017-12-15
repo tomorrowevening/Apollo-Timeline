@@ -1,6 +1,9 @@
 # Apollo Timeline
 
 ### An After Effects-inspired Timeline
+Examples [can be seen here](http://experiments.tomorrowevening.com/timeline/)
+
+After Effects project file [can be downloaded here](https://github.com/tomorrowevening/Apollo-Timeline/raw/master/examples/_animation/animations.aep) for comparison
 
 ##### Timeline
 A Timeline is an object with keyframes, markers, and a timer. The timer updates the Timeline every time it's updated. Typically a Timeline has a set duration for synching/combining animations.
