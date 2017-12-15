@@ -41,7 +41,7 @@ function compile(srcPaths, distPath, minify) {
   return gulp.src(srcPaths)
     .pipe(babel({
       comments: false,
-      presets: ["es2015", "stage-0"],
+      presets: ["latest", "stage-1"],
       plugins: ["glslify"]
     }))
     .pipe(concat(distPath))
