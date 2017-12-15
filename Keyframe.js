@@ -38,15 +38,11 @@ var Keyframe = function () {
     value: function update(progress) {
       var percent = this.getPercent(progress);
 
-      if (!this.active && this.startValue === undefined) {
+      if (this.startValue === undefined) {
         this.startValue = this.object[this.key];
       }
 
-      if (typeof this.startValue === 'number') {
-        this.object[this.key] = (0, _MathUtil.lerp)(percent, this.startValue, this.endValue);
-      } else {
-        this.object[this.key] = percent < 0.5 ? this.startValue : this.endValue;
-      }
+      this.object[this.key] = (0, _MathUtil.lerp)(percent, this.startValue, this.endValue);
 
       if (this.onUpdate !== undefined) {
         this.onUpdate(progress, percent);
@@ -68,7 +64,7 @@ var Keyframe = function () {
   }, {
     key: 'isActive',
     value: function isActive(time) {
-      return time >= this.startTime && time <= this.endTime;
+      return time >= this.startTime && time < this.endTime;
     }
   }, {
     key: 'getPercent',

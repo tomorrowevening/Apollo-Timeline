@@ -9,7 +9,7 @@ export default class ArrayKeyframe extends Keyframe {
   update(progress) {
     let percent = this.getPercent(progress);
 
-    if(!this.active && this.startValue === undefined) {
+    if(this.startValue === undefined) {
       this.startValue = this.object[this.key];
     }
     

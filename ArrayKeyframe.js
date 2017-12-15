@@ -34,7 +34,7 @@ var ArrayKeyframe = function (_Keyframe) {
     value: function update(progress) {
       var percent = this.getPercent(progress);
 
-      if (!this.active && this.startValue === undefined) {
+      if (this.startValue === undefined) {
         this.startValue = this.object[this.key];
       }
 

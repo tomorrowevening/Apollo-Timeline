@@ -28,14 +28,14 @@ export default class Keyframe {
   update(progress) {
     let percent = this.getPercent(progress);
 
-    if(!this.active && this.startValue === undefined) {
+    if(this.startValue === undefined) {
       this.startValue = this.object[this.key];
     }
     
-    if((typeof this.startValue) === 'number') {
+    if(typeof this.startValue === 'number') {
       this.object[this.key] = lerp(percent, this.startValue, this.endValue);
-    } else {
-      this.object[this.key] = percent < 0.5 ? this.startValue : this.endValue; // prob Keyframe.HOLD
+    } else if(typeof this.startValue === 'string') {
+      this.object[this.key] = percent < 1 ? this.startValue : this.endValue;
     }
 
     if(this.onUpdate !== undefined) {
@@ -55,7 +55,7 @@ export default class Keyframe {
   }
 
   isActive(time) {
-    return time >= this.startTime && time <= this.endTime;
+    return time >= this.startTime && time < this.endTime;
   }
 
   // Getters
