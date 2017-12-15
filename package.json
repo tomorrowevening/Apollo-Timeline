@@ -1,6 +1,6 @@
 {
   "name": "apollo-timeline",
-  "version": "1.2.297",
+  "version": "1.2.298",
   "description": "After Effects style Timeline",
   "files": [
     "package.json",
@@ -56,8 +56,8 @@
     "babel-cli": "^6.24.1",
     "babel-polyfill": "^6.23.0",
     "babel-plugin-glslify": "^2.0.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-stage-0": "^6.24.1",
+    "babel-preset-latest": "^6.24.1",
+    "babel-preset-stage-1": "^6.24.1",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.1",
     "gulp-concat": "^2.6.1",
@@ -65,9 +65,10 @@
     "gulp-util": "^3.0.8"
   },
   "dependencies": {
-    "apollo-utils": "^1.3.025",
+    "apollo-utils": "^1.3.026",
     "glsl-fast-gaussian-blur": "^1.0.2",
     "glslify": "^6.0.1",
+    "pixi.js": "4.6.2",
     "polyline-normals": "^2.0.2",
     "three": "^0.83.0"
   }
