@@ -1,5 +1,7 @@
 'use strict';
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _TimelineConfig = require('../TimelineConfig');
 
 var _TimelineConfig2 = _interopRequireDefault(_TimelineConfig);
@@ -27,10 +29,16 @@ module.exports = function (THREE) {
       var src = json.content.source;
       _this.fileID = _TimelineConfig2.default.fileID(src);
       _this.file = _TimelineConfig2.default.video[_this.fileID];
+
       _this.file.autoplay = false;
+      _this.file.width = json.content.width.toString();
+      _this.file.height = json.content.height.toString();
       _this.file.pause();
 
       var texture = new THREE.VideoTexture(_this.file);
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.format = THREE.RGBFormat;
       var geometry = new THREE.PlaneGeometry(json.content.width, json.content.height);
       geometry.topLeftAnchor(true);
 
@@ -45,6 +53,14 @@ module.exports = function (THREE) {
       THREELayer.transform(_this.item, _this.mesh, json.transform, timeline);
       return _this;
     }
+
+    _createClass(THREEVideo, [{
+      key: 'update',
+      value: function update(time) {
+        this.file.currentTime = time;
+        this.mesh.material.map.needsUpdate = true;
+      }
+    }]);
 
     return THREEVideo;
   }(THREELayer);

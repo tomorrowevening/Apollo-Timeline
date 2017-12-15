@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 var TimelineConfig = {
   compositions: {},
+  files: {},
+  json: {},
   images: {},
   textures: {},
   video: {},

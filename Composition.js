@@ -71,34 +71,29 @@ var Composition = function (_Layer) {
     }
   }, {
     key: 'update',
-    value: function update(time) {
-      this.timeline.update(time);
-      this.updateLayers();
-    }
-  }, {
-    key: 'updateHandler',
-    value: function updateHandler() {
-      this.update(this.seconds);
-      this.draw();
+    value: function update(time, duration) {
+      var d = duration !== undefined ? duration : this.timeline.duration;
+      this.timeline.update(time, duration);
+      this.updateLayers(this.timeline.seconds, d);
     }
   }, {
     key: 'updateLayers',
-    value: function updateLayers() {
-      var time = this.seconds;
+    value: function updateLayers(time, duration) {
       var total = this.layers.length;
       for (var i = 0; i < total; ++i) {
         var l = this.layers[i];
         var visible = l.showable(time);
+
         if (visible) {
           if (l instanceof Composition) {
             if (!l.showing && l.timeline.restartable) {
               l.play();
             }
-            l.update(time - l.start);
+            l.update(time - l.start, duration);
           } else {
-            l.update(time - l.start);
+            l.update(time - l.start, duration);
           }
-        } else if (l.showing) {
+        } else if (l.showing && l instanceof Composition) {
           if (l.timeline.playing && l.timeline.seconds > 0) {
             l.timeline.seconds = l.timeline.duration;
 
@@ -300,6 +295,9 @@ var Composition = function (_Layer) {
     key: 'seconds',
     get: function get() {
       return this.timeline.seconds;
+    },
+    set: function set(value) {
+      this.timeline.seconds = value;
     }
   }, {
     key: 'playing',

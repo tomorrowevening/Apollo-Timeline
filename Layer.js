@@ -23,9 +23,9 @@ var Layer = function () {
 
   _createClass(Layer, [{
     key: 'update',
-    value: function update(time) {
+    value: function update(time, duration) {
       if (this.item !== undefined && this.item.update !== undefined) {
-        this.item.update(time);
+        this.item.update(time, duration !== undefined ? duration : this.duration);
       }
     }
   }, {

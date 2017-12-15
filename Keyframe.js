@@ -42,7 +42,11 @@ var Keyframe = function () {
         this.startValue = this.object[this.key];
       }
 
-      this.object[this.key] = (0, _MathUtil.lerp)(percent, this.startValue, this.endValue);
+      if (typeof this.startValue === 'number') {
+        this.object[this.key] = (0, _MathUtil.lerp)(percent, this.startValue, this.endValue);
+      } else if (typeof this.startValue === 'string') {
+        this.object[this.key] = percent < 1 ? this.startValue : this.endValue;
+      }
 
       if (this.onUpdate !== undefined) {
         this.onUpdate(progress, percent);

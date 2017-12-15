@@ -28,6 +28,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var FPS_DELTA = 1 / 60 * 1000;
+
 var Timeline = function (_Dispatcher) {
   _inherits(Timeline, _Dispatcher);
 
@@ -36,6 +38,7 @@ var Timeline = function (_Dispatcher) {
 
     var _this = _possibleConstructorReturn(this, (Timeline.__proto__ || Object.getPrototypeOf(Timeline)).call(this));
 
+    _this.additive = true;
     _this.duration = 0;
     _this.timesPlayed = 0;
     _this.maxPlays = 0;
@@ -131,13 +134,15 @@ var Timeline = function (_Dispatcher) {
     }
   }, {
     key: 'update',
-    value: function update(time) {
+    value: function update(time, duration) {
       if (!this.playing) return;
 
       this.time.previous = this.seconds;
 
       if (time !== undefined) {
         this.time.elapsed = time * 1000;
+      } else if (this.additive) {
+        this.time.elapsed += FPS_DELTA * this.time.speed;
       } else {
         var now = _Timer.TIME.now();
         var delta = now - this.time.stamp;
@@ -147,7 +152,8 @@ var Timeline = function (_Dispatcher) {
 
       this.updateDelayed();
 
-      if (this.duration > 0) this.updatePlaymode();
+      var totalDuration = duration !== undefined ? duration : this.duration;
+      if (totalDuration > 0) this.updatePlaymode(totalDuration);
 
       this.updateMarkers();
 
@@ -241,12 +247,12 @@ var Timeline = function (_Dispatcher) {
     }
   }, {
     key: 'updatePlaymode',
-    value: function updatePlaymode() {
+    value: function updatePlaymode(duration) {
       var seconds = this.seconds;
       if (this.mode === Timeline.PING_PONG) {
 
-        if (seconds >= this.duration) {
-          this.time.elapsed = this.duration * 1000 - 1;
+        if (seconds >= duration) {
+          this.time.elapsed = duration * 1000 - 1;
           this.time.speed *= -1;
         } else if (seconds < 0) {
           this.time.elapsed = 1;
@@ -259,7 +265,7 @@ var Timeline = function (_Dispatcher) {
         }
       } else if (this.mode === Timeline.LOOP) {
 
-        if (seconds > this.duration) {
+        if (seconds > duration) {
           ++this.timesPlayed;
           if (this.maxPlays > 0 && this.timesPlayed >= this.maxPlays) {
             this.pause();
@@ -275,10 +281,10 @@ var Timeline = function (_Dispatcher) {
         }
       } else {
 
-        if (seconds > this.duration) {
+        if (seconds > duration) {
           ++this.timesPlayed;
           this.pause();
-          this.seconds = this.duration;
+          this.seconds = duration;
           this.notify(Timeline.COMPLETE);
         }
       }

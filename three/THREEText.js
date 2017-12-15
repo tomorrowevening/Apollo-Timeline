@@ -103,11 +103,8 @@ module.exports = function (THREE) {
         }
 
         this.sprite.position.x = this.canvas.textWidth / 2 / dpr * this._align.x;
-        this.sprite.position.y = this.canvas.textHeight / 2 / dpr * this._align.y;
+        this.sprite.position.y = this.canvas.textHeight / 2 / dpr * this._align.y - 20;
         this.sprite.scale.set(this.canvas.textWidth / dpr, this.canvas.textHeight / dpr, 1);
-
-        window.spr = this.sprite;
-        window.txt = this;
       }
     }, {
       key: 'align',
@@ -221,6 +218,8 @@ module.exports = function (THREE) {
     return THREEText;
   }(THREE.Object3D);
 
+  var MIN_CANVAS_SIZE = 64;
+
   var CanvasText = function () {
     function CanvasText() {
       _classCallCheck(this, CanvasText);
@@ -256,8 +255,8 @@ module.exports = function (THREE) {
 
         this.textWidth = Math.floor(textW * dpr);
         this.textHeight = Math.floor((this.totalLines * this.lineHeight + textTop) * dpr);
-        this.textWidth = Math.max(32, this.textWidth);
-        this.textHeight = Math.max(32, this.textHeight);
+        this.textWidth = Math.max(MIN_CANVAS_SIZE, this.textWidth);
+        this.textHeight = Math.max(MIN_CANVAS_SIZE, this.textHeight + 32);
 
         this.canvas.width = THREE.Math.nextPowerOfTwo(this.textWidth);
         this.canvas.height = THREE.Math.nextPowerOfTwo(this.textHeight);

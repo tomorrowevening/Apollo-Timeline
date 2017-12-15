@@ -79,8 +79,8 @@ module.exports = function (THREE) {
       value: function setupEffects() {}
     }, {
       key: 'update',
-      value: function update(time) {
-        this.timeline.update(time);
+      value: function update(time, duration) {
+        this.timeline.update(time, duration);
         this.updateLayers();
         this.updateCamera();
       }
@@ -127,6 +127,41 @@ module.exports = function (THREE) {
         this.camera.updateProjectionMatrix();
       }
     }, {
+      key: 'updateLayers',
+      value: function updateLayers() {
+        var time = this.seconds;
+        var total = this.layers.length;
+        for (var i = 0; i < total; ++i) {
+          var l = this.layers[i];
+          var visible = l.showable(time);
+          if (visible) {
+            if (l instanceof _Composition3.default) {
+              if (!l.showing && l.timeline.restartable) {
+                l.play();
+              }
+              l.update(time - l.start);
+            } else {
+              l.update(time - l.start);
+            }
+          } else if (l.showing && l instanceof _Composition3.default) {
+            if (l.timeline.playing && l.timeline.seconds > 0) {
+              l.timeline.seconds = l.timeline.duration;
+
+              if (l.timeline.time.speed < 0) {
+                l.timeline.seconds = 0;
+              }
+
+              if (l.timeline.maxPlays > 0 && l.timeline.timesPlayed >= l.timeline.maxPlays || l.timeline.mode === 'once') {
+                l.timeline.playing = false;
+              }
+            }
+          }
+          l.showing = visible;
+
+          l.item.visible = visible;
+        }
+      }
+    }, {
       key: 'resize',
       value: function resize(w, h) {
         this.post.resize(w, h);
@@ -139,9 +174,8 @@ module.exports = function (THREE) {
 
         effects.forEach(function (effect) {
           var efft = void 0;
-
           if (effect.name === 'Gaussian Blur') {
-            var multiplier = 1 / 5;
+            var multiplier = 0.067;
             efft = new BlurPass(_this2.camera);
             efft.uniforms.radius.value = effect.blurriness * multiplier;
             efft.uniforms.dir.value.set(effect.direction[0], effect.direction[1]);
@@ -158,8 +192,8 @@ module.exports = function (THREE) {
     }, {
       key: 'buildLayerComposition',
       value: function buildLayerComposition(json) {
-        var cJSON = _Loader2.default.json.project.compositions[json.name];
-        var atlas = _Loader2.default.json.atlas.compositions[json.name];
+        var cJSON = _TimelineConfig2.default.json.project.compositions[json.name];
+        var atlas = _TimelineConfig2.default.json.atlas.compositions[json.name];
         var layer = new THREEComposition(json, this.renderer);
         layer.build(cJSON, this);
         layer.buildAtlas(atlas);
@@ -170,8 +204,6 @@ module.exports = function (THREE) {
           var effect = new TrackMattePass({
             matte: mask
           });
-          window.effect = effect;
-          window.config = _TimelineConfig2.default;
           layer.post.add(effect);
           layer.post.enabled = true;
         }

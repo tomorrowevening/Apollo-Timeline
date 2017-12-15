@@ -14,8 +14,9 @@ module.exports = function (THREE) {
     var renderTarget = new THREE.WebGLRenderTarget(width, height, parameters);
 
     var post = {
+      camera: camera,
       effects: [],
-      enabled: false,
+      enabled: true,
       composer: new THREE.EffectComposer(renderer, renderTarget),
       copy: new THREE.ShaderPass(THREE.CopyShader),
       resize: function resize(w, h) {
