@@ -3,13 +3,17 @@ import ArrayKeyframe from './ArrayKeyframe';
 import Dispatcher from 'apollo-utils/Dispatcher';
 import { Timer, TIME } from 'apollo-utils/Timer';
 
+const FPS_DELTA = (1 / 60) * 1000;
+
 export default class Timeline extends Dispatcher {
   static LOOP = 'loop';
   static ONCE = 'once';
   static PING_PONG = 'pingPong';
+  static COMPLETE = 'complete';
   
   constructor() {
     super();
+    this.additive = true;
     this.duration = 0;
     this.timesPlayed = 0;
     this.maxPlays = 0;
@@ -19,7 +23,6 @@ export default class Timeline extends Dispatcher {
     this.delayed = [];
     this.playing = true;
     this.lastMarker = undefined;
-    this.additive = true;
     this.time = {
       elapsed: 0,
       previous: 0,
@@ -95,7 +98,7 @@ export default class Timeline extends Dispatcher {
     this.playing = false;
   }
 
-  update(time) {
+  update(time, duration) {
     if(!this.playing) return;
     
     this.time.previous = this.seconds;
@@ -103,7 +106,7 @@ export default class Timeline extends Dispatcher {
     if(time !== undefined) {
       this.time.elapsed = time * 1000;
     } else if(this.additive) {
-      this.time.elapsed += (1/60) * 1000 * this.time.speed;
+      this.time.elapsed += FPS_DELTA * this.time.speed;
     } else {
       let now = TIME.now();
       let delta = now - this.time.stamp;
@@ -115,7 +118,8 @@ export default class Timeline extends Dispatcher {
     this.updateDelayed();
 
     // Update play mode settings
-    if(this.duration > 0) this.updatePlaymode();
+    let totalDuration = duration !== undefined ? duration : this.duration;
+    if(totalDuration > 0) this.updatePlaymode(totalDuration);
 
     // Markers
     this.updateMarkers();
@@ -149,11 +153,6 @@ export default class Timeline extends Dispatcher {
       percent = (now - key.timestamp) / key.duration;
 
       if(key.isActive(now)) {
-
-        // Auto-origin?
-        if(!key.active && key.startValue === undefined && this.time.speed > 0) {
-          key.startValue = key.object[key.key];
-        }
 
         key.active = true;
         key.update(percent);
@@ -211,12 +210,12 @@ export default class Timeline extends Dispatcher {
     }
   }
 
-  updatePlaymode() {
+  updatePlaymode(duration) {
     const seconds = this.seconds;
     if(this.mode === Timeline.PING_PONG) {
 
-      if(seconds >= this.duration) {
-        this.time.elapsed = this.duration * 1000 - 1;
+      if(seconds >= duration) {
+        this.time.elapsed = duration * 1000 - 1;
         this.time.speed *= -1;
       } else if(seconds < 0) {
         this.time.elapsed = 1;
@@ -230,7 +229,7 @@ export default class Timeline extends Dispatcher {
 
     } else if(this.mode === Timeline.LOOP) {
 
-      if(seconds > this.duration) {
+      if(seconds > duration) {
         ++this.timesPlayed;
         if(this.maxPlays > 0 && this.timesPlayed >= this.maxPlays) {
           this.pause();
@@ -247,10 +246,11 @@ export default class Timeline extends Dispatcher {
 
     } else { // ONCE
 
-      if(seconds > this.duration) {
+      if(seconds > duration) {
         ++this.timesPlayed;
         this.pause();
-        this.time.elapsed = 0;
+        this.seconds = duration;
+        this.notify(Timeline.COMPLETE);
       }
 
     }

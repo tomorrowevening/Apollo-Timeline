@@ -44,8 +44,8 @@ module.exports = function(THREE) {
     setupEffects() {
     }
     
-    update(time) {
-      this.timeline.update(time);
+    update(time, duration) {
+      this.timeline.update(time, duration);
       this.updateLayers();
       this.updateCamera();
     }
@@ -90,6 +90,41 @@ module.exports = function(THREE) {
       this.camera.updateProjectionMatrix();
     }
     
+    updateLayers() {
+      const time = this.seconds;
+      let total = this.layers.length;
+      for (let i = 0; i < total; ++i) {
+        let l = this.layers[i];
+        let visible = l.showable(time);
+        if (visible) {
+          if (l instanceof Composition) {
+            if (!l.showing && l.timeline.restartable) {
+              l.play();
+              // l.timeline.time.stamp = TIME.now();
+            }
+            l.update(time - l.start);
+          } else {
+            l.update(time - l.start);
+          }
+        } else if (l.showing && l instanceof Composition) {
+          if (l.timeline.playing && l.timeline.seconds > 0) {
+            l.timeline.seconds = l.timeline.duration;
+
+            if (l.timeline.time.speed < 0) {
+              l.timeline.seconds = 0;
+            }
+
+            if ((l.timeline.maxPlays > 0 && l.timeline.timesPlayed >= l.timeline.maxPlays) || l.timeline.mode === 'once') {
+              l.timeline.playing = false;
+            }
+          }
+        }
+        l.showing = visible;
+        
+        l.item.visible = visible;
+      }
+    }
+    
     resize(w, h) {
       this.post.resize(w, h);
       super.resize(w, h);
@@ -100,9 +135,8 @@ module.exports = function(THREE) {
     applyEffects(effects) {
       effects.forEach((effect) => {
         let efft;
-        
         if(effect.name === 'Gaussian Blur') {
-          const multiplier = 1/5;
+          const multiplier = 0.067;
           efft = new BlurPass(this.camera);
           efft.uniforms.radius.value = effect.blurriness * multiplier;
           efft.uniforms.dir.value.set(effect.direction[0], effect.direction[1]);
@@ -118,8 +152,8 @@ module.exports = function(THREE) {
     }
     
     buildLayerComposition(json) {
-      let cJSON = Loader.json.project.compositions[json.name];
-      let atlas = Loader.json.atlas.compositions[json.name];
+      let cJSON = TimelineConfig.json.project.compositions[json.name];
+      let atlas = TimelineConfig.json.atlas.compositions[json.name];
       let layer = new THREEComposition(json, this.renderer);
       layer.build(cJSON, this);
       layer.buildAtlas(atlas);
@@ -130,8 +164,6 @@ module.exports = function(THREE) {
         let effect = new TrackMattePass({
           matte: mask
         });
-        window.effect = effect;
-        window.config = TimelineConfig;
         layer.post.add(effect);
         layer.post.enabled = true;
       }

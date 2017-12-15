@@ -1,5 +1,7 @@
 const TimelineConfig = {
   compositions: {},
+  files: {},
+  json: {},
   images: {},
   textures: {},
   video: {},

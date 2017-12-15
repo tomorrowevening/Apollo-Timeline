@@ -12,8 +12,9 @@ module.exports = function(THREE) {
     var renderTarget = new THREE.WebGLRenderTarget( width, height, parameters );
     
     const post = {
+      camera: camera,
       effects: [],
-      enabled: false,
+      enabled: true,
       composer: new THREE.EffectComposer( renderer, renderTarget ),
       copy: new THREE.ShaderPass( THREE.CopyShader ),
       resize: function(w, h) {
@@ -33,6 +34,14 @@ module.exports = function(THREE) {
         
         if(effect.renderToScreen) {
           this.copy.enabled = false;
+        }
+      },
+      draw: function() {
+        if(this.enabled) {
+          renderPass.camera = this.camera;
+          this.composer.render();
+        } else {
+          renderer.render(scene, this.camera);
         }
       }
     };

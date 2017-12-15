@@ -1,4 +1,4 @@
-varying vec2 lineU;
+varying vec2 lineU; // x = pos, y = total length
 
 uniform vec3 diffuse;
 uniform float opacity;
@@ -7,19 +7,22 @@ uniform vec3 trim; // x = start, y = end, z = offset
 
 void main() {
   float opacityMod = 1.0;
+  float offset = trim.z;
   
   // Dash
   if(dash.x > 0.0 && dash.y > 0.0) {
+    offset = trim.z * 360.0;
     float dashEnd = dash.x + dash.y;
-    float lineUMod = mod(lineU.x + dash.z, dashEnd);
+    float lineUMod = mod(lineU.x + dash.z - offset, dashEnd);
     opacityMod = 1.0 - smoothstep(dash.x, dash.x + 0.01, lineUMod);
   }
   
   // Trim
   if(trim.x > 0.0 || trim.y < 1.0) {
+    offset = trim.z;
     float per = lineU.x / lineU.y;
-    float start = min(trim.x, trim.y) + trim.z;
-    float end = max(trim.x, trim.y) + trim.z;
+    float start = min(trim.x, trim.y) + offset;
+    float end = max(trim.x, trim.y) + offset;
     
     if(start == end) {
       opacityMod = 0.0;

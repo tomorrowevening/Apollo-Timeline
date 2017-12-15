@@ -36,6 +36,14 @@ module.exports = function (THREE) {
         if (effect.renderToScreen) {
           this.copy.enabled = false;
         }
+      },
+      draw: function draw() {
+        if (this.enabled) {
+          renderPass.camera = this.camera;
+          this.composer.render();
+        } else {
+          renderer.render(scene, this.camera);
+        }
       }
     };
 

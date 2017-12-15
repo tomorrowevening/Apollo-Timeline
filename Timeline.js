@@ -45,7 +45,6 @@ var Timeline = function (_Dispatcher) {
     _this.delayed = [];
     _this.playing = true;
     _this.lastMarker = undefined;
-    _this.additive = true;
     _this.time = {
       elapsed: 0,
       previous: 0,
@@ -139,8 +138,6 @@ var Timeline = function (_Dispatcher) {
 
       if (time !== undefined) {
         this.time.elapsed = time * 1000;
-      } else if (this.additive) {
-        this.time.elapsed += 1 / 60 * 1000 * this.time.speed;
       } else {
         var now = _Timer.TIME.now();
         var delta = now - this.time.stamp;
@@ -190,9 +187,6 @@ var Timeline = function (_Dispatcher) {
         percent = (now - key.timestamp) / key.duration;
 
         if (key.isActive(now)) {
-          if (!key.active && key.startValue === undefined && this.time.speed > 0) {
-            key.startValue = key.object[key.key];
-          }
 
           key.active = true;
           key.update(percent);
@@ -284,7 +278,8 @@ var Timeline = function (_Dispatcher) {
         if (seconds > this.duration) {
           ++this.timesPlayed;
           this.pause();
-          this.time.elapsed = 0;
+          this.seconds = this.duration;
+          this.notify(Timeline.COMPLETE);
         }
       }
     }
@@ -381,4 +376,5 @@ var Timeline = function (_Dispatcher) {
 Timeline.LOOP = 'loop';
 Timeline.ONCE = 'once';
 Timeline.PING_PONG = 'pingPong';
+Timeline.COMPLETE = 'complete';
 exports.default = Timeline;
