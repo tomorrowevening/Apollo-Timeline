@@ -16,3 +16,5 @@ gulp.task('browserSync', function() {
 gulp.task('clean', require('del').bind(null, ['.tmp', 'dist']));
 
 gulp.task('default', ['clean', 'scripts', 'styles', 'browserSync'], function() {});
+
+gulp.task('dist', ['prebuild', 'build'], function() {});

@@ -112,6 +112,9 @@ gulp.task('build', function() {
   gulp.src(['app/json/**/*'])
   .pipe(gulp.dest('dist/json'));
   
+  gulp.src(['app/video/**/*'])
+  .pipe(gulp.dest('dist/video'));
+  
   gulp.src(['app/scripts/main.min.js'])
   .pipe(gulp.dest('dist/scripts'));
   
