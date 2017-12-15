@@ -12,9 +12,9 @@ export default class Layer {
     this.showing = obj.showing !== undefined ? obj.showing : true;
   }
 
-  update(time) {
+  update(time, duration) {
     if (this.item !== undefined && this.item.update !== undefined) {
-      this.item.update(time);
+      this.item.update(time, duration !== undefined ? duration : this.duration);
     }
   }
 

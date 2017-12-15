@@ -37,33 +37,28 @@ export default class Composition extends Layer {
     this.layers.push(layer);
   }
 
-  update(time) {
-    this.timeline.update(time);
-    this.updateLayers();
+  update(time, duration) {
+    const d = duration !== undefined ? duration : this.timeline.duration;
+    this.timeline.update(time, duration);
+    this.updateLayers(this.timeline.seconds, d);
   }
 
-  updateHandler() {
-    this.update(this.seconds);
-    this.draw();
-  }
-
-  updateLayers() {
-    const time = this.seconds;
+  updateLayers(time, duration) {
     let total = this.layers.length;
     for (let i = 0; i < total; ++i) {
       let l = this.layers[i];
       let visible = l.showable(time);
+      
       if (visible) {
         if (l instanceof Composition) {
           if (!l.showing && l.timeline.restartable) {
             l.play();
-            // l.timeline.time.stamp = TIME.now();
           }
-          l.update(time - l.start);
+          l.update(time - l.start, duration);
         } else {
-          l.update(time - l.start);
+          l.update(time - l.start, duration);
         }
-      } else if (l.showing) {
+      } else if (l.showing && l instanceof Composition) {
         if (l.timeline.playing && l.timeline.seconds > 0) {
           l.timeline.seconds = l.timeline.duration;
 
@@ -256,5 +251,9 @@ export default class Composition extends Layer {
 
   get playing() {
     return this.timeline.playing;
+  }
+  
+  set seconds(value) {
+    this.timeline.seconds = value;
   }
 }
