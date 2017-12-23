@@ -2,8 +2,7 @@
   "compositions": {
     "shapes": {
       "settings": {
-        "playMode": "pingPong",
-        "playCount": 4
+        "playMode": "loop"
       }
     },
     "video": {
@@ -23,12 +22,22 @@
     },
     "maskAnimation": {
       "settings": {
-        "playMode": "pingPong"
+        "playMode": "loop"
       }
     },
     "images": {
       "settings": {
         "playMode": "pingPong"
+      }
+    },
+    "compMasking": {
+      "settings": {
+        "playMode": "loop"
+      }
+    },
+    "textMasking": {
+      "settings": {
+        "playMode": "loop"
       }
     }
   }

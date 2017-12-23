@@ -1,6 +1,6 @@
 import { getID, getTag } from 'apollo-utils/DOMUtil';
 
-export const BG_COLOR = 0x0F0C1A;
+export const BG_COLOR = 0x000000;
 
 export const canvas = getID('world');
 
@@ -20,7 +20,9 @@ export const assets = {
   ],
   images: [
     'images/gradient.png',
-    'images/lighting.png'
+    'images/lighting.png',
+    'images/pixel.png',
+    'images/mask.png'
   ],
   video: [
     'video/big_buck_bunny.mp4'
