@@ -11,6 +11,8 @@ export default class Layer {
     this.item = undefined; // Object layer
     this.showing = obj.showing !== undefined ? obj.showing : true;
   }
+  
+  dispose() {}
 
   update(time, duration) {
     if (this.item !== undefined && this.item.update !== undefined) {

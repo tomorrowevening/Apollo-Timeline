@@ -11,4 +11,8 @@ export default class LayerVideo extends Layer {
       this.file = TimelineConfig.video[this.fileID];
     }
   }
+  
+  dispose() {
+    this.file.pause();
+  }
 }
