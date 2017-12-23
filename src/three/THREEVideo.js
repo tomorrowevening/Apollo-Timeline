@@ -36,8 +36,16 @@ module.exports = function(THREE) {
     }
     
     update(time) {
-      this.file.currentTime = time;
+      if(this.file.paused) {
+        if(time !== undefined) this.file.currentTime = time;
+        this.file.play();
+      }
       this.mesh.material.map.needsUpdate = true;
+    }
+    
+    dispose() {
+      this.file.pause();
+      super.dispose();
     }
   }
 
