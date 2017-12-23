@@ -29,6 +29,7 @@ export default class Composition extends Layer {
   dispose() {
     this.timeline.dispose();
     this.camera = undefined;
+    this.layers.forEach((layer) => { layer.dispose(); })
     this.layers = [];
   }
 
@@ -39,7 +40,7 @@ export default class Composition extends Layer {
 
   update(time, duration) {
     const d = duration !== undefined ? duration : this.timeline.duration;
-    this.timeline.update(time, duration);
+    this.timeline.update(time, d);
     this.updateLayers(this.timeline.seconds, d);
   }
 
@@ -145,7 +146,7 @@ export default class Composition extends Layer {
     // Build layers
     total = json.layers.length;
     for (i = total - 1; i > -1; --i) {
-      let layer = this.buildLayer(json.layers[i]);
+      let layer = this.buildLayer(json, json.layers[i]);
       if (layer !== undefined) this.layers.push(layer);
     }
   }
@@ -171,64 +172,64 @@ export default class Composition extends Layer {
     }
   }
 
-  buildLayer(json) {
-    let layer = new Layer(json.name, json.start, json.duration);
+  buildLayer(json, item) {
+    let layer = new Layer(item.name, item.start, item.duration);
 
     // Create layer...
-    switch (json.type) {
+    switch (item.type) {
       case 'audio':
-        layer = this.buildLayerAudio(json);
+        layer = this.buildLayerAudio(json, item);
         break;
       case 'composition':
-        layer = this.buildLayerComposition(json);
+        layer = this.buildLayerComposition(json, item);
         break;
       case 'image':
-        layer = this.buildLayerImage(json);
+        layer = this.buildLayerImage(json, item);
         break;
       case 'shape':
-        layer = this.buildLayerShape(json);
+        layer = this.buildLayerShape(json, item);
         break;
       case 'text':
-        layer = this.buildLayerText(json);
+        layer = this.buildLayerText(json, item);
         break;
       case 'video':
-        layer = this.buildLayerVideo(json);
+        layer = this.buildLayerVideo(json, item);
         break;
     }
 
-    layer.duration = Math.min(this.timeline.duration, json.duration);
+    layer.duration = Math.min(this.timeline.duration, item.duration);
 
     return layer;
   }
 
-  buildLayerAudio(json) {
-    let layer = new LayerAudio(json);
+  buildLayerAudio(json, item) {
+    let layer = new LayerAudio(item);
     return layer;
   }
 
-  buildLayerComposition(json) {
-    let layer = new Composition(json);
-    layer.build(json, this);
+  buildLayerComposition(json, item) {
+    let layer = new Composition(item);
+    layer.build(item, this);
     return layer;
   }
 
-  buildLayerImage(json) {
-    let layer = new LayerImage(json);
+  buildLayerImage(json, item) {
+    let layer = new LayerImage(item);
     return layer;
   }
 
-  buildLayerShape(json) {
-    let layer = new LayerShape(json);
+  buildLayerShape(json, item) {
+    let layer = new LayerShape(item);
     return layer;
   }
 
-  buildLayerText(json) {
-    let layer = new LayerText(json);
+  buildLayerText(json, item) {
+    let layer = new LayerText(item);
     return layer;
   }
 
-  buildLayerVideo(json) {
-    let layer = new LayerVideo(json);
+  buildLayerVideo(json, item) {
+    let layer = new LayerVideo(item);
     return layer;
   }
 
