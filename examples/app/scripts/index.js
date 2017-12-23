@@ -49,6 +49,8 @@ function loadComplete(evt) {
   Debug.init();
   // Debug.gui.add(apps, 'pixi');
   Debug.gui.add(apps, 'three');
+  
+  apps.three();
 }
 
 listen(document, 'DOMContentLoaded', beginLoad);

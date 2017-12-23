@@ -1,6 +1,7 @@
 var THREE = require('THREE');
 require('apollo-utils/ThreeUtil')(THREE);
 import { BG_COLOR, canvas } from './global';
+import ThreeHUD from '../views/ThreeHUD';
 
 export const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
@@ -16,3 +17,5 @@ renderer.shadowMap.enabled = false;
 renderer.setClearColor( BG_COLOR );
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize(window.innerWidth, window.innerHeight);
+
+export let hud = new ThreeHUD();

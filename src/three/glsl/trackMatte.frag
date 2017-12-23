@@ -6,13 +6,13 @@ uniform vec2 uPosition;
 uniform vec4 uSize;
 uniform vec2 uScale;
 uniform float uRotation;
-// uniform float matteOpacity;
+uniform float matteOpacity;
 
 varying vec2 vUv;
 
-// float luma(vec3 color) {
-//   return dot(color, vec3(0.299, 0.587, 0.114));
-// }
+float luma(vec3 color) {
+  return dot(color, vec3(0.299, 0.587, 0.114));
+}
 
 mat2 rotate2d(float _angle){
   return mat2(cos(_angle),-sin(_angle), sin(_angle),cos(_angle));
@@ -37,24 +37,21 @@ void main() {
     uv += uAnchor / resolution;
     uv = rotate2d(radians(uRotation)) * uv;
     uv -= uPosition / resolution;
-    // uv = scale2d(uScale) * uv;
+    uv = scale2d(uScale) * uv;
+    
+    uv.y += 1.0 - (resolution.y / uSize.y);
     
     vec4 matte = texture2D(tMatte, uv);
-    color += matte * 0.5;
-    // if(uType == 1.0) {
-    //   color.a *= matte.a;
-    // } else if(uType == 2.0) {
-    //   color.a *= (1.0 - matte.a);
-    // } else if(uType == 3.0) {
-    //   color.a *= luma(matte.xyz);
-    // } else if(uType == 4.0) {
-    //   color.a *= 1.0 - luma(matte.xyz);
-    // }
-    // color.a *= matteOpacity;
-    
-    if(uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) {
-      color.a = 0.0;
+    if(uType == 1.0) {
+      color.a *= matte.a;
+    } else if(uType == 2.0) {
+      color.a *= (1.0 - matte.a);
+    } else if(uType == 3.0) {
+      color.a *= luma(matte.xyz);
+    } else if(uType == 4.0) {
+      color.a *= 1.0 - luma(matte.xyz);
     }
+    color.a *= matteOpacity;
   }
   gl_FragColor = color;
 }

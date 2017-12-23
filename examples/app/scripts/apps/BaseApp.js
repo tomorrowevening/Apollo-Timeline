@@ -13,12 +13,14 @@ export default class BaseApp extends AppRunner {
     this.appNames   = params.apps !== undefined ? params.apps : [];
     this.appName    = '';
     this.comp       = undefined;
+    window.app      = this;
   }
   
   setup() {
     this.appFolder.add(this, 'appName', this.appNames).onChange((value) => {
       this.showComp(value);
     });
+    this.appFolder.open();
     
     // File sources
     for(let i in Loader.files) {
@@ -52,12 +54,12 @@ export default class BaseApp extends AppRunner {
   
   update() {
     if(this.comp !== undefined) {
-      this.comp.update();
       let time = this.comp.seconds;
       let duration = this.comp.duration;
       let speed = this.comp.timeline.speed.toFixed(1);
       let seconds = time.toFixed(2) + ' / ' + duration.toFixed(2);
       let frames = Math.round(time * 60).toString() + ' / ' + Math.round(duration * 60).toString();
+      this.comp.update(undefined, duration);
       
       // loop: 1.0 (2 / 4)
       // 2.5 / 5.0: 150 / 300

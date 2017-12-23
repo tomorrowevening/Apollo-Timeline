@@ -19,11 +19,13 @@ module.exports = function(THREE) {
   class THREEComposition extends Composition {
     constructor(json, renderer) {
       super(json);
-      
       this.renderer = renderer;
       this.item = new THREE.Scene();
       this.setupPerspectiveCam();
       this.post = setupPostEffects(this.item, this.camera, renderer);
+      if(json.isTrackMatte) {
+        this.post.copy.renderToScreen = false;
+      }
     }
     
     setupPerspectiveCam() {
@@ -45,17 +47,16 @@ module.exports = function(THREE) {
     }
     
     update(time, duration) {
-      this.timeline.update(time, duration);
-      this.updateLayers();
+      const d = duration !== undefined ? duration : this.timeline.duration;
+      this.timeline.update(time, d);
+      
+      const t = this.timeline.seconds;
+      this.updateLayers(t, d);
       this.updateCamera();
     }
     
     draw() {
-      if(this.post.enabled && this.post.effects.length > 0) {
-        this.post.composer.render();
-      } else {
-        this.renderer.render(this.item, this.camera);
-      }
+      this.post.composer.render();
       
       const time = this.seconds;
       let total = this.layers.length;
@@ -90,21 +91,20 @@ module.exports = function(THREE) {
       this.camera.updateProjectionMatrix();
     }
     
-    updateLayers() {
-      const time = this.seconds;
+    updateLayers(time, duration) {
       let total = this.layers.length;
       for (let i = 0; i < total; ++i) {
         let l = this.layers[i];
         let visible = l.showable(time);
+        
         if (visible) {
           if (l instanceof Composition) {
             if (!l.showing && l.timeline.restartable) {
               l.play();
-              // l.timeline.time.stamp = TIME.now();
             }
-            l.update(time - l.start);
+            l.update();
           } else {
-            l.update(time - l.start);
+            l.update();
           }
         } else if (l.showing && l instanceof Composition) {
           if (l.timeline.playing && l.timeline.seconds > 0) {
@@ -120,7 +120,6 @@ module.exports = function(THREE) {
           }
         }
         l.showing = visible;
-        
         l.item.visible = visible;
       }
     }
@@ -151,46 +150,86 @@ module.exports = function(THREE) {
       });
     }
     
-    buildLayerComposition(json) {
-      let cJSON = TimelineConfig.json.project.compositions[json.name];
-      let atlas = TimelineConfig.json.atlas.compositions[json.name];
-      let layer = new THREEComposition(json, this.renderer);
+    buildLayer(json, item) {
+      let layer = super.buildLayer(json, item);
+      
+      if(item.isTrackMatte) {
+        let prevLayer = json.layers[this.layers.length];
+        let type  = prevLayer.trackMatte;
+        let iType = 0;
+        if(     type === 'alpha')         iType = 1;
+        else if(type === 'alphaInverted') iType = 2;
+        else if(type === 'luma')          iType = 3;
+        else if(type === 'lumaInverted')  iType = 4;
+        let pass = new THREE.MattePass({
+          type: iType,
+          anchor: item.transform.anchor,
+          pos: item.transform.position,
+          scale: item.transform.scale,
+          rotation: item.transform.rotation[2]
+        });
+        
+        if(item.type === 'image') {
+          let imgID = Loader.fileID(item.name);
+          let tex = TimelineConfig.textures[imgID];
+          
+          pass.mattes = [tex];
+          pass.width  = tex.image.width;
+          pass.height = tex.image.height;
+          this.item.remove( layer.item );
+          layer = undefined;
+        } else if(item.type === 'composition') {
+          pass.mattes = [
+            layer.post.composer.writeBuffer.texture,
+            layer.post.composer.readBuffer.texture
+          ];
+          pass.width  = layer.post.composer.writeBuffer.width;
+          pass.height = layer.post.composer.writeBuffer.height;
+          
+          if(prevLayer.type === 'composition') {
+            let prev = this.layers[this.layers.length-1];
+            prev.post.add(pass);
+            return layer;
+          }
+        }
+        
+        this.post.add(pass);
+      }
+      
+      return layer;
+    }
+    
+    buildLayerComposition(json, item) {
+      let cJSON = TimelineConfig.json.project.compositions[item.name];
+      let atlas = TimelineConfig.json.atlas.compositions[item.name];
+      let layer = new THREEComposition(item, this.renderer);
       layer.build(cJSON, this);
       layer.buildAtlas(atlas);
-      layer.applyEffects(json.effects);
-      if(json.matte !== undefined) {
-        let src = TimelineConfig.fileID(json.matte.src);
-        let mask = TimelineConfig.textures[src];
-        let effect = new TrackMattePass({
-          matte: mask
-        });
-        layer.post.add(effect);
-        layer.post.enabled = true;
-      }
+      layer.applyEffects(item.effects);
       layer.setupEffects();
       return layer;
     }
     
-    buildLayerImage(json) {
-      let layer = new THREEImage( json, this.timeline );
+    buildLayerImage(json, item) {
+      let layer = new THREEImage( item, this.timeline );
       this.item.add( layer.item );
       return layer;
     }
     
-    buildLayerShape(json) {
-      let layer = new THREEShape( json, this.timeline );
+    buildLayerShape(json, item) {
+      let layer = new THREEShape( item, this.timeline );
       this.item.add( layer.item );
       return layer;
     }
     
-    buildLayerText(json) {
-      let layer = new THREETextLayer( json, this.timeline );
+    buildLayerText(json, item) {
+      let layer = new THREETextLayer( item, this.timeline );
       this.item.add( layer.item );
       return layer;
     }
     
-    buildLayerVideo(json) {
-      let layer = new THREEVideo( json, this.timeline );
+    buildLayerVideo(json, item) {
+      let layer = new THREEVideo( item, this.timeline );
       this.item.add( layer.item );
       return layer;
     }

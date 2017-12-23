@@ -5,9 +5,9 @@ import BaseApp from './BaseApp';
 // Timeline
 import TimelineConfig from '../../../../src/TimelineConfig';
 var THREEComposition = require('../../../../src/three/THREEComposition')(THREE);
-import { renderer } from '../models/three';
+import { renderer, hud } from '../models/three';
 
-let comp = undefined;
+let pass;
 
 export default class ThreeApp extends BaseApp {
   constructor() {
@@ -16,13 +16,22 @@ export default class ThreeApp extends BaseApp {
         'images',
         'shapes',
         'text',
-        'video'
+        'video',
+        'maskAnimation',
+        'masked',
+        'compMasking',
+        'imgMasking',
+        'multiCompMasking',
+        'textMasking'
       ]
     });
   }
   
   setup() {
     super.setup();
+    
+    this.appFolder.add(hud, 'show').name('Show HUD');
+    this.appFolder.add(hud, 'hide').name('Hide HUD');
     
     // Images/Textures
     for(let i in TimelineConfig.images) {
@@ -35,12 +44,14 @@ export default class ThreeApp extends BaseApp {
   draw() {
     renderer.clear();
     super.draw();
+    hud.draw();
   }
   
   resize(evt) {
     const w = window.innerWidth;
     const h = window.innerHeight;
     renderer.setSize(w, h);
+    hud.resize(w, h);
     super.resize();
   }
   
@@ -54,5 +65,6 @@ export default class ThreeApp extends BaseApp {
     this.comp.build(mainJSON);
     this.comp.buildAtlas(atlasJSON);
     this.comp.play();
+    window.comp = this.comp;
   }
 }

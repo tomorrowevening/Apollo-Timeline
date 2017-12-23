@@ -12,6 +12,7 @@ export default class LoadBar extends Dispatcher {
   }
   
   startLoad() {
+    // Loader.retinaCheck = true;
     Loader.retinaCheck = false;
     Loader.loadAssets(
       assets,
