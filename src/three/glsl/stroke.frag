@@ -11,9 +11,9 @@ void main() {
   
   // Dash
   if(dash.x > 0.0 && dash.y > 0.0) {
-    offset = trim.z * 360.0;
+    offset = (dash.z * 0.5) - (trim.z * lineU.y);
     float dashEnd = dash.x + dash.y;
-    float lineUMod = mod(lineU.x + dash.z - offset, dashEnd);
+    float lineUMod = mod(lineU.x + offset, dashEnd);
     opacityMod = 1.0 - smoothstep(dash.x, dash.x + 0.01, lineUMod);
   }
   
