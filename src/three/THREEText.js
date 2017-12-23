@@ -96,7 +96,7 @@ module.exports = function(THREE) {
       }
 
       this.sprite.position.x = (this.canvas.textWidth /2/dpr) * this._align.x;
-      this.sprite.position.y = (this.canvas.textHeight/2/dpr) * this._align.y - 20;
+      this.sprite.position.y = ((this.canvas.textHeight/2/dpr) * this._align.y - 20 - (this._fontSize / dpr)) * -1;
       this.sprite.scale.set(this.canvas.textWidth/dpr, this.canvas.textHeight/dpr, 1);
     }
 
@@ -247,8 +247,8 @@ module.exports = function(THREE) {
       this.textWidth  = Math.max(MIN_CANVAS_SIZE, this.textWidth);
       this.textHeight = Math.max(MIN_CANVAS_SIZE, this.textHeight + 32);
 
-      this.canvas.width  = THREE.Math.nextPowerOfTwo(this.textWidth);
-      this.canvas.height = THREE.Math.nextPowerOfTwo(this.textHeight);
+      this.canvas.width  = THREE.Math.ceilPowerOfTwo(this.textWidth);
+      this.canvas.height = THREE.Math.ceilPowerOfTwo(this.textHeight);
       
       // DEBUG
       // this.ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
