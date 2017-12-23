@@ -333,6 +333,7 @@ module.exports = function (THREE) {
                 var geom = shape.createPointsGeometry(36);
                 var pts = THREELineGeometry.createPath(geom, false);
                 var dst = stroke.dashes !== undefined || trim !== undefined;
+                dst = true;
                 geometry = new THREELineGeometry(pts, {
                   closed: closed,
                   distances: dst

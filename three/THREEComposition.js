@@ -54,6 +54,9 @@ module.exports = function (THREE) {
       _this.item = new THREE.Scene();
       _this.setupPerspectiveCam();
       _this.post = setupPostEffects(_this.item, _this.camera, renderer);
+      if (json.isTrackMatte) {
+        _this.post.copy.renderToScreen = false;
+      }
       return _this;
     }
 
@@ -80,18 +83,17 @@ module.exports = function (THREE) {
     }, {
       key: 'update',
       value: function update(time, duration) {
-        this.timeline.update(time, duration);
-        this.updateLayers();
+        var d = duration !== undefined ? duration : this.timeline.duration;
+        this.timeline.update(time, d);
+
+        var t = this.timeline.seconds;
+        this.updateLayers(t, d);
         this.updateCamera();
       }
     }, {
       key: 'draw',
       value: function draw() {
-        if (this.post.enabled && this.post.effects.length > 0) {
-          this.post.composer.render();
-        } else {
-          this.renderer.render(this.item, this.camera);
-        }
+        this.post.composer.render();
 
         var time = this.seconds;
         var total = this.layers.length;
@@ -128,20 +130,20 @@ module.exports = function (THREE) {
       }
     }, {
       key: 'updateLayers',
-      value: function updateLayers() {
-        var time = this.seconds;
+      value: function updateLayers(time, duration) {
         var total = this.layers.length;
         for (var i = 0; i < total; ++i) {
           var l = this.layers[i];
           var visible = l.showable(time);
+
           if (visible) {
             if (l instanceof _Composition3.default) {
               if (!l.showing && l.timeline.restartable) {
                 l.play();
               }
-              l.update(time - l.start);
+              l.update();
             } else {
-              l.update(time - l.start);
+              l.update();
             }
           } else if (l.showing && l instanceof _Composition3.default) {
             if (l.timeline.playing && l.timeline.seconds > 0) {
@@ -157,7 +159,6 @@ module.exports = function (THREE) {
             }
           }
           l.showing = visible;
-
           l.item.visible = visible;
         }
       }
@@ -190,51 +191,86 @@ module.exports = function (THREE) {
         });
       }
     }, {
+      key: 'buildLayer',
+      value: function buildLayer(json, item) {
+        var layer = _get(THREEComposition.prototype.__proto__ || Object.getPrototypeOf(THREEComposition.prototype), 'buildLayer', this).call(this, json, item);
+
+        if (item.isTrackMatte) {
+          var prevLayer = json.layers[this.layers.length];
+          var type = prevLayer.trackMatte;
+          var iType = 0;
+          if (type === 'alpha') iType = 1;else if (type === 'alphaInverted') iType = 2;else if (type === 'luma') iType = 3;else if (type === 'lumaInverted') iType = 4;
+          var pass = new THREE.MattePass({
+            type: iType,
+            anchor: item.transform.anchor,
+            pos: item.transform.position,
+            scale: item.transform.scale,
+            rotation: item.transform.rotation[2]
+          });
+
+          if (item.type === 'image') {
+            var imgID = _Loader2.default.fileID(item.name);
+            var tex = _TimelineConfig2.default.textures[imgID];
+
+            pass.mattes = [tex];
+            pass.width = tex.image.width;
+            pass.height = tex.image.height;
+            this.item.remove(layer.item);
+            layer = undefined;
+          } else if (item.type === 'composition') {
+            pass.mattes = [layer.post.composer.writeBuffer.texture, layer.post.composer.readBuffer.texture];
+            pass.width = layer.post.composer.writeBuffer.width;
+            pass.height = layer.post.composer.writeBuffer.height;
+
+            if (prevLayer.type === 'composition') {
+              var prev = this.layers[this.layers.length - 1];
+              prev.post.add(pass);
+              return layer;
+            }
+          }
+
+          this.post.add(pass);
+        }
+
+        return layer;
+      }
+    }, {
       key: 'buildLayerComposition',
-      value: function buildLayerComposition(json) {
-        var cJSON = _TimelineConfig2.default.json.project.compositions[json.name];
-        var atlas = _TimelineConfig2.default.json.atlas.compositions[json.name];
-        var layer = new THREEComposition(json, this.renderer);
+      value: function buildLayerComposition(json, item) {
+        var cJSON = _TimelineConfig2.default.json.project.compositions[item.name];
+        var atlas = _TimelineConfig2.default.json.atlas.compositions[item.name];
+        var layer = new THREEComposition(item, this.renderer);
         layer.build(cJSON, this);
         layer.buildAtlas(atlas);
-        layer.applyEffects(json.effects);
-        if (json.matte !== undefined) {
-          var src = _TimelineConfig2.default.fileID(json.matte.src);
-          var mask = _TimelineConfig2.default.textures[src];
-          var effect = new TrackMattePass({
-            matte: mask
-          });
-          layer.post.add(effect);
-          layer.post.enabled = true;
-        }
+        layer.applyEffects(item.effects);
         layer.setupEffects();
         return layer;
       }
     }, {
       key: 'buildLayerImage',
-      value: function buildLayerImage(json) {
-        var layer = new THREEImage(json, this.timeline);
+      value: function buildLayerImage(json, item) {
+        var layer = new THREEImage(item, this.timeline);
         this.item.add(layer.item);
         return layer;
       }
     }, {
       key: 'buildLayerShape',
-      value: function buildLayerShape(json) {
-        var layer = new THREEShape(json, this.timeline);
+      value: function buildLayerShape(json, item) {
+        var layer = new THREEShape(item, this.timeline);
         this.item.add(layer.item);
         return layer;
       }
     }, {
       key: 'buildLayerText',
-      value: function buildLayerText(json) {
-        var layer = new THREETextLayer(json, this.timeline);
+      value: function buildLayerText(json, item) {
+        var layer = new THREETextLayer(item, this.timeline);
         this.item.add(layer.item);
         return layer;
       }
     }, {
       key: 'buildLayerVideo',
-      value: function buildLayerVideo(json) {
-        var layer = new THREEVideo(json, this.timeline);
+      value: function buildLayerVideo(json, item) {
+        var layer = new THREEVideo(item, this.timeline);
         this.item.add(layer.item);
         return layer;
       }

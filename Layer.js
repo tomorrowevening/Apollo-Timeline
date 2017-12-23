@@ -22,6 +22,9 @@ var Layer = function () {
   }
 
   _createClass(Layer, [{
+    key: 'dispose',
+    value: function dispose() {}
+  }, {
     key: 'update',
     value: function update(time, duration) {
       if (this.item !== undefined && this.item.update !== undefined) {

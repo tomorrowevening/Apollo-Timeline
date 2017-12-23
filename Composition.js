@@ -61,6 +61,9 @@ var Composition = function (_Layer) {
     value: function dispose() {
       this.timeline.dispose();
       this.camera = undefined;
+      this.layers.forEach(function (layer) {
+        layer.dispose();
+      });
       this.layers = [];
     }
   }, {
@@ -73,7 +76,7 @@ var Composition = function (_Layer) {
     key: 'update',
     value: function update(time, duration) {
       var d = duration !== undefined ? duration : this.timeline.duration;
-      this.timeline.update(time, duration);
+      this.timeline.update(time, d);
       this.updateLayers(this.timeline.seconds, d);
     }
   }, {
@@ -188,7 +191,7 @@ var Composition = function (_Layer) {
 
       total = json.layers.length;
       for (i = total - 1; i > -1; --i) {
-        var layer = this.buildLayer(json.layers[i]);
+        var layer = this.buildLayer(json, json.layers[i]);
         if (layer !== undefined) this.layers.push(layer);
       }
     }
@@ -213,69 +216,69 @@ var Composition = function (_Layer) {
     }
   }, {
     key: 'buildLayer',
-    value: function buildLayer(json) {
-      var layer = new _Layer3.default(json.name, json.start, json.duration);
+    value: function buildLayer(json, item) {
+      var layer = new _Layer3.default(item.name, item.start, item.duration);
 
-      switch (json.type) {
+      switch (item.type) {
         case 'audio':
-          layer = this.buildLayerAudio(json);
+          layer = this.buildLayerAudio(json, item);
           break;
         case 'composition':
-          layer = this.buildLayerComposition(json);
+          layer = this.buildLayerComposition(json, item);
           break;
         case 'image':
-          layer = this.buildLayerImage(json);
+          layer = this.buildLayerImage(json, item);
           break;
         case 'shape':
-          layer = this.buildLayerShape(json);
+          layer = this.buildLayerShape(json, item);
           break;
         case 'text':
-          layer = this.buildLayerText(json);
+          layer = this.buildLayerText(json, item);
           break;
         case 'video':
-          layer = this.buildLayerVideo(json);
+          layer = this.buildLayerVideo(json, item);
           break;
       }
 
-      layer.duration = Math.min(this.timeline.duration, json.duration);
+      layer.duration = Math.min(this.timeline.duration, item.duration);
 
       return layer;
     }
   }, {
     key: 'buildLayerAudio',
-    value: function buildLayerAudio(json) {
-      var layer = new LayerAudio(json);
+    value: function buildLayerAudio(json, item) {
+      var layer = new LayerAudio(item);
       return layer;
     }
   }, {
     key: 'buildLayerComposition',
-    value: function buildLayerComposition(json) {
-      var layer = new Composition(json);
-      layer.build(json, this);
+    value: function buildLayerComposition(json, item) {
+      var layer = new Composition(item);
+      layer.build(item, this);
       return layer;
     }
   }, {
     key: 'buildLayerImage',
-    value: function buildLayerImage(json) {
-      var layer = new LayerImage(json);
+    value: function buildLayerImage(json, item) {
+      var layer = new LayerImage(item);
       return layer;
     }
   }, {
     key: 'buildLayerShape',
-    value: function buildLayerShape(json) {
-      var layer = new LayerShape(json);
+    value: function buildLayerShape(json, item) {
+      var layer = new LayerShape(item);
       return layer;
     }
   }, {
     key: 'buildLayerText',
-    value: function buildLayerText(json) {
-      var layer = new LayerText(json);
+    value: function buildLayerText(json, item) {
+      var layer = new LayerText(item);
       return layer;
     }
   }, {
     key: 'buildLayerVideo',
-    value: function buildLayerVideo(json) {
-      var layer = new LayerVideo(json);
+    value: function buildLayerVideo(json, item) {
+      var layer = new LayerVideo(item);
       return layer;
     }
   }, {
