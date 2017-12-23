@@ -55,6 +55,6 @@
     "pixi.js": "4.6.2",
     "polyline-normals": "^2.0.2",
     "stats.js": "^0.17.0",
-    "three": "^0.85.2"
+    "three": "^0.89.0"
   }
 }

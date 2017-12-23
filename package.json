@@ -1,6 +1,6 @@
 {
   "name": "apollo-timeline",
-  "version": "1.2.298",
+  "version": "1.2.299",
   "description": "After Effects style Timeline",
   "files": [
     "package.json",
@@ -37,8 +37,7 @@
     "three/glsl/trackMatte.frag",
     "three/materials/StrokeMaterial.js",
     "three/passes/BlurPass.js",
-    "three/passes/FXAAPass.js",
-    "three/passes/TrackMattePass.js"
+    "three/passes/FXAAPass.js"
   ],
   "repository": {
     "type": "git",
@@ -70,6 +69,6 @@
     "glslify": "^6.0.1",
     "pixi.js": "4.6.2",
     "polyline-normals": "^2.0.2",
-    "three": "^0.83.0"
+    "three": "^0.89.0"
   }
 }
