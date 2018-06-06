@@ -1,7 +1,7 @@
 import Keyframe from './Keyframe';
 import ArrayKeyframe from './ArrayKeyframe';
 import Dispatcher from 'apollo-utils/Dispatcher';
-import { Timer, TIME } from 'apollo-utils/Timer';
+import Timer from 'apollo-utils/Timer';
 
 const FPS_DELTA = (1 / 60) * 1000;
 
@@ -10,7 +10,7 @@ export default class Timeline extends Dispatcher {
   static ONCE = 'once';
   static PING_PONG = 'pingPong';
   static COMPLETE = 'complete';
-  
+
   constructor() {
     super();
     this.additive = true;
@@ -43,7 +43,7 @@ export default class Timeline extends Dispatcher {
     });
     return this.addKeyframe(newKey);
   }
-  
+
   addArray(target, key, to, duration, params) {
     params = params !== undefined ? params : {};
     const now = this.seconds;
@@ -70,7 +70,7 @@ export default class Timeline extends Dispatcher {
   delay(wait, callback, params) {
     let time = 0;
     this.delayed.push({
-      time: wait * 1000 + TIME.now(),
+      time: wait * 1000 + Timer.now(),
       callback: callback,
       params: params
     });
@@ -90,7 +90,7 @@ export default class Timeline extends Dispatcher {
         this.keyframes[i].active = false;
       }
     }
-    this.time.stamp = TIME.now();
+    this.time.stamp = Timer.now();
     this.playing = true;
   }
 
@@ -100,15 +100,15 @@ export default class Timeline extends Dispatcher {
 
   update(time, duration) {
     if(!this.playing) return;
-    
+
     this.time.previous = this.seconds;
-    
+
     if(time !== undefined) {
       this.time.elapsed = time * 1000;
     } else if(this.additive) {
       this.time.elapsed += FPS_DELTA * this.time.speed;
     } else {
-      let now = TIME.now();
+      let now = Timer.now();
       let delta = now - this.time.stamp;
       this.time.elapsed += delta * this.time.speed;
       this.time.stamp = now;
@@ -129,7 +129,7 @@ export default class Timeline extends Dispatcher {
   }
 
   updateDelayed() {
-    const now = TIME.now();
+    const now = Timer.now();
     let i, delay, total = this.delayed.length;
     for(i = 0; i < total; ++i) {
       delay = this.delayed[i];
@@ -271,7 +271,7 @@ export default class Timeline extends Dispatcher {
       // delay call
       marker.trigger();
     }
-    
+
     this.notify('marker', marker);
 
     return true;

@@ -20,6 +20,8 @@ var _Dispatcher3 = _interopRequireDefault(_Dispatcher2);
 
 var _Timer = require('apollo-utils/Timer');
 
+var _Timer2 = _interopRequireDefault(_Timer);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -102,7 +104,7 @@ var Timeline = function (_Dispatcher) {
     value: function delay(wait, callback, params) {
       var time = 0;
       this.delayed.push({
-        time: wait * 1000 + _Timer.TIME.now(),
+        time: wait * 1000 + _Timer2.default.now(),
         callback: callback,
         params: params
       });
@@ -124,7 +126,7 @@ var Timeline = function (_Dispatcher) {
           this.keyframes[i].active = false;
         }
       }
-      this.time.stamp = _Timer.TIME.now();
+      this.time.stamp = _Timer2.default.now();
       this.playing = true;
     }
   }, {
@@ -144,7 +146,7 @@ var Timeline = function (_Dispatcher) {
       } else if (this.additive) {
         this.time.elapsed += FPS_DELTA * this.time.speed;
       } else {
-        var now = _Timer.TIME.now();
+        var now = _Timer2.default.now();
         var delta = now - this.time.stamp;
         this.time.elapsed += delta * this.time.speed;
         this.time.stamp = now;
@@ -162,7 +164,7 @@ var Timeline = function (_Dispatcher) {
   }, {
     key: 'updateDelayed',
     value: function updateDelayed() {
-      var now = _Timer.TIME.now();
+      var now = _Timer2.default.now();
       var i = void 0,
           delay = void 0,
           total = this.delayed.length;
