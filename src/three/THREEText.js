@@ -1,10 +1,10 @@
 import { getHex } from 'apollo-utils/DOMUtil';
 
 module.exports = function(THREE) {
-  var THREELayer = require('./THREELayer')(THREE);
-  
+  var THREELayer = require('apollo-timeline/three/THREELayer')(THREE);
+
   const dpr = window.devicePixelRatio;
-  
+
   const TextAlign = {
     LEFT_BOTTOM   : new THREE.Vector2(1.0, 1.0),
     CENTER_BOTTOM : new THREE.Vector2(0.5, 1.0),
@@ -16,10 +16,10 @@ module.exports = function(THREE) {
     CENTER_TOP    : new THREE.Vector2(0.5, 0.0),
     RIGHT_TOP     : new THREE.Vector2(0.0, 0.0)
   };
-  
+
   //////////////////////////////////////////////////
   // Text
-  
+
   class THREEText extends THREE.Object3D {
     constructor(text, options) {
       super();
@@ -101,11 +101,11 @@ module.exports = function(THREE) {
     }
 
     // Getters
-    
+
     get align() {
       return this._align;
     }
-    
+
     get color() {
       return this._color;
     }
@@ -137,28 +137,28 @@ module.exports = function(THREE) {
     get weight() {
       return this._weight;
     }
-    
+
     get width() {
       return this.canvas.textWidth;
     }
-    
+
     get height() {
       return this.canvas.textHeight;
     }
 
     // Setters
-    
+
     set align(value) {
       if(typeof value === 'string') {
         switch(value) {
           case 'left':
             this._align = TextAlign.LEFT_BOTTOM;
           break;
-          
+
           case 'center':
             this._align = TextAlign.CENTER_BOTTOM;
           break;
-          
+
           case 'right':
             this._align = TextAlign.RIGHT_BOTTOM;
           break;
@@ -168,7 +168,7 @@ module.exports = function(THREE) {
       }
       this.update();
     }
-    
+
     set color(value) {
       this._color = value;
       this.update();
@@ -212,9 +212,9 @@ module.exports = function(THREE) {
 
   //////////////////////////////////////////////////
   // Canvas
-  
-  const MIN_CANVAS_SIZE = 64;
-  
+
+  const MIN_CANVAS_SIZE = 32;
+
   class CanvasText {
     constructor() {
       this.canvas = document.createElement('canvas');
@@ -225,6 +225,12 @@ module.exports = function(THREE) {
       this.totalLines = 0;
       this.textAlign = 'left';
       this.textBaseline = 'top';
+      // this.debugColor  = 'rgba(';
+      // this.debugColor += [
+      //   Math.round(Math.random() * 255),
+      //   Math.round(Math.random() * 255),
+      //   Math.round(Math.random() * 255)
+      // ].join(', ') + ')';
     }
 
     draw(text, font, fontSize, weight, fill, spacing, textTop) {
@@ -242,16 +248,16 @@ module.exports = function(THREE) {
         textW = Math.max(textW, wid);
       });
 
-      this.textWidth  = Math.floor(textW * dpr);
-      this.textHeight = Math.floor(((this.totalLines * this.lineHeight) + textTop) * dpr);
+      this.textWidth  = Math.floor(textW);
+      this.textHeight = Math.floor(((this.totalLines * this.lineHeight) + textTop));
       this.textWidth  = Math.max(MIN_CANVAS_SIZE, this.textWidth);
-      this.textHeight = Math.max(MIN_CANVAS_SIZE, this.textHeight + 32);
+      this.textHeight = Math.max(MIN_CANVAS_SIZE, this.textHeight + 16);
 
       this.canvas.width  = THREE.Math.ceilPowerOfTwo(this.textWidth);
       this.canvas.height = THREE.Math.ceilPowerOfTwo(this.textHeight);
-      
+
       // DEBUG
-      // this.ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+      // this.ctx.fillStyle = this.debugColor;
       // this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       // this.ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
       // this.ctx.fillRect(0, 0, this.canvas.width, textTop);
@@ -320,24 +326,24 @@ module.exports = function(THREE) {
       width: totalWidth
     };
   }
-  
+
   //////////////////////////////////////////////////
   // Layer
-  
+
   class THREETextLayer extends THREELayer {
     constructor(json, timeline) {
       super(json, timeline);
 
       this.mesh = new THREE.Object3D();
       this.item.add(this.mesh);
-      
+
       var content = json.content;
       var fontSize = content.fontSize * window.devicePixelRatio;
       var fColor = getHex(content.color[0], content.color[1], content.color[2]);
       var tColor = new THREE.Color(fColor);
       var color = '#' + tColor.getHexString();
       var weight = content.weight === 'regular' ? 'normal' : content.weight;
-      
+
       this.tText = new THREEText(content.text, {
         align: content.align,
         color: color,
@@ -351,7 +357,7 @@ module.exports = function(THREE) {
       this.mesh.add(this.tText);
 
       THREELayer.transform(this.item, this.mesh, json.transform, timeline);
-      
+
       content.timeline.forEach((ani) => {
         if(ani.name === 'text') {
           THREELayer.animate(this, 'text', timeline, ani);

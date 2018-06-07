@@ -11,7 +11,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 module.exports = function (THREE) {
-  var THREELayer = require('./THREELayer')(THREE);
+  var THREELayer = require('apollo-timeline/three/THREELayer')(THREE);
 
   var dpr = window.devicePixelRatio;
 
@@ -218,7 +218,7 @@ module.exports = function (THREE) {
     return THREEText;
   }(THREE.Object3D);
 
-  var MIN_CANVAS_SIZE = 64;
+  var MIN_CANVAS_SIZE = 32;
 
   var CanvasText = function () {
     function CanvasText() {
@@ -253,10 +253,10 @@ module.exports = function (THREE) {
           textW = Math.max(textW, wid);
         });
 
-        this.textWidth = Math.floor(textW * dpr);
-        this.textHeight = Math.floor((this.totalLines * this.lineHeight + textTop) * dpr);
+        this.textWidth = Math.floor(textW);
+        this.textHeight = Math.floor(this.totalLines * this.lineHeight + textTop);
         this.textWidth = Math.max(MIN_CANVAS_SIZE, this.textWidth);
-        this.textHeight = Math.max(MIN_CANVAS_SIZE, this.textHeight + 32);
+        this.textHeight = Math.max(MIN_CANVAS_SIZE, this.textHeight + 16);
 
         this.canvas.width = THREE.Math.ceilPowerOfTwo(this.textWidth);
         this.canvas.height = THREE.Math.ceilPowerOfTwo(this.textHeight);
